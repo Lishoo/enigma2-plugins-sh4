@@ -1,4 +1,6 @@
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 # To check if in Standby
 import Screens.Standby
 
@@ -22,6 +24,8 @@ from os import path as path
 # We want a list of unique services
 from EPGRefreshService import EPGRefreshService
 
+from OrderedSet import OrderedSet
+
 # Configuration
 from Components.config import config
 
@@ -36,13 +40,14 @@ from RecordAdapter import RecordAdapter
 
 # Path to configuration
 CONFIG = "/etc/enigma2/epgrefresh.xml"
+XML_VERSION = "1"
 
 class EPGRefresh:
 	"""Simple Class to refresh EPGData"""
 
 	def __init__(self):
 		# Initialize
-		self.services = (set(), set())
+		self.services = (OrderedSet(), OrderedSet())
 		self.forcedScan = False
 		self.session = None
 		self.beginOfTimespan = 0
@@ -72,7 +77,12 @@ class EPGRefresh:
 		self.services[1].clear()
 
 		# Open file
-		configuration= cet_parse(CONFIG).getroot()
+		configuration = cet_parse(CONFIG).getroot()
+		version = configuration.get("version", None)
+		if version is None:
+			factor = 60
+		else: #if version == "1"
+			factor = 1
 
 		# Add References
 		for service in configuration.findall("service"):
@@ -84,7 +94,7 @@ class EPGRefresh:
 					value = value[:pos+1]
 
 				duration = service.get('duration', None)
-				duration = duration and int(duration)
+				duration = duration and int(duration)*factor
 
 				self.services[0].add(EPGRefreshService(value, duration))
 		for bouquet in configuration.findall("bouquet"):
@@ -95,7 +105,7 @@ class EPGRefresh:
 				self.services[1].add(EPGRefreshService(value, duration))
 
 	def buildConfiguration(self, webif = False):
-		list = ['<?xml version="1.0" ?>\n<epgrefresh>\n\n']
+		list = ['<?xml version="1.0" ?>\n<epgrefresh version="', XML_VERSION, '">\n\n']
 
 		if webif:
 			for serviceref in self.services[0].union(self.services[1]):
@@ -136,7 +146,7 @@ class EPGRefresh:
 			self.refreshAdapter = None
 
 	def forceRefresh(self, session = None):
-		print "[EPGRefresh] Forcing start of EPGRefresh"
+		print("[EPGRefresh] Forcing start of EPGRefresh")
 		if self.session is None:
 			if session is not None:
 				self.session = session
@@ -154,18 +164,36 @@ class EPGRefresh:
 		epgrefreshtimer.setRefreshTimer(self.createWaitTimer)
 
 	def stop(self):
-		print "[EPGRefresh] Stopping Timer"
+		print("[EPGRefresh] Stopping Timer")
 		self.maybeStopAdapter()
 		epgrefreshtimer.clear()
 
+	def addServices(self, fromList, toList, channelIds):
+		for scanservice in fromList:
+			service = eServiceReference(scanservice.sref)
+			if not service.valid() \
+				or (service.flags & (eServiceReference.isMarker|eServiceReference.isDirectory)):
+
+				continue
+
+			channelID = '%08x%04x%04x' % (
+				service.getUnsignedData(4), # NAMESPACE
+				service.getUnsignedData(2), # TSID
+				service.getUnsignedData(3), # ONID
+			)
+
+			if channelID not in channelIds:
+				toList.append(scanservice)
+				channelIds.append(channelID)
+
 	def prepareRefresh(self):
-		print "[EPGRefresh] About to start refreshing EPG"
+		print("[EPGRefresh] About to start refreshing EPG")
 
 		# Maybe read in configuration
 		try:
 			self.readConfiguration()
-		except Exception, e:
-			print "[EPGRefresh] Error occured while reading in configuration:", e
+		except Exception as e:
+			print("[EPGRefresh] Error occured while reading in configuration:", e)
 
 		# This will hold services which are not explicitely in our list
 		additionalServices = []
@@ -186,8 +214,8 @@ class EPGRefresh:
 
 				# Read in configuration
 				autotimer.readXml()
-			except Exception, e:
-				print "[EPGRefresh] Could not inherit AutoTimer Services:", e
+			except Exception as e:
+				print("[EPGRefresh] Could not inherit AutoTimer Services:", e)
 			else:
 				# Fetch services
 				for timer in autotimer.getEnabledTimerList():
@@ -197,6 +225,10 @@ class EPGRefresh:
 				# Remove instance if there wasn't one before
 				if removeInstance:
 					autotimer = None
+
+		scanServices = []
+		channelIdList = []
+		self.addServices(self.services[0], scanServices, channelIdList)
 
 		serviceHandler = eServiceCenter.getInstance()
 		for bouquet in self.services[1].union(additionalBouquets):
@@ -212,28 +244,11 @@ class EPGRefresh:
 						break
 		del additionalBouquets[:]
 
-		scanServices = []
-		channelIdList = []
-		for scanservice in self.services[0].union(additionalServices):
-			service = eServiceReference(scanservice.sref)
-			if not service.valid() \
-				or (service.flags & (eServiceReference.isMarker|eServiceReference.isDirectory)):
-
-				continue
-
-			channelID = '%08x%04x%04x' % (
-				service.getUnsignedData(4), # NAMESPACE
-				service.getUnsignedData(2), # TSID
-				service.getUnsignedData(3), # ONID
-			)
-
-			if channelID not in channelIdList:
-				scanServices.append(scanservice)
-				channelIdList.append(channelID)
+		self.addServices(additionalServices, scanServices, channelIdList)
 		del additionalServices[:]
 
 		# Debug
-		print "[EPGRefresh] Services we're going to scan:", ', '.join([repr(x) for x in scanServices])
+		print("[EPGRefresh] Services we're going to scan:", ', '.join([repr(x) for x in scanServices]))
 
 		self.maybeStopAdapter()
 		# NOTE: start notification is handled in adapter initializer
@@ -246,7 +261,7 @@ class EPGRefresh:
 			refreshAdapter = MainPictureAdapter(self.session)
 
 		if (not refreshAdapter.backgroundCapable and Screens.Standby.inStandby) or not refreshAdapter.prepare():
-			print "[EPGRefresh] Adapter is not able to run in background or not available, falling back to MainPictureAdapter"
+			print("[EPGRefresh] Adapter is not able to run in background or not available, falling back to MainPictureAdapter")
 			refreshAdapter = MainPictureAdapter(self.session)
 			refreshAdapter.prepare()
 		self.refreshAdapter = refreshAdapter
@@ -273,8 +288,8 @@ class EPGRefresh:
 
 				# Parse EPG
 				autotimer.parseEPG()
-			except Exception, e:
-				print "[EPGRefresh] Could not start AutoTimer:", e
+			except Exception as e:
+				print("[EPGRefresh] Could not start AutoTimer:", e)
 			finally:
 				# Remove instance if there wasn't one before
 				if removeInstance:
@@ -313,10 +328,10 @@ class EPGRefresh:
 					config.plugins.epgrefresh.begin.value,
 					config.plugins.epgrefresh.end.value):
 
-					print "[EPGRefresh] Gone out of timespan while refreshing, sorry!"
+					print("[EPGRefresh] Gone out of timespan while refreshing, sorry!")
 					self.cleanUp()
 				else:
-					print "[EPGRefresh] Box no longer in Standby or Recording started, rescheduling"
+					print("[EPGRefresh] Box no longer in Standby or Recording started, rescheduling")
 
 					# Recheck later
 					epgrefreshtimer.add(EPGRefreshTimerEntry(
@@ -333,14 +348,14 @@ class EPGRefresh:
 
 	def nextService(self):
 		# Debug
-		print "[EPGRefresh] Maybe zap to next service"
+		print("[EPGRefresh] Maybe zap to next service")
 
 		try:
 			# Get next reference
 			service = self.scanServices.pop(0)
 		except IndexError:
 			# Debug
-			print "[EPGRefresh] Done refreshing EPG"
+			print("[EPGRefresh] Done refreshing EPG")
 
 			# Clean up
 			self.cleanUp()
@@ -350,9 +365,9 @@ class EPGRefresh:
 			self.refreshAdapter.play(eServiceReference(service.sref))
 
 			# Start Timer
-			delay = service.duration or config.plugins.epgrefresh.interval.value
+			delay = service.duration or config.plugins.epgrefresh.interval_seconds.value
 			epgrefreshtimer.add(EPGRefreshTimerEntry(
-				time() + delay*60,
+				time() + delay,
 				self.refresh,
 				nocheck = True)
 			)

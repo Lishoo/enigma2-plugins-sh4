@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 # for localized messages
 from . import _
 
@@ -22,7 +24,7 @@ config.plugins.epgrefresh = ConfigSubsection()
 config.plugins.epgrefresh.enabled = ConfigYesNo(default = False)
 config.plugins.epgrefresh.begin = ConfigClock(default = int(begin))
 config.plugins.epgrefresh.end = ConfigClock(default = int(end))
-config.plugins.epgrefresh.interval = ConfigNumber(default = 2)
+config.plugins.epgrefresh.interval_seconds = ConfigNumber(default = 120)
 config.plugins.epgrefresh.delay_standby = ConfigNumber(default = 10)
 config.plugins.epgrefresh.inherit_autotimer = ConfigYesNo(default = False)
 config.plugins.epgrefresh.afterevent = ConfigYesNo(default = False)
@@ -41,14 +43,56 @@ config.plugins.epgrefresh.adapter = ConfigSelection(choices = [
 config.plugins.epgrefresh.show_in_extensionsmenu = ConfigYesNo(default = False)
 config.plugins.epgrefresh.show_help = ConfigYesNo(default = True)
 
-# convert previous parameter
+# convert previous parameters
 config.plugins.epgrefresh.background = ConfigYesNo(default = False)
 if config.plugins.epgrefresh.background.value:
 	config.plugins.epgrefresh.adapter.value = "pip_hidden"
 	config.plugins.epgrefresh.background.value = False
 	config.plugins.epgrefresh.save()
+config.plugins.epgrefresh.interval = ConfigNumber(default = 2)
+if config.plugins.epgrefresh.interval.value != 2:
+	config.plugins.epgrefresh.interval_seconds.value = config.plugins.epgrefresh.interval.value * 60
+	config.plugins.epgrefresh.interval.value = 2
+	config.plugins.epgrefresh.save()
 
 del now, begin, end
+
+#pragma mark - Workaround for unset clock
+
+from enigma import eDVBLocalTimeHandler
+
+def timeCallback(isCallback=True):
+	"""Time Callback/Autostart management."""
+	thInstance = eDVBLocalTimeHandler.getInstance()
+	if isCallback:
+		# NOTE: this assumes the clock is actually ready when called back
+		# this may not be true, but we prefer silently dying to waiting forever
+		thInstance.m_timeUpdated.get().remove(timeCallback)
+	elif not thInstance.ready():
+		thInstance.m_timeUpdated.get().append(timeCallback)
+		return
+
+	if config.plugins.epgrefresh.wakeup.value:
+		now = localtime()
+		begin = int(mktime(
+			(now.tm_year, now.tm_mon, now.tm_mday,
+			config.plugins.epgrefresh.begin.value[0],
+			config.plugins.epgrefresh.begin.value[1],
+			0, now.tm_wday, now.tm_yday, now.tm_isdst)
+		))
+		# booted +- 10min from begin of timespan
+		if abs(time() - begin) < 600:
+			from Screens.MessageBox import MessageBox
+			from Tools.Notifications import AddNotificationWithCallback
+			from Tools.BoundFunction import boundFunction
+			# XXX: we use a notification because this will be suppressed otherwise
+			AddNotificationWithCallback(
+				boundFunction(standbyQuestionCallback, epgrefresh.session),
+				MessageBox,
+				_("This might have been an automated bootup to refresh the EPG. For this to happen it is recommended to put the receiver to Standby.\nDo you want to do this now?"),
+				timeout = 15
+			)
+	epgrefresh.start()
 
 #pragma mark - Help
 try:
@@ -56,8 +100,8 @@ try:
 	from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 	reader = XMLHelpReader(resolveFilename(SCOPE_PLUGINS, "Extensions/EPGRefresh/mphelp.xml"))
 	epgrefreshHelp = registerHelp(*reader)
-except Exception, e:
-	print "[EPGRefresh] Unable to initialize MPHelp:", e,"- Help not available!"
+except Exception as e:
+	print("[EPGRefresh] Unable to initialize MPHelp:", e,"- Help not available!")
 	epgrefreshHelp = None
 #pragma mark -
 
@@ -77,33 +121,12 @@ def standbyQuestionCallback(session, res = None):
 
 # Autostart
 def autostart(reason, **kwargs):
-	if reason == 0 and kwargs.has_key("session"):
+	if reason == 0 and "session" in kwargs:
 		session = kwargs["session"]
 		epgrefresh.session = session
 
 		if config.plugins.epgrefresh.enabled.value:
-			if config.plugins.epgrefresh.wakeup.value:
-				now = localtime()
-				begin = int(mktime(
-					(now.tm_year, now.tm_mon, now.tm_mday,
-					config.plugins.epgrefresh.begin.value[0],
-					config.plugins.epgrefresh.begin.value[1],
-					0, now.tm_wday, now.tm_yday, now.tm_isdst)
-				))
-				# booted +- 10min from begin of timespan
-				if abs(time() - begin) < 600:
-					from Screens.MessageBox import MessageBox
-					from Tools.Notifications import AddNotificationWithCallback
-					from Tools.BoundFunction import boundFunction
-					# XXX: we use a notification because this will be suppressed otherwise
-					AddNotificationWithCallback(
-						boundFunction(standbyQuestionCallback, session),
-						MessageBox,
-						_("This might have been an automated bootup to refresh the EPG. For this to happen it is recommended to put the receiver to Standby.\nDo you want to do this now?"),
-						timeout = 15
-					)
-
-			epgrefresh.start(session)
+			timeCallback(isCallback=False)
 
 	elif reason == 1:
 		epgrefresh.stop()
@@ -164,8 +187,8 @@ def housekeepingExtensionsmenu(el):
 	else:
 		try:
 			plugins.removePlugin(extDescriptor)
-		except ValueError, ve:
-			print "[EPGRefresh] housekeepingExtensionsmenu got confused, tried to remove non-existant plugin entry... ignoring."
+		except ValueError as ve:
+			print("[EPGRefresh] housekeepingExtensionsmenu got confused, tried to remove non-existant plugin entry... ignoring.")
 
 config.plugins.epgrefresh.show_in_extensionsmenu.addNotifier(housekeepingExtensionsmenu, initial_call = False, immediate_feedback = True)
 extDescriptor = PluginDescriptor(name="EPGRefresh", description = _("Automatically refresh EPG"), where = PluginDescriptor.WHERE_EXTENSIONSMENU, fnc = extensionsmenu, needsRestart=False)

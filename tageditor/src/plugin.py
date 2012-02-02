@@ -95,11 +95,11 @@ class TagEditor(Screen):
 	def loadTagsFile(self):
 		try:
 			file = open("/etc/enigma2/movietags")
-			tags = [x.rstrip() for x in file.readlines()]
+			tags = [x.rstrip() for x in file]
 			while "" in tags:
 				tags.remove("")
 			file.close()
-		except IOError, ioe:
+		except IOError as ioe:
 			tags = []
 		return tags
 
@@ -108,7 +108,7 @@ class TagEditor(Screen):
 			file = open("/etc/enigma2/movietags", "w")
 			file.write("\n".join(tags)+"\n")
 			file.close()
-		except IOError, ioe:
+		except IOError as ioe:
 			pass
 
 	def joinTags(self, taglist, newtags):
@@ -296,6 +296,7 @@ class MovieTagEditor(TagEditor):
 		else:
 			tags = []
 		TagEditor.__init__(self, session, tags, args, parent = parent)
+		self.skinName = [ "MovieTagEditor", "TagEditor" ]
 
 	def saveTags(self, file, tags):
 		if os_path.exists(file + ".ts.meta"):

@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 # for localized messages
 from . import _
 
@@ -19,7 +21,7 @@ from Components.config import config, getConfigListEntry
 from EPGRefresh import epgrefresh
 from Components.SystemInfo import SystemInfo
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 class EPGRefreshConfiguration(Screen, ConfigListScreen):
 	"""Configuration of EPGRefresh"""
@@ -59,7 +61,7 @@ class EPGRefreshConfiguration(Screen, ConfigListScreen):
 			getConfigListEntry(_("Show in extension menu"), config.plugins.epgrefresh.show_in_extensionsmenu, _("Enable this to be able to access the EPGRefresh configuration from within the extension menu.")),
 			getConfigListEntry(_("Show popup when refresh starts and ends"), config.plugins.epgrefresh.enablemessage, _("This setting controls whether or not an informational message will be shown at start and completion of refresh.")),
 			getConfigListEntry(_("Wake up from deep standby for EPG refresh"), config.plugins.epgrefresh.wakeup, _("If this is enabled, the plugin will wake up the receiver from deep standby if possible. Otherwise it needs to be switched on already.")),
-			getConfigListEntry(_("Duration to stay on service-channels (minutes)"), config.plugins.epgrefresh.interval, _("This is the duration each service/channel will stay active during a refresh.")),
+			getConfigListEntry(_("Duration to stay on service (seconds)"), config.plugins.epgrefresh.interval_seconds, _("This is the duration each service/channel will stay active during a refresh.")),
 			getConfigListEntry(_("EPG refresh auto-start earliest (hh:mm)"), config.plugins.epgrefresh.begin, _("An automated refresh will start after this time of day, but before the time specified in next setting.")),
 			getConfigListEntry(_("EPG refresh auto-start latest (hh:mm)"), config.plugins.epgrefresh.end, _("An automated refresh will start before this time of day, but after the time specified in previous setting.")),
 			getConfigListEntry(_("Delay if not in standby (minutes)"), config.plugins.epgrefresh.delay_standby, _("If the receiver currently isn't in standby, this is the duration which EPGRefresh will wait before retry.")),
@@ -75,8 +77,8 @@ class EPGRefreshConfiguration(Screen, ConfigListScreen):
 
 			self.list.append(getConfigListEntry(_("Inherit Services from AutoTimer"), config.plugins.epgrefresh.inherit_autotimer, _("Extend the list of services to refresh by those your AutoTimers use?")))
 			self.list.append(getConfigListEntry(_("Run AutoTimer after refresh"), config.plugins.epgrefresh.parse_autotimer, _("After a successful refresh the AutoTimer will automatically search for new matches if this is enabled.")))
-		except ImportError, ie:
-			print "[EPGRefresh] AutoTimer Plugin not installed:", ie
+		except ImportError as ie:
+			print("[EPGRefresh] AutoTimer Plugin not installed:", ie)
 
 		ConfigListScreen.__init__(self, self.list, session = session, on_change = self.changed)
 		

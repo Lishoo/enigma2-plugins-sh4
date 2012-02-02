@@ -83,7 +83,12 @@ class MP(Source):
 			else:
 				return (("empty", True, "playlist"),)
 
-		matchingPattern = "(?i)^.*\.(mp2|mp3|ogg|ts|wav|wave|m3u|pls|e2pls|mpg|vob|avi|divx|m4v|mkv|mp4|m4a|dat|flac|mov|m2ts)" #MediaPlayer-Match
+		# try to extract current pattern from media player and use it over our hardcoded one as default
+		try:
+			matchingPattern = mp.filelist.matchingPattern
+		except Exception:
+			matchingPattern = "(?i)^.*\.(mp2|mp3|ogg|ts|wav|wave|m3u|pls|e2pls|mpg|vob|avi|divx|m4v|mkv|mp4|m4a|dat|flac|mov|m2ts)" #MediaPlayer-Match
+
 		useServiceRef = False
 		if param["types"] == "audio":
 			matchingPattern = "(?i)^.*\.(mp3|ogg|wav|wave|m3u|pls|e2pls)"
@@ -97,11 +102,12 @@ class MP(Source):
 			matchingPattern = param["types"]
 
 		path = param["path"]
-		if path == "Filesystems":
-			path = None
-		elif path is not None and not os_path.isdir(path):
-			# TODO: returning something is better than just dying but is this return sane?
-			return ((None, True, path),)
+		if path is not None:
+			if path.lower() == "filesystems":
+				path = None
+			elif not os_path.isdir(path):
+				# TODO: returning something is better than just dying but is this return sane?
+				return ((None, True, path),)
 
 		filelist = FileList(path, showDirectories=True, showFiles=True, matchingPattern=matchingPattern, useServiceRef=useServiceRef, isTop=False)
 		list = filelist.getFileList()
@@ -168,28 +174,29 @@ class MP(Source):
 		return (False, "'%s' not found in playlist" % file)
 
 	def loadPlaylist(self, param):
-		filename = "playlist/%s" % param
-		from Tools.Directories import resolveFilename, SCOPE_CONFIG
+		from Tools.Directories import resolveFilename, SCOPE_PLAYLIST
 
 		# TODO: fix error handling
 		mp = self.tryOpenMP()
 		if mp is None:
 			return (False, "Mediaplayer not installed")
 
-		fullPath = resolveFilename(SCOPE_CONFIG, filename)
-		mp.PlaylistSelected(fullPath)
+		fullPath = resolveFilename(SCOPE_PLAYLIST, param)
+		if not os_path.isfile(fullPath):
+			return (False, "Playlist '%s' does not exist" % fullPath)
+		mp.PlaylistSelected((param, fullPath))
 		return (True, "Playlist loaded from '%s'" % fullPath)
 
 	def writePlaylist(self, param):
-		filename = "playlist/%s.e2pls" % param
-		from Tools.Directories import resolveFilename, SCOPE_CONFIG
+		filename = "%s.e2pls" % param
+		from Tools.Directories import resolveFilename, SCOPE_PLAYLIST
 
 		# TODO: fix error handling
 		mp = self.tryOpenMP()
 		if mp is None:
 			return (False, "Mediaplayer not installed")
 
-		fullPath = resolveFilename(SCOPE_CONFIG, filename)
+		fullPath = resolveFilename(SCOPE_PLAYLIST, filename)
 		mp.playlistIOInternal.save(fullPath)
 		return (True, "Playlist saved to '%s'" % fullPath)
 

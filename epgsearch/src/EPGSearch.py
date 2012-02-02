@@ -5,6 +5,7 @@ from enigma import eEPGCache, eServiceReference, RT_HALIGN_LEFT, \
 		RT_HALIGN_RIGHT, eListboxPythonMultiContent
 
 from Tools.LoadPixmap import LoadPixmap
+from Tools.Directories import fileExists, resolveFilename, SCOPE_PLUGINS
 from ServiceReference import ServiceReference
 
 from EPGSearchSetup import EPGSearchSetup
@@ -24,12 +25,13 @@ from Components.Sources.ServiceEvent import ServiceEvent
 from Components.Sources.Event import Event
 
 from time import localtime
+from operator import itemgetter
 
 # Partnerbox installed and icons in epglist enabled?
 try:
 	from Plugins.Extensions.Partnerbox.PartnerboxEPGList import \
 			isInRemoteTimer, getRemoteClockPixmap
-	from Plugins.Extensions.Partnerbox.PartnerboxSetup import \
+	from Plugins.Extensions.Partnerbox.plugin import \
 			showPartnerboxIconsinEPGList
 	PartnerBoxIconsEnabled = showPartnerboxIconsinEPGList()
 except ImportError:
@@ -67,7 +69,7 @@ def EPGSelection__init__(self, session, service, zapFunc=None, eventid=None, bou
 				{
 					"blue": bluePressed,
 				})
-		self["key_blue"].text = _("EPG Search")
+		self["key_blue"].text = _("Search")
 
 # Modified EPGSearchList with support for PartnerBox
 class EPGSearchList(EPGList):
@@ -176,6 +178,20 @@ class EPGSearch(EPGSelection):
 		if PartnerBoxIconsEnabled:
 			EPGSelection.PartnerboxInit(self, False)
 
+		# Hook up actions for yttrailer if installed
+		try:
+			from Plugins.Extensions.YTTrailer.plugin import baseEPGSelection__init__
+		except ImportError as ie:
+			pass
+		else:
+			if baseEPGSelection__init__ is not None:
+				self["trailerActions"] = ActionMap(["InfobarActions", "InfobarTeletextActions"],
+				{
+					"showTv": self.showTrailer,
+					"showRadio": self.showTrailerList,
+					"startTeletext": self.showConfig
+				})
+
 	def onCreate(self):
 		self.setTitle(_("EPG Search"))
 
@@ -216,6 +232,8 @@ class EPGSearch(EPGSelection):
 				(_("Save search as AutoTimer"), self.addAutoTimer),
 				(_("Export selected as AutoTimer"), self.exportAutoTimer),
 			))
+		if fileExists(resolveFilename(SCOPE_PLUGINS, "Extensions/IMDb/plugin.py")):
+			options.append((_("Open selected in IMDb"), self.openImdb))
 		options.append(
 				(_("Setup"), self.setup)
 		)
@@ -255,7 +273,7 @@ class EPGSearch(EPGSelection):
 
 			# Read in configuration
 			autotimer.readXml()
-		except Exception, e:
+		except Exception as e:
 			self.session.open(
 				MessageBox,
 				_("Could not read AutoTimer timer list: %s") % e,
@@ -285,6 +303,16 @@ class EPGSearch(EPGSelection):
 		if cur is None:
 			return
 		addAutotimerFromEvent(self.session, cur[0], cur[1])
+
+	def openImdb(self):
+		cur = self['list'].getCurrent()
+		if cur is None:
+			return
+		try:
+			from Plugins.Extensions.IMDb.plugin import IMDB
+			self.session.open(IMDB, cur[0].getEventName())
+		except ImportError as ie:
+			pass
 
 	def setup(self):
 		self.session.open(EPGSearchSetup)
@@ -335,8 +363,8 @@ class EPGSearch(EPGSelection):
 
 			# Search EPG, default to empty list
 			epgcache = eEPGCache.getInstance() # XXX: the EPGList also keeps an instance of the cache but we better make sure that we get what we want :-)
-			ret = epgcache.search(('RIBDT', 500, eEPGCache.PARTIAL_TITLE_SEARCH, searchString, eEPGCache.NO_CASE_CHECK)) or []
-			ret.sort(key = lambda x: x[2]) # sort by time
+			ret = epgcache.search(('RIBDT', 1000, eEPGCache.PARTIAL_TITLE_SEARCH, searchString, eEPGCache.NO_CASE_CHECK)) or []
+			ret.sort(key=itemgetter(2)) # sort by time
 
 			# Update List
 			l = self["list"]

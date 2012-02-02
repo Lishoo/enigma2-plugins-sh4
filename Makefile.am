@@ -1,6 +1,7 @@
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = \
+	3dsettings \
 	aihdcontroler \
 	antiscrollbar \
 	audiosync \
@@ -13,26 +14,32 @@ SUBDIRS = \
 	bitrateviewer \
 	bonjour \
 	cdinfo \
+	curlytx \
 	dreamirc \
 	dreammediathek \
 	dvdbackup \
 	dyndns \
 	easyinfo \
 	easymedia \
+	ecasa \
 	eibox \
 	elektro \
 	emailclient \
+	emission \
 	epgrefresh \
 	epgsearch \
+	eurotictv \
 	fancontrol2 \
 	filebrowser \
 	fritzcall \
+	fstabeditor \
 	ftpbrowser \
 	genuinedreambox \
 	googlemaps \
 	growlee \
 	httpproxy \
 	imdb \
+	infobartunerstate \
 	kiddytimer \
 	lastfm \
 	letterbox \
@@ -40,6 +47,7 @@ SUBDIRS = \
 	mediadownloader \
 	menusort \
 	merlinepg \
+	merlinepgcenter \
 	merlinmusicplayer \
 	meteoitalia \
 	mosaic \
@@ -63,6 +71,8 @@ SUBDIRS = \
 	partnerbox \
 	passwordchanger \
 	permanentclock \
+	permanenttimeshift \
+	pipservicerelation \
 	pipzap \
 	pluginhider \
 	pluginsort \
@@ -80,6 +90,7 @@ SUBDIRS = \
 	simplerss \
 	startupservice \
 	startuptostandby \
+	subsdownloader2 \
 	svdrp \
 	tageditor \
 	trafficinfo \

@@ -1,15 +1,28 @@
 # -*- coding: UTF-8 -*-
+from __future__ import print_function
+
 # for localized messages
 from . import _
 
-from AutoTimerComponent import preferredAutoTimerComponent
+from AutoTimerComponent import preferredAutoTimerComponent, getDefaultEncoding
 from RecordTimer import AFTEREVENT
 from Tools.XMLTools import stringToXML
 from ServiceReference import ServiceReference
 
 from enigma import eServiceReference
 
-CURRENT_CONFIG_VERSION = "5"
+"""
+Configuration Version.
+To be bumped for any modification of the config format.
+Incompatible changes (e.g. different parameter names) require a compatible
+parser to be implemented as for example parseConfigOld which is capable of
+parsing every config format before version 5.
+Previously this variable was only bumped for incompatible changes, but as this
+is the only reliable way to make remote tools aware of our capabilities without
+much overhead (read: a special api just for this) we chose to change the meaning
+of the version attribue.
+"""
+CURRENT_CONFIG_VERSION = "7"
 
 def getValue(definitions, default):
 	# Initialize Output
@@ -29,7 +42,13 @@ def getValue(definitions, default):
 	return ret.strip() or default
 
 def parseConfig(configuration, list, version = None, uniqueTimerId = 0, defaultTimer = None):
-	if version != CURRENT_CONFIG_VERSION:
+	try:
+		intVersion = int(version)
+	except ValueError:
+		print('[AutoTimer] Config version "%s" is not a valid integer, assuming old version' % version)
+		intVersion = -1
+
+	if intVersion < 5:
 		parseConfigOld(configuration, list, uniqueTimerId)
 		return
 
@@ -55,13 +74,13 @@ def parseEntry(element, baseTimer, defaults = False):
 		# Read out match
 		baseTimer.match = element.get("match", "").encode("UTF-8")
 		if not baseTimer.match:
-			print '[AutoTimer] Erroneous config is missing attribute "match", skipping entry'
+			print('[AutoTimer] Erroneous config is missing attribute "match", skipping entry')
 			return False
 
 		# Read out name
 		baseTimer.name = element.get("name", "").encode("UTF-8")
 		if not baseTimer.name:
-			print '[AutoTimer] Timer is missing attribute "name", defaulting to match'
+			print('[AutoTimer] Timer is missing attribute "name", defaulting to match')
 			baseTimer.name = baseTimer.match
 
 		# Read out enabled
@@ -71,7 +90,7 @@ def parseEntry(element, baseTimer, defaults = False):
 		elif enabled == "yes":
 			baseTimer.enabled = True
 		else:
-			print '[AutoTimer] Erroneous config contains invalid value for "enabled":', enabled,', disabling'
+			print('[AutoTimer] Erroneous config contains invalid value for "enabled":', enabled,', disabling')
 			baseTimer.enabled = False
 
 		# Read timeframe
@@ -135,9 +154,11 @@ def parseEntry(element, baseTimer, defaults = False):
 
 	# Read out justplay
 	baseTimer.justplay = int(element.get("justplay", 0))
+	baseTimer.setEndtime = int(element.get("setEndtime", 1))
 
 	# Read out avoidDuplicateDescription
 	baseTimer.avoidDuplicateDescription = int(element.get("avoidDuplicateDescription", 0))
+	baseTimer.searchForDuplicateDescription = int(element.get("searchForDuplicateDescription", 2))
 
 	# Read out allowed services
 	l = element.findall("serviceref")
@@ -183,10 +204,10 @@ def parseEntry(element, baseTimer, defaults = False):
 		for afterevent in l:
 			value = afterevent.text
 
-			if idx.has_key(value):
+			if value in idx:
 				value = idx[value]
 			else:
-				print '[AutoTimer] Erroneous config contains invalid value for "afterevent":', afterevent,', ignoring definition'
+				print('[AutoTimer] Erroneous config contains invalid value for "afterevent":', afterevent,', ignoring definition')
 				continue
 
 			start = afterevent.get("from")
@@ -210,7 +231,7 @@ def parseEntry(element, baseTimer, defaults = False):
 			if not (value and where):
 				continue
 
-			if idx.has_key(where):
+			if where in idx:
 				excludes[idx[where]].append(value.encode("UTF-8"))
 		baseTimer.exclude = excludes
 
@@ -224,7 +245,7 @@ def parseEntry(element, baseTimer, defaults = False):
 			if not (value and where):
 				continue
 
-			if idx.has_key(where):
+			if where in idx:
 				includes[idx[where]].append(value.encode("UTF-8"))
 		baseTimer.include = includes
 
@@ -243,7 +264,7 @@ def parseEntry(element, baseTimer, defaults = False):
 	return True
 
 def parseConfigOld(configuration, list, uniqueTimerId = 0):
-	print "[AutoTimer] Trying to parse old config"
+	print("[AutoTimer] Trying to parse old config")
 
 	# Iterate Timers
 	for timer in configuration.findall("timer"):
@@ -260,7 +281,7 @@ def parseConfigOld(configuration, list, uniqueTimerId = 0):
 			name = getValue(timer.findall("name"), "").encode("UTF-8")
 
 		if not name:
-			print '[AutoTimer] Erroneous config is missing attribute "name", skipping entry'
+			print('[AutoTimer] Erroneous config is missing attribute "name", skipping entry')
 			continue
 
 		# Read out match (V3+)
@@ -269,7 +290,7 @@ def parseConfigOld(configuration, list, uniqueTimerId = 0):
 			# Read out match
 			match = match.encode("UTF-8")
 			if not match:
-				print '[AutoTimer] Erroneous config contains empty attribute "match", skipping entry'
+				print('[AutoTimer] Erroneous config contains empty attribute "match", skipping entry')
 				continue
 		# V2-
 		else:
@@ -285,7 +306,7 @@ def parseConfigOld(configuration, list, uniqueTimerId = 0):
 			elif enabled == "yes":
 				enabled = True
 			else:
-				print '[AutoTimer] Erroneous config contains invalid value for "enabled":', enabled,', skipping entry'
+				print('[AutoTimer] Erroneous config contains invalid value for "enabled":', enabled,', skipping entry')
 				enabled = False
 		# V1
 		else:
@@ -318,7 +339,7 @@ def parseConfigOld(configuration, list, uniqueTimerId = 0):
 					end = [int(x) for x in end.split(':')]
 					timetuple = (start, end)
 				else:
-					print '[AutoTimer] Erroneous config contains invalid definition of "timespan", ignoring definition'
+					print('[AutoTimer] Erroneous config contains invalid definition of "timespan", ignoring definition')
 					timetuple = None
 			else:
 				timetuple = None
@@ -384,9 +405,13 @@ def parseConfigOld(configuration, list, uniqueTimerId = 0):
 
 		# Read out justplay
 		justplay = int(timer.get("justplay", '0'))
+		setEndtime = int(timer.get("setEndtime", '1'))
 
 		# Read out avoidDuplicateDescription
 		avoidDuplicateDescription = int(timer.get("avoidDuplicateDescription", 0))
+		searchForDuplicateDescription = int(timer.get("searchForDuplicateDescription", 3)) - 1
+		if searchForDuplicateDescription < 0 or searchForDuplicateDescription > 2:
+			searchForDuplicateDescription = 2
 
 		# Read out afterevent (compatible to V* though behaviour for V3- is different as V4+ allows multiple afterevents while the last definication was chosen before)
 		idx = {
@@ -400,10 +425,10 @@ def parseConfigOld(configuration, list, uniqueTimerId = 0):
 		for element in timer.findall("afterevent"):
 			value = element.text
 
-			if idx.has_key(value):
+			if value in idx:
 				value = idx[value]
 			else:
-				print '[AutoTimer] Erroneous config contains invalid value for "afterevent":', afterevent,', ignoring definition'
+				print('[AutoTimer] Erroneous config contains invalid value for "afterevent":', afterevent,', ignoring definition')
 				continue
 
 			start = element.get("from")
@@ -424,7 +449,7 @@ def parseConfigOld(configuration, list, uniqueTimerId = 0):
 			if not (value and where):
 				continue
 
-			if idx.has_key(where):
+			if where in idx:
 				excludes[idx[where]].append(value.encode("UTF-8"))
 
 		# Read out includes (use same idx) (V4+ feature, should not harm V3-)
@@ -435,7 +460,7 @@ def parseConfigOld(configuration, list, uniqueTimerId = 0):
 			if not (value and where):
 				continue
 
-			if idx.has_key(where):
+			if where in idx:
 				includes[idx[where]].append(value.encode("UTF-8"))
 
 		# Read out max length (V4+)
@@ -484,7 +509,9 @@ def parseConfigOld(configuration, list, uniqueTimerId = 0):
 				matchFormatString = counterFormat,
 				lastBegin = lastBegin,
 				justplay = justplay,
+				setEndtime = setEndtime,
 				avoidDuplicateDescription = avoidDuplicateDescription,
+				searchForDuplicateDescription = searchForDuplicateDescription,
 				bouquets = bouquets,
 				tags = tags
 		))
@@ -494,6 +521,7 @@ def buildConfig(defaultTimer, timers, webif = False):
 	list = ['<?xml version="1.0" ?>\n<autotimer version="', CURRENT_CONFIG_VERSION, '">\n\n']
 	append = list.append
 	extend = list.extend
+	defaultEncoding = getDefaultEncoding()
 
 	# This gets deleted afterwards if we do not have set any defaults
 	append(' <defaults')
@@ -529,16 +557,21 @@ def buildConfig(defaultTimer, timers, webif = False):
 	if defaultTimer.getAvoidDuplicateDescription():
 		extend((' avoidDuplicateDescription="', str(defaultTimer.getAvoidDuplicateDescription()), '"'))
 
+		if defaultTimer.getAvoidDuplicateDescription() > 0:
+			if defaultTimer.searchForDuplicateDescription != 2:
+				extend((' searchForDuplicateDescription="', str(defaultTimer.searchForDuplicateDescription), '"'))
 	# Only display justplay if true
 	if defaultTimer.justplay:
 		extend((' justplay="', str(defaultTimer.getJustplay()), '"'))
+		if not defaultTimer.setEndtime:
+			append(' setEndtime="0"')
 
 	# Only display encoding if != utf-8
-	if defaultTimer.encoding != 'UTF-8' or webif:
+	if defaultTimer.encoding != defaultEncoding or webif:
 		extend((' encoding="', str(defaultTimer.encoding), '"'))
 
-	# Only display searchType if exact
-	if defaultTimer.searchType == "exact":
+	# SearchType
+	if defaultTimer.searchType != "partial":
 		extend((' searchType="', str(defaultTimer.searchType), '"'))
 
 	# Only display searchCase if sensitive
@@ -662,17 +695,21 @@ def buildConfig(defaultTimer, timers, webif = False):
 		# Duplicate Description
 		if timer.getAvoidDuplicateDescription():
 			extend((' avoidDuplicateDescription="', str(timer.getAvoidDuplicateDescription()), '"'))
+			if timer.searchForDuplicateDescription != 2:
+				extend((' searchForDuplicateDescription="', str(timer.searchForDuplicateDescription), '"'))
 
 		# Only display justplay if true
 		if timer.justplay:
 			extend((' justplay="', str(timer.getJustplay()), '"'))
+			if not timer.setEndtime:
+				append(' setEndtime="0"')
 
 		# Only display encoding if != utf-8
-		if timer.encoding != 'UTF-8' or webif:
+		if timer.encoding != defaultEncoding or webif:
 			extend((' encoding="', str(timer.encoding), '"'))
 
-		# Only display searchType if exact
-		if timer.searchType == "exact":
+		# SearchType
+		if timer.searchType != "partial":
 			extend((' searchType="', str(timer.searchType), '"'))
 
 		# Only display searchCase if sensitive

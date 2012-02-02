@@ -5,7 +5,14 @@ from enigma import eServiceReference
 from Components.config import config
 from Components.SystemInfo import SystemInfo
 from time import localtime
-from urllib import unquote
+try:
+	from urllib import unquote
+	iteritems = lambda d: d.iteritems()
+except ImportError as ie:
+	from urllib.parse import unquote
+	iteritems = lambda d: d.items()
+
+API_VERSION = "1.0"
 
 class EPGRefreshStartRefreshResource(resource.Resource):
 	def render(self, req):
@@ -18,7 +25,7 @@ class EPGRefreshStartRefreshResource(resource.Resource):
 			output = "could not initiate refresh"
 
 		req.setResponseCode(http.OK)
-		req.setHeader('Content-type', 'application; xhtml+xml')
+		req.setHeader('Content-type', 'application/xhtml+xml')
 		req.setHeader('charset', 'UTF-8')
 
 		return """<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
@@ -51,7 +58,7 @@ class EPGRefreshAddRemoveServiceResource(resource.Resource):
 			duration = req.args.get("duration", None)
 			try:
 				duration = duration and int(duration)
-			except ValueError, ve:
+			except ValueError as ve:
 				output = 'invalid value for "duration": ' + str(duration)
 			else:
 				for sref in req.args.get('sref'):
@@ -112,7 +119,7 @@ class EPGRefreshAddRemoveServiceResource(resource.Resource):
 			output = 'service restriction changed'
 
 		req.setResponseCode(http.OK)
-		req.setHeader('Content-type', 'application; xhtml+xml')
+		req.setHeader('Content-type', 'application/xhtml+xml')
 		req.setHeader('charset', 'UTF-8')
 		
 		return """<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
@@ -125,14 +132,14 @@ class EPGRefreshListServicesResource(resource.Resource):
 	def render(self, req):
 		# show xml
 		req.setResponseCode(http.OK)
-		req.setHeader('Content-type', 'application; xhtml+xml')
+		req.setHeader('Content-type', 'application/xhtml+xml')
 		req.setHeader('charset', 'UTF-8')
 		return ''.join(epgrefresh.buildConfiguration(webif = True))
 
 class EPGRefreshChangeSettingsResource(resource.Resource):
 	def render(self, req):
 		statetext = "config changed."
-		for key, value in req.args.iteritems():
+		for key, value in iteritems(req.args):
 			value = value[0]
 			if key == "enabled":
 				config.plugins.epgrefresh.enabled.value = True if value == "true" else False
@@ -149,9 +156,14 @@ class EPGRefreshChangeSettingsResource(resource.Resource):
 					t = localtime(int(value))
 					config.plugins.epgrefresh.end.value = [t.tm_hour, t.tm_min]
 			elif key == "interval":
+				statetext += " parameter \"interval\" is deprecated. please use new \"interval_seconds\" parameter instead."
 				value = int(value)
 				if value:
-					config.plugins.epgrefresh.interval.value = value
+					config.plugins.epgrefresh.interval_seconds.value = value*60
+			elif key == "interval_seconds":
+				value = int(value)
+				if value:
+					config.plugins.epgrefresh.interval_seconds.value = value
 			elif key == "delay_standby":
 				value = int(value)
 				if value:
@@ -181,7 +193,7 @@ class EPGRefreshChangeSettingsResource(resource.Resource):
 			epgrefresh.stop()
 
 		req.setResponseCode(http.OK)
-		req.setHeader('Content-type', 'application; xhtml+xml')
+		req.setHeader('Content-type', 'application/xhtml+xml')
 		req.setHeader('charset', 'UTF-8')
 
 		return """<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
@@ -193,7 +205,7 @@ class EPGRefreshChangeSettingsResource(resource.Resource):
 class EPGRefreshSettingsResource(resource.Resource):
 	def render(self, req):
 		req.setResponseCode(http.OK)
-		req.setHeader('Content-type', 'application; xhtml+xml')
+		req.setHeader('Content-type', 'application/xhtml+xml')
 		req.setHeader('charset', 'UTF-8')
 
 		from time import time, localtime, mktime
@@ -214,7 +226,7 @@ class EPGRefreshSettingsResource(resource.Resource):
 		try:
 			from Plugins.Extensions.AutoTimer.AutoTimer import AutoTimer
 			hasAutoTimer = True
-		except ImportError, ie: pass
+		except ImportError as ie: pass
 
 		return """<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
 <e2settings>
@@ -234,8 +246,13 @@ class EPGRefreshSettingsResource(resource.Resource):
   <e2settingname>config.plugins.epgrefresh.end</e2settingname>
   <e2settingvalue>%d</e2settingvalue>
  </e2setting>
+ <!-- deprecated, pending removal -->
  <e2setting>
   <e2settingname>config.plugins.epgrefresh.interval</e2settingname>
+  <e2settingvalue>%d</e2settingvalue>
+ </e2setting>
+ <e2setting>
+  <e2settingname>config.plugins.epgrefresh.interval_seconds</e2settingname>
   <e2settingvalue>%d</e2settingvalue>
  </e2setting>
  <e2setting>
@@ -263,6 +280,10 @@ class EPGRefreshSettingsResource(resource.Resource):
   <e2settingvalue>%s</e2settingvalue>
  </e2setting>
  <e2setting>
+  <e2settingname>config.plugins.epgrefresh.lastscan</e2settingname>
+  <e2settingvalue>%d</e2settingvalue>
+ </e2setting>
+ <e2setting>
   <!-- deprecated, pending removal -->
   <e2settingname>config.plugins.epgrefresh.background</e2settingname>
   <e2settingvalue>%s</e2settingvalue>
@@ -284,13 +305,15 @@ class EPGRefreshSettingsResource(resource.Resource):
 				config.plugins.epgrefresh.enablemessage.value,
 				begin,
 				end,
-				config.plugins.epgrefresh.interval.value,
+				int(config.plugins.epgrefresh.interval_seconds.value/60),
+				config.plugins.epgrefresh.interval_seconds.value,
 				config.plugins.epgrefresh.delay_standby.value,
 				config.plugins.epgrefresh.inherit_autotimer.value,
 				config.plugins.epgrefresh.afterevent.value,
 				config.plugins.epgrefresh.force.value,
 				config.plugins.epgrefresh.wakeup.value,
 				config.plugins.epgrefresh.parse_autotimer.value,
+				config.plugins.epgrefresh.lastscan.value,
 				config.plugins.epgrefresh.adapter.value in ("pip", "pip_hidden"),
 				config.plugins.epgrefresh.adapter.value,
 				canDoBackgroundRefresh,
