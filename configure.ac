@@ -193,12 +193,6 @@ eurotictv/meta/Makefile
 eurotictv/po/Makefile
 eurotictv/src/Makefile
 
-fancontrol2/Makefile
-fancontrol2/meta/Makefile
-fancontrol2/po/Makefile
-fancontrol2/src/Makefile
-fancontrol2/src/data/Makefile
-
 filebrowser/Makefile
 filebrowser/meta/Makefile
 filebrowser/src/Makefile
@@ -218,10 +212,6 @@ ftpbrowser/meta/Makefile
 ftpbrowser/po/Makefile
 ftpbrowser/src/Makefile
 ftpbrowser/src/images/Makefile
-
-genuinedreambox/Makefile
-genuinedreambox/meta/Makefile
-genuinedreambox/src/Makefile
 
 googlemaps/Makefile
 googlemaps/meta/Makefile

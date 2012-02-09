@@ -29,12 +29,10 @@ SUBDIRS = \
 	epgrefresh \
 	epgsearch \
 	eurotictv \
-	fancontrol2 \
 	filebrowser \
 	fritzcall \
 	fstabeditor \
 	ftpbrowser \
-	genuinedreambox \
 	googlemaps \
 	growlee \
 	httpproxy \
