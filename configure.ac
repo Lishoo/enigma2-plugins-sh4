@@ -23,7 +23,7 @@ AX_PTHREAD
 TUXBOX_APPS_DVB
 
 PKG_CHECK_MODULES(ENIGMA2, enigma2)
-#PKG_CHECK_MODULES(GSTREAMER, gstreamer-0.10 gstreamer-pbutils-0.10)
+# PKG_CHECK_MODULES(GSTREAMER, gstreamer-0.10 gstreamer-pbutils-0.10)
 PKG_CHECK_MODULES(LIBCRYPTO, libcrypto)
 
 AC_ARG_WITH(debug,
@@ -280,12 +280,6 @@ merlinepgcenter/images/SD/Makefile
 merlinepgcenter/images/XD/Makefile
 merlinepgcenter/images/XD_BORDER/Makefile
 merlinepgcenter/images/HD_Elgato/Makefile
-
-#merlinmusicplayer/Makefile
-#merlinmusicplayer/meta/Makefile
-#merlinmusicplayer/src/Makefile
-#merlinmusicplayer/src/images/Makefile
-#merlinmusicplayer/src/merlinmp3player/Makefile
 
 meteoitalia/Makefile
 meteoitalia/meta/Makefile
