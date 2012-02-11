@@ -281,11 +281,11 @@ merlinepgcenter/images/XD/Makefile
 merlinepgcenter/images/XD_BORDER/Makefile
 merlinepgcenter/images/HD_Elgato/Makefile
 
-merlinmusicplayer/Makefile
-merlinmusicplayer/meta/Makefile
-merlinmusicplayer/src/Makefile
-merlinmusicplayer/src/images/Makefile
-merlinmusicplayer/src/merlinmp3player/Makefile
+#merlinmusicplayer/Makefile
+#merlinmusicplayer/meta/Makefile
+#merlinmusicplayer/src/Makefile
+#merlinmusicplayer/src/images/Makefile
+#merlinmusicplayer/src/merlinmp3player/Makefile
 
 meteoitalia/Makefile
 meteoitalia/meta/Makefile

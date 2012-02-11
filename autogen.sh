@@ -1,6 +1,6 @@
 #!/bin/sh
 
-autoreconf --force --install
+autoreconf --install
 
 echo "now, execute ./configure"
 echo "after that, you could build an ipkg with 'make ipkg' in any of the"
