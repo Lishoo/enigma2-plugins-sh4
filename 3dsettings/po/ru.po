@@ -1,0 +1,60 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 3D Settings\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-12-23 18:35+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Jakob Kais <schpuntik@freenet.de>\n"
+"Language-Team: Dr. Best <dr.best@dreambox-tools.info>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: Germany\n"
+"X-Poedit-SourceCharset: utf-8\n"
+
+msgid "off"
+msgstr "Выкл"
+
+msgid "on with side by side"
+msgstr "вкл рядом"
+
+msgid "on with top/bottom"
+msgstr "вкл вверху/внизу"
+
+msgid "Side by side"
+msgstr "Рядом"
+
+msgid "Top/Bottom"
+msgstr "Вверху/Снизу"
+
+msgid "2D mode"
+msgstr "2D режим"
+
+msgid "Show side by side option in extension menu"
+msgstr "Активировать рядом опцию в расширенном меню"
+
+msgid "Show top/bottom option in extension menu"
+msgstr "Активировать вверху/снизу опцию в расширеном меню"
+
+msgid "Switch OSD automatically"
+msgstr "Переключить автоматически"
+
+msgid "Offset"
+msgstr "Смещение"
+
+msgid "3D settings"
+msgstr "3D Установки"
+
+msgid "3D: Enable side by side menu"
+msgstr "3D: Рядом модус включить"
+
+msgid "3D: Enable top/bottom menu"
+msgstr "3D Сверху/Снизу модус включить"
+
+msgid "3D: disable 3D menu"
+msgstr "3D: 3D модус выключить"
+
+msgid "Change 3D settings"
+msgstr "3D Изменить установки"
+
