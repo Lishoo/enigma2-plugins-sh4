@@ -52,12 +52,6 @@ AM_CONDITIONAL(UPDATE_PO, test "$with_po" = "yes")
 AC_CONFIG_FILES([
 Makefile
 
-aihdcontroler/Makefile
-aihdcontroler/meta/Makefile
-aihdcontroler/src/Makefile
-aihdcontroler/src/comp/Makefile
-aihdcontroler/src/data/Makefile
-
 antiscrollbar/Makefile
 antiscrollbar/meta/Makefile
 antiscrollbar/src/Makefile
