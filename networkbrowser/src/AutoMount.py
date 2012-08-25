@@ -3,7 +3,7 @@
 #from __init__ import _
 from re import compile as re_compile
 from os import path as os_path, symlink, listdir, unlink, readlink, remove
-
+import os
 from enigma import eTimer
 from Components.Console import Console
 from Components.Harddisk import harddiskmanager #global harddiskmanager
@@ -117,6 +117,8 @@ class AutoMount():
 			self.MountConsole = Console()
 
 		self.command = None
+		if os_path.exists("/media/net") is False:
+			createDir("/media/net")
 		if self.activeMountsCounter == 0:
 			print "self.automounts without active mounts",self.automounts
 			if data['active'] == 'False' or data['active'] is False:
@@ -145,6 +147,12 @@ class AutoMount():
 
 				elif data['mounttype'] == 'cifs':
 					if not os_path.ismount(path):
+						if os_path.exists("/lib/modules/cifs.ko") is True:
+							os.popen("insmod /lib/modules/cifs.ko")
+						else:
+							linuxversion = os.popen("ls -a /lib/modules | grep _stm")
+							if os_path.exists("/lib/modules/%s/kernel/fs/cifs.ko" % linuxversion) is True:
+								os.popen("modprobe cifs")
 						tmpusername = data['username'].replace(" ", "\\ ")
 						tmpcmd = 'mount -t cifs -o '+ self.sanitizeOptions(data['options'], cifs=True) +',iocharset=utf8,username='+ tmpusername + ',password='+ data['password'] + ' //' + data['ip'] + '/' + tmpsharedir + ' ' + path
 						self.command = tmpcmd.encode("UTF-8")
@@ -186,7 +194,7 @@ class AutoMount():
 					self.timer.startLongTimer(10)
 
 	def makeHDDlink(self, path):
-		hdd_dir = '/media/hdd'
+		hdd_dir = '/hdd'
 		print "[AutoMount.py] symlink %s %s" % (path, hdd_dir)
 		if os_path.islink(hdd_dir):
 			if readlink(hdd_dir) != path:
@@ -196,6 +204,7 @@ class AutoMount():
 			if os_path.isdir(hdd_dir):
 				self.rm_rf(hdd_dir)
 		try:
+			remove(hdd_dir)
 			symlink(path, hdd_dir)
 		except OSError:
 			print "[AutoMount.py] add symlink fails!"
@@ -208,6 +217,8 @@ class AutoMount():
 				self.rm_rf(path)
 			else:
 				unlink(path)
+				remove("/hdd")
+				symlink("/media/hdd /hdd")
 		removeDir(d)
 
 	def mountTimeout(self):
