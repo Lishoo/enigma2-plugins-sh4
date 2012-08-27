@@ -81,7 +81,7 @@ class QuickEPGPlugin(Screen):
     def go_continue(self,ret):
 
 	try:
-		if os.path.exists('usr/bin/enigma2.sh'):
+		if os.path.exists('/usr/bin/enigma2.sh'):
 			content = open('/usr/bin/enigma2.sh', 'r').read()
 			m = re.search('epg.dat', content)
 			if not m:
