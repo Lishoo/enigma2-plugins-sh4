@@ -6,8 +6,14 @@ from Components.ActionMap import ActionMap
 from Components.MenuList import MenuList
 from Screens.Console import Console
 from Plugins.Plugin import PluginDescriptor
+from enigma import eEPGCache
 import os
 import gettext
+import time
+import new
+import _enigma
+import re
+
 
 
 quickepg_title= _("Quick EPG Import")
@@ -52,8 +58,8 @@ def Plugins(path,**kwargs):
 
 class QuickEPGPlugin(Screen):
     skin = """
-        <screen position="center,center" size="500,100" title="%s" >
-            <widget name="menu" position="10,10" size="490,90" scrollbarMode="showOnDemand" />
+        <screen position="center,center" size="600,100" title="%s" >
+            <widget name="menu" position="10,10" size="590,90" scrollbarMode="showOnDemand" />
         </screen>""" % quickepg_title
         
     def __init__(self, session, args = 0):
@@ -62,20 +68,45 @@ class QuickEPGPlugin(Screen):
         Screen.__init__(self, session)
         self.menu = args
         quickepglist = []
-        quickepglist.append((_("Download EPG - events in ukr. language"), "uaepg"))
-        quickepglist.append((_("Download EPG - events in rus. language"), "ruepg"))     
+        quickepglist.append((_("Download EPG - events in ukr. language"), "ua"))
+        quickepglist.append((_("Download EPG - events in rus. language"), "ru"))     
         self["menu"] = MenuList(quickepglist)
         self["actions"] = ActionMap(["WizardActions", "DirectionActions"],{"ok": self.go,"back": self.close,}, -1)
-        
+
     def go(self):
-        returnValue = self["menu"].l.getCurrentSelection()[1]
-        if returnValue is not None:
-           if returnValue is "quickepg":
-              QuickEPG(self.session)
-           elif returnValue is "uaepg":
-              self.session.open(Console,_("Downloading EPG ..."),["echo 'epg_ua.dat.gz' > /etc/epgdat && /usr/lib/enigma2/python/Plugins/Extensions/QuickEPG/quick_epg.sh"])
-           elif returnValue is "ruepg":
-              self.session.open(Console,_("Downloading EPG ..."),["echo 'epg_ru.dat.gz' > /etc/epgdat && /usr/lib/enigma2/python/Plugins/Extensions/QuickEPG/quick_epg.sh"])
+	
+	self.mbox = self.session.openWithCallback(self.go_continue,MessageBox,(_("Downloading... Please wait!")), MessageBox.TYPE_INFO, timeout = 3)
+
+
+    def go_continue(self,ret):
+
+	try:
+		if os.path.exists('usr/bin/enigma2.sh'):
+			content = open('/usr/bin/enigma2.sh', 'r').read()
+			m = re.search('epg.dat', content)
+			if not m:
+				os.system("cp /usr/bin/enigma2.sh /usr/bin/enigma2.sh.xmltvbak")
+				line_number = 2 
+				with open('/usr/bin/enigma2.sh') as f:
+     					lines = f.readlines()
+				lines.insert(line_number, '[ -f /media/hdd/epg_new.dat ] && cp /media/hdd/epg_new.dat /media/hdd/epg.dat\n')
+				with open('/usr/bin/enigma2.sh', 'w') as f:
+     					f.writelines(lines)
+		lang = self["menu"].l.getCurrentSelection()[1]
+		ret = os.system("wget -q http://linux-sat.tv/epg/epg_%s.dat.gz -O /hdd/epg_new.dat.gz" % (lang))
+		if ret:
+			self.mbox = self.session.open(MessageBox,(_("Sorry, the EPG download error. Try again later or check your internet connection")), MessageBox.TYPE_INFO, timeout = 6 )
+			return
+		os.system("gzip -df /hdd/epg_new.dat.gz")
+		os.system("cp -f /hdd/epg_new.dat /hdd/epg.dat")
+		os.system("rm -f epg_new.dat.gz")
+		epgcache = new.instancemethod(_enigma.eEPGCache_load,None,eEPGCache)
+		epgcache = eEPGCache.getInstance().load()
+		self.mbox = self.session.open(MessageBox,(_("the EPG download is complete")), MessageBox.TYPE_INFO, timeout = 4)
+        except:
+		self.mbox = self.session.open(MessageBox,(_("Error")), MessageBox.TYPE_INFO, timeout = 4 )
+        
+
 
 
 
