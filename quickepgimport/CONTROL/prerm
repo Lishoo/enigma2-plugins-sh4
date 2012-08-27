@@ -1,3 +1,0 @@
-	if [ -f /usr/bin/enigma2.sh.bak ] ; then
-		mv -f /usr/bin/enigma2.sh.bak /usr/bin/enigma2.sh
-	fi
