@@ -100,13 +100,14 @@ class QuickEPGPlugin(Screen):
 		os.system("gzip -df /hdd/epg_new.dat.gz")
 		os.system("cp -f /hdd/epg_new.dat /hdd/epg.dat")
 		os.system("rm -f epg_new.dat.gz")
-		epgcache = new.instancemethod(_enigma.eEPGCache_load,None,eEPGCache)
-		epgcache = eEPGCache.getInstance().load()
 		self.mbox = self.session.open(MessageBox,(_("the EPG download is complete")), MessageBox.TYPE_INFO, timeout = 4)
         except:
 		self.mbox = self.session.open(MessageBox,(_("Error")), MessageBox.TYPE_INFO, timeout = 4 )
-        
-
+	try:
+		epgcache = new.instancemethod(_enigma.eEPGCache_load,None,eEPGCache)
+		epgcache = eEPGCache.getInstance().load()
+	except:
+		os.system("killall -9 enigma2 >/dev/null 2>&1")
 
 
 
