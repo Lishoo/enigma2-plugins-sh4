@@ -7,14 +7,13 @@ from Components.MenuList import MenuList
 from Screens.Console import Console
 from Plugins.Plugin import PluginDescriptor
 from enigma import eEPGCache
+from Screens.Standby import TryQuitMainloop
 import os
 import gettext
 import time
 import new
 import _enigma
 import re
-
-
 
 quickepg_title= _("Quick EPG Import")
 quickepg_plugindir="/usr/lib/enigma2/python/Plugins/Extensions/QuickEPG" 
@@ -107,4 +106,10 @@ class QuickEPGPlugin(Screen):
 		epgcache = new.instancemethod(_enigma.eEPGCache_load,None,eEPGCache)
 		epgcache = eEPGCache.getInstance().load()
 	except:
-		os.system("killall -9 enigma2 >/dev/null 2>&1")
+		restartbox = self.session.openWithCallback(self.restartGUI,MessageBox,_("Restart GUI now?"), MessageBox.TYPE_YESNO)
+		restartbox.setTitle(_("Restart GUI now?"))
+
+    def restartGUI(self, answer):
+
+	if answer is True:
+		self.session.open(TryQuitMainloop, 3)
