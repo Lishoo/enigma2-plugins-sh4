@@ -11,7 +11,7 @@
                     <packagename>enigma2-plugin-extensions-quickepgimport</packagename>
                     <shortdescription>Download and import EPG for exUSSR channels</shortdescription>
                     <description>Download and import EPG for exUSSR channels</description>
-                    <screenshot src="src="http://spark.sat-universum.de/preview/quikepgimport.jpg" />		    
+                    <screenshot src="http://spark.sat-universum.de/preview/quikepgimport.jpg" />		    
           </info>
 
 	  <files type="package"> <!-- without version, without .ipk -->
