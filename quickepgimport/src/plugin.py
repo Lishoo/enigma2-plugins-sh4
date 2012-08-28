@@ -67,8 +67,8 @@ class QuickEPGPlugin(Screen):
         Screen.__init__(self, session)
         self.menu = args
         quickepglist = []
-        quickepglist.append((_("Download EPG - events in rus. language"), "rus"))
-        quickepglist.append((_("Download EPG - events in ukr. language"), "ukr"))     
+        quickepglist.append((_("Download EPG - events in rus. language"), "ru"))
+        quickepglist.append((_("Download EPG - events in ukr. language"), "ua"))     
         self["menu"] = MenuList(quickepglist)
         self["actions"] = ActionMap(["WizardActions", "DirectionActions"],{"ok": self.go,"back": self.close,}, -1)
 
