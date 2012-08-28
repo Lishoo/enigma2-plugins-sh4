@@ -74,7 +74,7 @@ SUBDIRS = \
 	podcast \
 	porncenter \
 	quickbutton \
-	quickepgimport \
+	quickepg \
 	reconstructapsc \
 	remotetimer \
 	rsdownloader \

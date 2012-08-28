@@ -8,13 +8,13 @@
           <info>
                     <author>dillinger</author>
                     <name>QuickEPG</name>
-                    <packagename>enigma2-plugin-extensions-quickepgimport</packagename>
+                    <packagename>enigma2-plugin-extensions-quickepg</packagename>
                     <shortdescription>Download and import EPG for exUSSR channels</shortdescription>
                     <description>Download and import EPG for exUSSR channels</description>
-                    <screenshot src="http://spark.sat-universum.de/preview/quikepgimport.jpg" />		    
+                    <screenshot src="http://spark.sat-universum.de/preview/quikepg.jpg" />		    
           </info>
 
 	  <files type="package"> <!-- without version, without .ipk -->
-		<file type="package" name="enigma2-plugin-extensions-quickepgimport" />
+		<file type="package" name="enigma2-plugin-extensions-quickepg" />
 	  </files>
 </default>

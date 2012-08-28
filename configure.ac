@@ -421,10 +421,10 @@ quickbutton/meta/Makefile
 quickbutton/po/Makefile
 quickbutton/src/Makefile
 
-quickepgimport/Makefile
-quickepgimport/meta/Makefile
-quickepgimport/po/Makefile
-quickepgimport/src/Makefile
+quickepg/Makefile
+quickepg/meta/Makefile
+quickepg/po/Makefile
+quickepg/src/Makefile
 
 reconstructapsc/Makefile
 reconstructapsc/meta/Makefile
