@@ -15,14 +15,27 @@ msgstr ""
 msgid "Quick EPG Import"
 msgstr ""
 
-#: ../src/plugin.py:65
+#: ../src/plugin.py:71
 msgid "Download EPG - events in ukr. language"
 msgstr "Ielādēt EPG  ukraiņu valodā"
 
-#: ../src/plugin.py:66
+#: ../src/plugin.py:72
 msgid "Download EPG - events in rus. language"
 msgstr "Ielādēt EPG  krievu valodā"
 
-#: ../src/plugin.py:76 ../src/plugin.py:78
-msgid "Downloading EPG ..."
+#: ../src/plugin.py:78
+msgid "Downloading... Please wait!"
 msgstr ""
+
+#: ../src/plugin.py:98
+msgid "Sorry, the EPG download error. Try again later or check your internet connection"
+msgstr ""
+
+#: ../src/plugin.py:103
+msgid "the EPG download is complete"
+msgstr ""
+
+#: ../src/plugin.py:105
+msgid "Error"
+msgstr ""
+

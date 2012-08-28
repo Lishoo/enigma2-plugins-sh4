@@ -17,12 +17,25 @@ msgstr ""
 
 #: ../src/plugin.py:65
 msgid "Download EPG - events in ukr. language"
-msgstr "Завантажити EPG - програма на українській мові"
+msgstr "Завантажити телегід - програма на українській мові"
 
 #: ../src/plugin.py:66
 msgid "Download EPG - events in rus. language"
-msgstr "Завантажити EPG - програма на російській мові"
+msgstr "Завантажити телегід - програма на російській мові"
 
-#: ../src/plugin.py:76 ../src/plugin.py:78
-msgid "Downloading EPG ..."
-msgstr ""
+#: ../src/plugin.py:78
+msgid "Downloading... Please wait!"
+msgstr "Завантаження... Будь ласка, зачекайте!"
+
+#: ../src/plugin.py:98
+msgid "Sorry, the EPG download error. Try again later or check your internet connection"
+msgstr "Вибачте, помилка завантаження телегіда. Спробуйте пізніше або перевірте ваше інтернет підключення"
+
+#: ../src/plugin.py:103
+msgid "the EPG download is complete"
+msgstr "Завантаження телегіда завершено"
+
+#: ../src/plugin.py:105
+msgid "Error"
+msgstr "Помилка"
+

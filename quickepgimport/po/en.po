@@ -11,18 +11,31 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/plugin.py:13 ../src/plugin.py:46 ../src/plugin.py:51
+#: ../src/plugin.py:19 ../src/plugin.py:52 ../src/plugin.py:57
 msgid "Quick EPG Import"
 msgstr ""
 
-#: ../src/plugin.py:65
+#: ../src/plugin.py:71
 msgid "Download EPG - events in ukr. language"
 msgstr "Download EPG - events in ukr. language"
 
-#: ../src/plugin.py:66
+#: ../src/plugin.py:72
 msgid "Download EPG - events in rus. language"
 msgstr "Download EPG - events in rus. language"
 
-#: ../src/plugin.py:76 ../src/plugin.py:78
-msgid "Downloading EPG ..."
-msgstr ""
+#: ../src/plugin.py:78
+msgid "Downloading... Please wait!"
+msgstr "Downloading... Please wait!"
+
+#: ../src/plugin.py:98
+msgid "Sorry, the EPG download error. Try again later or check your internet connection"
+msgstr "Sorry, the EPG download error. Try again later or check your internet connection"
+
+#: ../src/plugin.py:103
+msgid "the EPG download is complete"
+msgstr "the EPG download is complete"
+
+#: ../src/plugin.py:105
+msgid "Error"
+msgstr "Error"
+
