@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-25 17:31+0200\n"
+"POT-Creation-Date: 2012-08-29 19:00+0300\n"
 "PO-Revision-Date: 2011-05-09 19:44+0200\n"
 "Last-Translator: maigais <maigonisgulbis2@inbox.lv>\n"
 "Language-Team: Linux Sat Team <dillinger@linux-sat.tv>\n"
@@ -11,31 +11,36 @@ msgstr ""
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/plugin.py:13 ../src/plugin.py:46 ../src/plugin.py:51
+#: ../src/plugin.py:18 ../src/plugin.py:51 ../src/plugin.py:56
 msgid "Quick EPG Import"
 msgstr ""
+
+#: ../src/plugin.py:70
+msgid "Download EPG - events in rus. language"
+msgstr "Ielādēt EPG  krievu valodā"
 
 #: ../src/plugin.py:71
 msgid "Download EPG - events in ukr. language"
 msgstr "Ielādēt EPG  ukraiņu valodā"
 
-#: ../src/plugin.py:72
-msgid "Download EPG - events in rus. language"
-msgstr "Ielādēt EPG  krievu valodā"
-
-#: ../src/plugin.py:78
+#: ../src/plugin.py:77
 msgid "Downloading... Please wait!"
 msgstr ""
 
-#: ../src/plugin.py:98
-msgid "Sorry, the EPG download error. Try again later or check your internet connection"
+#: ../src/plugin.py:97
+msgid ""
+"Sorry, the EPG download error. Try again later or check your internet "
+"connection"
 msgstr ""
 
-#: ../src/plugin.py:103
+#: ../src/plugin.py:102
 msgid "the EPG download is complete"
 msgstr ""
 
-#: ../src/plugin.py:105
+#: ../src/plugin.py:104
 msgid "Error"
 msgstr ""
 
+#: ../src/plugin.py:109 ../src/plugin.py:110
+msgid "Restart GUI now?"
+msgstr ""

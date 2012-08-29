@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-25 17:31+0200\n"
+"POT-Creation-Date: 2012-08-29 19:03+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -17,32 +17,36 @@ msgstr ""
 "Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
 
-#: ../src/plugin.py:19 ../src/plugin.py:52 ../src/plugin.py:57
+#: ../src/plugin.py:18 ../src/plugin.py:51 ../src/plugin.py:56
 msgid "Quick EPG Import"
+msgstr ""
+
+#: ../src/plugin.py:70
+msgid "Download EPG - events in rus. language"
 msgstr ""
 
 #: ../src/plugin.py:71
 msgid "Download EPG - events in ukr. language"
 msgstr ""
 
-#: ../src/plugin.py:72
-msgid "Download EPG - events in rus. language"
-msgstr ""
-
-#: ../src/plugin.py:78
+#: ../src/plugin.py:77
 msgid "Downloading... Please wait!"
 msgstr ""
 
-#: ../src/plugin.py:98
-msgid "Sorry, the EPG download error. Try again later or check your internet connection"
+#: ../src/plugin.py:97
+msgid ""
+"Sorry, the EPG download error. Try again later or check your internet "
+"connection"
 msgstr ""
 
-#: ../src/plugin.py:103
+#: ../src/plugin.py:102
 msgid "the EPG download is complete"
 msgstr ""
 
-#: ../src/plugin.py:105
+#: ../src/plugin.py:104
 msgid "Error"
 msgstr ""
 
-
+#: ../src/plugin.py:109 ../src/plugin.py:110
+msgid "Restart GUI now?"
+msgstr ""
