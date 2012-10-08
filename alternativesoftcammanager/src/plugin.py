@@ -148,6 +148,8 @@ class AltCamManager(Screen):
 
 	def CreateCamList(self):
 		self.list = []
+		if not self.actcam:
+			self.actcam = "none"
 		if self.actcam != "none":
 			try:
 				softpng = LoadPixmap(cached=True, path=resolveFilename(SCOPE_PLUGINS, "Extensions/AlternativeSoftCamManager/images/actcam.png"))
