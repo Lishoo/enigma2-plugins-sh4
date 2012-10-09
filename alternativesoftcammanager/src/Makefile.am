@@ -2,4 +2,4 @@ installdir = $(libdir)/enigma2/python/Plugins/Extensions/AlternativeSoftCamManag
 
 install_PYTHON = *.py
 
-SUBDIRS = icons
+SUBDIRS = images
