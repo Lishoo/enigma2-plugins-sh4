@@ -31,21 +31,21 @@ if not os.path.isdir(config.AltSoftcam.camdir.value):
 	AltSoftcamConfigError = True
 
 def getcamcmd(cam):
-	if cam.find("oscam") != -1:
+	if cam.lower().find("oscam") != -1:
 		result = config.AltSoftcam.camdir.value + "/" + cam + " -bc " + config.AltSoftcam.camconfig.value + "/"
-	elif cam.find("wicard") != -1:
+	elif cam.lower().find("wicard") != -1:
 		result = config.AltSoftcam.camdir.value + "/" + cam + " -d -c " + config.AltSoftcam.camconfig.value + "/wicardd.conf"
-	elif cam.find("camd3") != -1:
+	elif cam.lower().find("camd3") != -1:
 		result = config.AltSoftcam.camdir.value + "/" + cam + " " + config.AltSoftcam.camconfig.value + "/camd3.config"
-	elif cam.find("mbox") != -1:
+	elif cam.lower().find("mbox") != -1:
 		result = config.AltSoftcam.camdir.value + "/" + cam + " " + config.AltSoftcam.camconfig.value + "/mbox.cfg"
-	elif cam.find("mpcs") != -1:
+	elif cam.lower().find("mpcs") != -1:
 		result = config.AltSoftcam.camdir.value + "/" + cam + " -c " + config.AltSoftcam.camconfig.value
-	elif cam.find("newcs") != -1:
+	elif cam.lower().find("newcs") != -1:
 		result = config.AltSoftcam.camdir.value + "/" + cam + " -C " + config.AltSoftcam.camconfig.value + "/newcs.conf"
-	elif cam.find("vizcam") != -1:
+	elif cam.lower().find("vizcam") != -1:
 		result = config.AltSoftcam.camdir.value + "/" + cam + " -b -c " + config.AltSoftcam.camconfig.value + "/"
-	elif cam.find("rucam") != -1:
+	elif cam.lower().find("rucam") != -1:
 		result = config.AltSoftcam.camdir.value + "/" + cam + " -b"
 	else:
 		result = config.AltSoftcam.camdir.value + "/" + cam
@@ -53,7 +53,7 @@ def getcamcmd(cam):
 
 class AltCamManager(Screen):
 	skin = """
-<screen name="AlternativeSoftCamManager" position="center,center" size="630,370" title="SoftCam manager">
+<screen position="center,center" size="630,370" title="SoftCam manager">
 	<eLabel position="5,0" size="620,2" backgroundColor="#aaaaaa" />
 <widget source="list" render="Listbox" position="10,15" size="340,300" scrollbarMode="showOnDemand">
 	<convert type="TemplatedMultiContent">
@@ -166,37 +166,35 @@ class AltCamManager(Screen):
 		self["list"].setList(self.list)
 
 	def checkcam (self, cam):
-		if cam.find("oscam") != -1:
+		if cam.lower().find("oscam") != -1:
 			camtext = "Oscam"
-		elif cam.find("mgcamd") != -1:
+		elif cam.lower().find("mgcamd") != -1:
 			camtext = "Mgcamd"
-		elif cam.find("wicard") != -1:
+		elif cam.lower().find("wicard") != -1:
 			camtext = "Wicard"
-		elif cam.find("camd3") != -1:
+		elif cam.lower().find("camd3") != -1:
 			camtext = "Camd3"
-		elif cam.find("mcas") != -1:
+		elif cam.lower().find("mcas") != -1:
 			camtext = "Mcas"
-		elif cam.find("cccam") != -1:
+		elif cam.lower().find("cccam") != -1:
 			camtext = "CCcam"
-		elif cam.find("CCcam") != -1:
-			camtext = "CCcam"
-		elif cam.find("gbox") != -1:
+		elif cam.lower().find("gbox") != -1:
 			camtext = "Gbox"
-		elif cam.find("ufs910camd") != -1:
+		elif cam.lower().find("ufs910camd") != -1:
 			camtext = "Ufs910"
-		elif cam.find("incubuscamd") != -1:
+		elif cam.lower().find("incubuscamd") != -1:
 			camtext = "Incubus"
-		elif cam.find("mpcs") != -1:
+		elif cam.lower().find("mpcs") != -1:
 			camtext = "Mpcs"
-		elif cam.find("mbox") != -1:
+		elif cam.lower().find("mbox") != -1:
 			camtext = "Mbox"
-		elif cam.find("newcs") != -1:
+		elif cam.lower().find("newcs") != -1:
 			camtext = "Newcs"
-		elif cam.find("vizcam") != -1:
+		elif cam.lower().find("vizcam") != -1:
 			camtext = "Vizcam"
-		elif cam.find("sh4CAM") != -1:
+		elif cam.lower().find("sh4cam") != -1:
 			camtext = "Sh4CAM"
-		elif cam.find("rucam") != -1:
+		elif cam.lower().find("rucam") != -1:
 			camtext = "Rucam"
 		else:
 			camtext = cam[0:6]
