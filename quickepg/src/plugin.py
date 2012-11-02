@@ -36,7 +36,7 @@ if os.path.exists("/etc/enigma2/settings") == True:
               os.environ['LANGUAGE']='en'
    f.close
 
-_=gettext.Catalog('quickepg', '%s/locale' % quickepg_plugindir).gettext
+_=gettext.Catalog('QuickEPG', '%s/locale' % quickepg_plugindir).gettext
 
 
 def main(session,**kwargs):

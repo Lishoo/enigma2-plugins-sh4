@@ -148,11 +148,11 @@ class AutoMount():
 				elif data['mounttype'] == 'cifs':
 					if not os_path.ismount(path):
 						if os_path.exists("/lib/modules/cifs.ko") is True:
-							os.popen("insmod /lib/modules/cifs.ko")
+							self.MountConsole.ePopen("insmod /lib/modules/cifs.ko")
 						else:
-							linuxversion = os.popen("ls -a /lib/modules | grep _stm")
-							if os_path.exists("/lib/modules/%s/kernel/fs/cifs.ko" % linuxversion) is True:
-								os.popen("modprobe cifs")
+							for linuxversion in os.listdir("/lib/modules"):
+								if os_path.exists("/lib/modules/%s/kernel/fs/cifs/cifs.ko" % linuxversion) is True:
+									self.MountConsole.ePopen("modprobe cifs")
 						tmpusername = data['username'].replace(" ", "\\ ")
 						tmpcmd = 'mount -t cifs -o '+ self.sanitizeOptions(data['options'], cifs=True) +',iocharset=utf8,username='+ tmpusername + ',password='+ data['password'] + ' //' + data['ip'] + '/' + tmpsharedir + ' ' + path
 						self.command = tmpcmd.encode("UTF-8")
