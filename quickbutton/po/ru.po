@@ -1,0 +1,99 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Quickbutton\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-06-14 14:29+0200\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Jakob Kais <schpuntik@freenet.de>\n"
+"Language-Team: Dr.Best <dr.best@dreambox-tools.info>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: German\n"
+"X-Poedit-Country: GERMANY\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+
+msgid "Assign plugin to long blue key pressed"
+msgstr "Долгое нажатие голубой кнопки"
+
+msgid "Assign plugin to long green key pressed"
+msgstr "Долгое нажатие зелёной кнопки"
+
+msgid "Assign plugin to long red key pressed"
+msgstr "Долгое нажатие красной кнопки"
+
+msgid "Assign plugin to long yellow key pressed"
+msgstr "Долгое нажатие жёлтой кнопки"
+
+msgid "Assign plugin to red key pressed"
+msgstr "Нажатие красной кнопки"
+
+msgid "Cancel"
+msgstr "Отменить"
+
+msgid "Display 4:3 content as"
+msgstr "4:3 Изображение показать как"
+
+msgid "EPG List"
+msgstr "Список EPG "
+
+#, python-format
+msgid ""
+"Error!\n"
+"Error Text: %s"
+msgstr ""
+
+msgid "Just Scale"
+msgstr ""
+
+msgid "MediaPlayer"
+msgstr " Медиаплеер"
+
+msgid "No plugin assigned!"
+msgstr "Функция не назначена"
+
+msgid "Nothing"
+msgstr "Ничего"
+
+msgid "OK"
+msgstr ""
+
+msgid "Pan&Scan"
+msgstr ""
+
+msgid "Pillarbox"
+msgstr ""
+
+msgid "Plugin browser"
+msgstr "Плагин браузер"
+
+msgid "Plugin not found!"
+msgstr "Плагин не найден!"
+
+msgid "Timer"
+msgstr "Таймер"
+
+msgid "Unknown Error"
+msgstr "Неизвестная ошибка"
+
+msgid "assigned to long blue"
+msgstr "Длительное нажатие голубой кнопки"
+
+msgid "assigned to long green"
+msgstr "Длительное нажатие зелёной кнопки"
+
+msgid "assigned to long red"
+msgstr "Длительное нажатие красной кнопки"
+
+msgid "assigned to long yellow"
+msgstr "Длительное нажатие жёлтой кнопки"
+
+msgid "assigned to red"
+msgstr "Нажатие на красную"
+
+msgid "setup for Quickbutton"
+msgstr "Установки Quickbutton "
+
+msgid "switch 4:3 content display"
+msgstr "Переключить изображение на  4:3 "
+
