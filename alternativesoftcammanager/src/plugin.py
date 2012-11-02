@@ -21,7 +21,7 @@ import os
 config.plugins.AltSoftcam = ConfigSubsection()
 config.plugins.AltSoftcam.actcam = ConfigText(default = "none")
 config.plugins.AltSoftcam.camconfig = ConfigText(default = "/var/keys", visible_width = 100, fixed_size = False)
-config.plugins.AltSoftcam.camdir = ConfigText(default = "/var/emu", visible_width = 100, fixed_size = False)
+config.plugins.AltSoftcam.camdir = ConfigText(default = "/usr/bin/cam", visible_width = 100, fixed_size = False)
 AltSoftcamConfigError = False
 if not os.path.isdir(config.plugins.AltSoftcam.camconfig.value):
 	config.plugins.AltSoftcam.camconfig.value = "none"
