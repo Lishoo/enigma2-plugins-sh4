@@ -84,7 +84,7 @@ class AltCamManager(Screen):
 		self.Console = Console()
 		self["key_red"] = Label(_("Stop"))
 		self["key_green"] = Label(_("Start"))
-		self["key_yellow"] = Label(_("ReStart"))
+		self["key_yellow"] = Label(_("Restart"))
 		self["key_blue"] = Label(_("Setup"))
 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions"],
 			{
@@ -212,7 +212,7 @@ class AltCamManager(Screen):
 			if self.camstart != self.actcam:
 				print "[Alternative SoftCam Manager] Start SoftCam"
 				self.camstartcmd = getcamcmd(self.camstart)
-				msg = _("Starting %s" % self.camstart)
+				msg = _("Starting %s") % self.camstart
 				self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
 				self.activityTimer = eTimer()
 				self.activityTimer.timeout.get().append(self.Stopping)
@@ -226,7 +226,7 @@ class AltCamManager(Screen):
 				os.remove("/tmp/ecm.info")
 			except:
 				pass
-			msg  = _("Stopping %s" % self.actcam)
+			msg  = _("Stopping %s") % self.actcam
 			self.actcam = "none"
 			self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
 			self.activityTimer = eTimer()
@@ -245,7 +245,7 @@ class AltCamManager(Screen):
 			self.camstart = self.actcam
 			if self.camstartcmd == "":
 				self.camstartcmd = getcamcmd(self.camstart)
-			msg  = _("Restarting %s" % self.actcam)
+			msg  = _("Restarting %s") % self.actcam
 			self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
 			self.activityTimer = eTimer()
 			self.activityTimer.timeout.get().append(self.Stopping)
@@ -294,7 +294,7 @@ class AltCamManager(Screen):
 
 class ConfigEdit(Screen, ConfigListScreen):
 	skin = """
-<screen name="ConfigEdit" position="center,center" size="500,200" title="Emu path configuration">
+<screen name="ConfigEdit" position="center,center" size="500,200" title="SoftCam path configuration">
 	<eLabel position="5,0" size="490,2" backgroundColor="#aaaaaa" />
 <widget name="config" position="30,20" size="460,50" zPosition="1" scrollbarMode="showOnDemand" />
 	<eLabel position="85,180" size="166,2" backgroundColor="#00ff2525" />
@@ -349,7 +349,7 @@ class ConfigEdit(Screen, ConfigListScreen):
 				self.close()
 			else:
 				AltSoftcamConfigError = True
-				self.mbox = self.session.open(MessageBox, "Directory %s not exist!\nPlease set the correct directory path!" % msg, MessageBox.TYPE_INFO, timeout = 5 )
+				self.mbox = self.session.open(MessageBox, _("Directory %s does not exist!\nPlease set the correct directory path!") % msg, MessageBox.TYPE_INFO, timeout = 5 )
 
 def main(session, **kwargs):
 	session.open(AltCamManager)
@@ -373,5 +373,5 @@ def StartCam(reason, **kwargs):
 
 def Plugins(**kwargs):
 	return [
-	PluginDescriptor(name = "Alternative SoftCam Manager", description = "Start, stop, restart SoftCams, change setting path.", where = [ PluginDescriptor.WHERE_PLUGINMENU, PluginDescriptor.WHERE_EXTENSIONSMENU ], icon = "images/softcam.png", fnc = main),
+	PluginDescriptor(name = _("Alternative SoftCam Manager"), description = _("Start, stop, restart SoftCams, change settings."), where = [ PluginDescriptor.WHERE_PLUGINMENU, PluginDescriptor.WHERE_EXTENSIONSMENU ], icon = "images/softcam.png", fnc = main),
 	PluginDescriptor(where = PluginDescriptor.WHERE_AUTOSTART, needsRestart = True, fnc = StartCam)]
