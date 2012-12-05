@@ -25,7 +25,7 @@ config.plugins.AltSoftcam = ConfigSubsection()
 config.plugins.AltSoftcam.actcam = ConfigText(default = "none")
 config.plugins.AltSoftcam.camconfig = ConfigText(default = "/var/keys",
 	visible_width = 100, fixed_size = False)
-config.plugins.AltSoftcam.camdir = ConfigText(default = "/usr/bin/cam",
+config.plugins.AltSoftcam.camdir = ConfigText(default = "/var/emu",
 	visible_width = 100, fixed_size = False)
 AltSoftcamConfigError = False
 if not path.isdir(config.plugins.AltSoftcam.camconfig.value):
@@ -288,21 +288,15 @@ class AltCamManager(Screen):
 		except:
 			pass
 		self.actcam = self.camstart
-		self.currentservice = self.session.nav.getCurrentlyPlayingServiceReference()
-		self.session.nav.stopService()
-		self.activityTimer = eTimer()
-		self.activityTimer.timeout.get().append(self.Starting)
-		self.activityTimer.start(100, False)
-
-	def Starting(self):
-		self.activityTimer.stop()
-		del self.activityTimer 
+		service = self.session.nav.getCurrentlyPlayingServiceReference()
+		if service:
+			self.session.nav.stopService()
 		self.Console.ePopen(self.camstartcmd)
 		print "[Alternative SoftCam Manager] ", self.camstartcmd
 		if self.mbox:
 			self.mbox.close()
-		self.session.nav.playService(self.currentservice)
-		del self.currentservice
+		if service:
+			self.session.nav.playService(service)
 		self.CreateInfo()
 
 	def ok(self):
