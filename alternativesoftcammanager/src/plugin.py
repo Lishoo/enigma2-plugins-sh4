@@ -207,7 +207,7 @@ class AltCamManager(Screen):
 		elif "wicard" in cam:
 			return "Wicard"
 		elif "camd3" in cam:
-			camtext = "Camd3"
+			return "Camd3"
 		elif "mcas" in cam:
 			return "Mcas"
 		elif "cccam" in cam:
