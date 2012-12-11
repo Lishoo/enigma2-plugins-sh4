@@ -1,0 +1,1 @@
+SUBDIRS = bitratecalc Converter Renderer

@@ -1,0 +1,2 @@
+SUBDIRS = meta src
+

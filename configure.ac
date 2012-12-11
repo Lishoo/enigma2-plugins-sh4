@@ -250,6 +250,13 @@ letterbox/Makefile
 letterbox/src/Makefile
 letterbox/meta/Makefile
 
+libgisclubskin/Makefile
+libgisclubskin/src/Makefile
+libgisclubskin/src/Converter/Makefile
+libgisclubskin/src/Renderer/Makefile
+libgisclubskin/src/bitratecalc/Makefile
+libgisclubskin/meta/Makefile
+
 logomanager/Makefile
 logomanager/logodir_hdd/Makefile
 logomanager/meta/Makefile

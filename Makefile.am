@@ -40,6 +40,7 @@ SUBDIRS = \
 	kiddytimer \
 	lastfm \
 	letterbox \
+	libgisclubskin \
 	logomanager \
 	mediadownloader \
 	menusort \
