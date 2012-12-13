@@ -165,19 +165,18 @@ class AltCamManager(Screen):
 			for line in self.softcamlist.splitlines():
 				if line != self.actcam:
 					self.Console.ePopen("pidof %s" % line, self.CamActiveFromList, line)
-			self.Console.ePopen("echo 1", self.CamActiveFromList, "softcamlistend")
+			self.Console.ePopen("echo 1", self.CamActiveFromList, "none")
 
 	def CamActiveFromList(self, result, retval, extra_args):
 		if result.strip():
-			if extra_args != "softcamlistend":
-				self.actcam = extra_args
-			else:
-				self.actcam = "none"
+			self.actcam = extra_args
 			self.CreateCamList()
 
 	def CreateCamList(self):
 		self.list = []
-		if not self.actcam:
+		try:
+			test = self.actcam
+		except:
 			self.actcam = "none"
 		if self.actcam != "none":
 			try:
