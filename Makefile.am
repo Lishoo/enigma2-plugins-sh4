@@ -80,6 +80,7 @@ SUBDIRS = \
 	reconstructapsc \
 	remotetimer \
 	rsdownloader \
+	sambaserver \
 	seekbar \
 	serienfilm \
 	setpasswd \

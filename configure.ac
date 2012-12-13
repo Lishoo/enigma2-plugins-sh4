@@ -459,6 +459,10 @@ rsdownloader/po/Makefile
 rsdownloader/src/Makefile
 rsdownloader/src/container/Makefile
 
+sambaserver/Makefile
+sambaserver/meta/Makefile
+sambaserver/src/Makefile
+
 seekbar/Makefile
 seekbar/meta/Makefile
 seekbar/po/Makefile

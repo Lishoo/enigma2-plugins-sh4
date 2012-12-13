@@ -1,0 +1,5 @@
+Package: enigma2-plugin-systemplugins-sambaserver
+Version: 131212
+Description: Configure Samba Server for network share.
+Maintainer: Taapat <taapat@gmail.com>
+

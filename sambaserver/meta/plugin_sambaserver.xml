@@ -1,0 +1,17 @@
+<default>
+	  <prerequisites>
+                    <tag type="Software" />
+	  </prerequisites>
+          <info>
+                    <author>Taapat</author>
+                    <name>Samba Server</name>
+                    <packagename>enigma2-plugin-systemplugins-sambaserver</packagename>
+                    <shortdescription>Configure Samba</shortdescription>
+                    <description>Configure Samba Server for network share.</description>
+                    <screenshot/>
+          </info>
+
+	  <files type="package"> <!-- without version, without .ipk -->
+		<file type="package" name="enigma2-plugin-systemplugins-sambaserver" />
+	  </files>
+</default>
