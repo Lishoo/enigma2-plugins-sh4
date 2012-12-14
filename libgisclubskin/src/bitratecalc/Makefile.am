@@ -13,3 +13,7 @@ bitratecalc_la_LDFLAGS = \
 
 bitratecalc_la_LIBADD = \
 	@LIBCRYPTO_LIBS@
+
+install-data-hook:
+	rm $(DESTDIR)$(libdir)/enigma2/python/Components/Converter/bitratecalc.*a
+	chmod 775 $(DESTDIR)$(libdir)/enigma2/python/Components/Converter/bitratecalc.so
