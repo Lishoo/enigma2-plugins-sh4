@@ -1,0 +1,17 @@
+<default>
+	  <prerequisites>
+                    <tag type="Software" />
+	  </prerequisites>
+          <info>
+                    <author>Taapat</author>
+                    <name>Hdd manager</name>
+                    <packagename>enigma2-plugin-extensions-hddmanager</packagename>
+                    <shortdescription>Hdd mount manager</shortdescription>
+                    <description>Plugin to manage mounting and swapfile.</description>
+                    <screenshot/>
+          </info>
+
+	  <files type="package"> <!-- without version, without .ipk -->
+		<file type="package" name="enigma2-plugin-extensions-hddmanager" />
+	  </files>
+</default>

@@ -221,6 +221,10 @@ growlee/Makefile
 growlee/meta/Makefile
 growlee/src/Makefile
 
+hddmanager/Makefile
+hddmanager/meta/Makefile
+hddmanager/src/Makefile
+
 httpproxy/Makefile
 httpproxy/meta/Makefile
 httpproxy/src/Makefile

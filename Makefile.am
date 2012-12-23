@@ -34,6 +34,7 @@ SUBDIRS = \
 	ftpbrowser \
 	googlemaps \
 	growlee \
+	hddmanager \
 	httpproxy \
 	imdb \
 	infobartunerstate \
