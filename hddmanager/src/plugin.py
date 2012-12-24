@@ -92,7 +92,8 @@ class MountSetup(Screen, ConfigListScreen):
 			for line in result.splitlines():
 				if line and line.startswith("/dev"):
 					swap = GetDeviceFromList(self.device, line[5:9])
-					self.device.remove(swap)
+					if swap in self.device:
+						self.device.remove(swap)
 		self.CreateList()
 
 	def CreateList(self):
