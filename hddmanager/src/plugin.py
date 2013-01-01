@@ -72,9 +72,11 @@ class MountSetup(Screen, ConfigListScreen):
 		self.list = []
 		self.swapdevice = []
 		self.device = GetDevices()
+		self.hddChange = None
 		self.Console = Console()
 		self.Console.ePopen("sfdisk -l /dev/sd? | grep swap", self.CheckSwap)
-		ConfigListScreen.__init__(self, self.list, session)
+		ConfigListScreen.__init__(self, self.list, session,
+			on_change = self.CreateList)
 		self["key_red"] = StaticText(_("Cancel"))
 		self["key_green"] = StaticText(_("Ok"))
 		self["actions"] = ActionMap(["SetupActions", "ColorActions"],
@@ -93,9 +95,9 @@ class MountSetup(Screen, ConfigListScreen):
 					if swap in self.device:
 						self.device.remove(swap)
 						self.swapdevice.append(swap)
-		self.CreateList()
+		self.CreateSettings()
 
-	def CreateList(self):
+	def CreateSettings(self):
 		self.MountOnStart = ConfigYesNo(default = \
 			config.plugins.HddMount.MountOnStart.value)
 		mounts = CheckMountDir(self.device)
@@ -108,39 +110,49 @@ class MountSetup(Screen, ConfigListScreen):
 		self.SwapOnStart = ConfigYesNo(default = \
 			config.plugins.HddMount.SwapOnStart.value)
 		self.swap = "no"
-		if self.hdd != "nothing":
-			try:
-				f = open("/proc/swaps", "r")
-				for line in f.readlines():
-					if line.startswith("/media/hdd/swapfile"):
-						self.swap = str(path.getsize("/media/hdd/swapfile") / 1024)
-					else:
-						for device in self.swapdevice:
-							if device.startswith(line[5:9]):
-								self.swap = device
-				f.close()
-			except:
-				print "[HddManager] ERROR in read /proc/swaps"
-		if self.device:
-			self.SwapFile = ConfigSelection(default = self.swap, \
-				choices = [("no", _("no")), ("65536", _("64MB")), 
-				("131072", _("128MB")), ("262144", _("256MB")), ("524288", _("512MB"))]
-				+ self.swapdevice)
-		else:
-			self.SwapFile = ConfigSelection(default = self.swap, \
-				choices = [("no", _("no"))])
-		self.list = []
-		self.list.append(getConfigListEntry(_("Mount all on receiver startup"),
-			self.MountOnStart))
-		self.list.append(getConfigListEntry(_("Mount on /media/hdd"),
-			self.MountOnHdd))
-		self.list.append(getConfigListEntry(_("Mount on /media/hdd/movie"),
-			self.MountOnMovie))
-		self.list.append(getConfigListEntry(_("Enable swap on receiver startup"),
-			self.SwapOnStart))
-		self.list.append(getConfigListEntry(_("Enable swapfile"),
-			self.SwapFile))
-		self["config"].list = self.list
+		try:
+			f = open("/proc/swaps", "r")
+			for line in f.readlines():
+				if line.startswith("/media/hdd/swapfile"):
+					self.swap = str(path.getsize("/media/hdd/swapfile") / 1024)
+				else:
+					for device in self.swapdevice:
+						if device.startswith(line[5:9]):
+							self.swap = device
+			f.close()
+		except:
+			print "[HddManager] ERROR in read /proc/swaps"
+		self.CreateList()
+
+	def CreateList(self):
+		if self.MountOnHdd.value != self.hddChange:
+			self.hddChange = self.MountOnHdd.value
+			if self.device and self.hddChange != "nothing":
+				self.SwapFile = ConfigSelection(default = self.swap, \
+					choices = [("no", _("no")), ("65536", _("64MB")), 
+					("131072", _("128MB")), ("262144", _("256MB")), 
+					("524288", _("512MB"))] + self.swapdevice)
+			else:
+				if self.hddChange == "nothing" \
+					and not self.swap.startswith("sd"):
+					defaultswap = "no"
+				else:
+					defaultswap = self.swap
+				self.SwapFile = ConfigSelection(default = defaultswap, \
+					choices = [("no", _("no"))] + self.swapdevice)
+			self.list = []
+			self.list.append(getConfigListEntry(_("Mount all on receiver startup"),
+				self.MountOnStart))
+			self.list.append(getConfigListEntry(_("Mount on /media/hdd"),
+				self.MountOnHdd))
+			self.list.append(getConfigListEntry(_("Mount on /media/hdd/movie"),
+				self.MountOnMovie))
+			self.list.append(getConfigListEntry(_("Enable swap on receiver startup"),
+				self.SwapOnStart))
+			self.list.append(getConfigListEntry(_("Enable swapfile"),
+				self.SwapFile))
+			self["config"].list = self.list
+			self["config"].setList(self.list)
 
 	def Ok(self):
 		if self.list:
