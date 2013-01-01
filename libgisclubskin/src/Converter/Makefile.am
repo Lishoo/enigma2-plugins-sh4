@@ -12,7 +12,6 @@ install_PYTHON = \
 	EventName2.py \
 	ExtraNumText.py \
 	FrontendInfo2.py \
-	FrontendInfo.py \
 	MemoryInfo.py \
 	NextEvent.py \
 	ProgressDiskSpaceInfo.py \
