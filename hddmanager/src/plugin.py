@@ -110,10 +110,8 @@ class MountSetup(Screen, ConfigListScreen):
 		self.swap = "no"
 		if self.hdd != "nothing":
 			try:
-				print "self.swapdevice", self.swapdevice
 				f = open("/proc/swaps", "r")
 				for line in f.readlines():
-					print "/proc/swaps", line[5:9]
 					if line.startswith("/media/hdd/swapfile"):
 						self.swap = str(path.getsize("/media/hdd/swapfile") / 1024)
 					else:
