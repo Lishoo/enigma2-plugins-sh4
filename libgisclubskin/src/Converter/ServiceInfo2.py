@@ -9,7 +9,8 @@
 # ver 0.3a  23/05/2012 added xVTYPE mod by 2boom
 # ver 0.4 03/08/2012 added VideoHeight and  VideoWidth mod by 2boom
 # ver 0.4a 02/09/2012 added Framerate mod by 2boom
-# ver 0.5 21.09.2012 added Provader name upper case for piconUni futures
+# ver 0.4b 15/12/2012 added xATYPE mod by 2boom
+# ver 0.4c 16/12/2012 added xALLTYPE mod by 2boom
 from Poll import Poll
 from Components.Converter.Converter import Converter
 from enigma import iServiceInformation, iPlayableService
@@ -26,10 +27,13 @@ class ServiceInfo2(Poll, Converter, object):
 	yAll = 6
 	xAll = 7
 	xVTYPE = 8
-	VideoHeight = 9
-	VideoWidth = 10
-	Framerate = 11
-	Provider = 12
+	xATYPE = 9
+	xALLTYPE = 10
+	VideoHeight = 11
+	VideoWidth = 12
+	Framerate = 13
+	Provider = 14
+	
 	def __init__(self, type):
 		Converter.__init__(self, type)
 		Poll.__init__(self)
@@ -43,6 +47,8 @@ class ServiceInfo2(Poll, Converter, object):
 				"yAll": (self.yAll, (iPlayableService.evUpdatedInfo,)),
 				"xAll": (self.xAll, (iPlayableService.evUpdatedInfo,)),
 				"xVTYPE": (self.xVTYPE, (iPlayableService.evUpdatedInfo,)),
+				"xATYPE": (self.xATYPE, (iPlayableService.evUpdatedInfo,)),
+				"xALLTYPE": (self.xALLTYPE, (iPlayableService.evUpdatedInfo,)),
 				"VideoHeight": (self.VideoHeight, (iPlayableService.evUpdatedInfo,)),
 				"VideoWidth": (self.VideoWidth, (iPlayableService.evUpdatedInfo,)),
 				"Framerate": (self.Framerate, (iPlayableService.evVideoSizeChanged,iPlayableService.evUpdatedInfo,)),
@@ -84,37 +90,49 @@ class ServiceInfo2(Poll, Converter, object):
 			try:
 				return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sAudioPID))
 			except:
-				return "N/A"
+				return " "
 		elif self.type == self.xVTYPE:
 			try:
 				return ("MPEG2", "MPEG4", "MPEG1", "MPEG4-II", "VC1", "VC1-SM", "")[info.getInfo(iServiceInformation.sVideoType)]
 			except: 
-				return "N/A"
+				return " "
+		elif self.type == self.xALLTYPE:
+			audio = service.audioTracks()
+			try:
+				return "%s%s" % (("MPEG2/", "MPEG4/", "MPEG1/", "MPEG4-II/", "VC1/", "VC1-SM/", "")[info.getInfo(iServiceInformation.sVideoType)], str(audio.getTrackInfo(audio.getCurrentTrack()).getDescription()))
+			except: 
+				return " "
+		elif self.type == self.xATYPE:
+			audio = service.audioTracks()
+			try:
+				return str(audio.getTrackInfo(audio.getCurrentTrack()).getDescription())
+			except: 
+				return " "
 		elif self.type == self.xVPID:
 			try:
 				return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sVideoPID))
 			except:
-				return "N/A"
+				return " "
 		elif self.type == self.xSID:
 			try:
 				return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sSID))
 			except:
-				return "N/A"
+				return " "
 		elif self.type == self.xTSID:
 			try:
 				return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sTSID))
 			except:
-				return "N/A"
+				return " "
 		elif self.type == self.xONID:
 			try:
 				return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sONID))
 			except:
-				return "N/A"
+				return " "
 		elif self.type == self.sCAIDs:
 			try:
 				return self.getServiceInfoString(info, iServiceInformation.sCAIDs)
 			except:
-				return "N/A"
+				return " "
 		elif self.type == self.yAll:
 			try:
 				return "SID: %0.4X  VPID: %0.4X  APID: %0.4X  TSID: %0.4X  ONID: %0.4X" % (int(self.getServiceInfoString(info, iServiceInformation.sSID)), int(self.getServiceInfoString(info, iServiceInformation.sVideoPID)), int(self.getServiceInfoString(info, iServiceInformation.sAudioPID)), int(self.getServiceInfoString(info, iServiceInformation.sTSID)), int(self.getServiceInfoString(info, iServiceInformation.sONID)))
@@ -122,7 +140,7 @@ class ServiceInfo2(Poll, Converter, object):
 				try:
 					return "SID: %0.4X  VPID: %0.4X  TSID: %0.4X  ONID: %0.4X" % (int(self.getServiceInfoString(info, iServiceInformation.sSID)), int(self.getServiceInfoString(info, iServiceInformation.sVideoPID)), int(self.getServiceInfoString(info, iServiceInformation.sTSID)), int(self.getServiceInfoString(info, iServiceInformation.sONID)))
 				except:
-					return "N/A"
+					return " "
 		elif self.type == self.xAll:
 			try:
 				return "SID: %0.4X  VPID: %0.4X APID: %0.4X" % (int(self.getServiceInfoString(info, iServiceInformation.sSID)), int(self.getServiceInfoString(info, iServiceInformation.sVideoPID)), int(self.getServiceInfoString(info, iServiceInformation.sAudioPID)))
@@ -130,17 +148,17 @@ class ServiceInfo2(Poll, Converter, object):
 				try:
 					return "SID: %0.4X  APID: %0.4X" % (int(self.getServiceInfoString(info, iServiceInformation.sSID)), int(self.getServiceInfoString(info, iServiceInformation.sAudioPID)))
 				except:
-					return "N/A"
+					return " "
 		elif self.type == self.VideoHeight:
 			yres = info.getInfo(iServiceInformation.sVideoHeight)
 			if yres == -1:
-				return ""
+				return " "
 			mode = ("i", "p", "")[info.getInfo(iServiceInformation.sProgressive)]
 			return str(yres) + mode
 		elif self.type == self.VideoWidth:
 			xres = info.getInfo(iServiceInformation.sVideoWidth)
 			if xres == -1:
-				return ""
+				return " "
 			return str(xres)
 		elif self.type == self.Framerate:
 			return self.getServiceInfoString(info, iServiceInformation.sFrameRate, lambda x: "%d" % ((x+500)/1000))
@@ -154,3 +172,5 @@ class ServiceInfo2(Poll, Converter, object):
 	def changed(self, what):
 		if what[0] != self.CHANGED_SPECIFIC or what[1] in self.interesting_events:
 			Converter.changed(self, what)
+		elif what[0] == self.CHANGED_POLL:
+			self.downstream_elements.changed(what)

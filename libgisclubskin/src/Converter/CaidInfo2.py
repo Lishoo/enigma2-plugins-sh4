@@ -1,7 +1,7 @@
 #
 #  CaidInfo2 - Converter
 #
-#  ver 1.1.3 13/11/2012
+#  ver 1.1.3 23/12/2012
 #
 #  Coded by bigroma & 2boom
 
@@ -128,6 +128,7 @@ class CaidInfo2(Poll, Converter, object):
 			"0B" : "Conax",
 			"0D" : "Cryptoworks",
 			"4A" : "DRE-Crypt",
+			"27" : "DRE-Crypt",
 			"0E" : "PowerVu",
 			"22" : "Codicrypt",
 			"07" : "DigiCipher",
@@ -145,6 +146,7 @@ class CaidInfo2(Poll, Converter, object):
 			"09" : "NDS",
 			"0B" : "CON",
 			"0D" : "CRW",
+			"7B" : "DRE",
 			"7B" : "DRE",
 			"4A" : "DRE" }
 
@@ -394,6 +396,9 @@ class CaidInfo2(Poll, Converter, object):
 						if self.type == self.ALL:
 							if source == "emu":
 								textvalue = "%s - %s (Caid: %s)" % (source, self.systemTxtCaids.get(caid[:2]), caid)
+							#new oscam ecm.info with port parametr
+							elif reader != "" and source == "net" and port != "": 
+								textvalue = "%s - Prov: %s, Caid: %s, Reader: %s, %s (%s:%s) - %ss, %s hops" % (source, prov, caid, reader, protocol, server, port, ecm_time, hops)
 							elif reader != "" and source == "net": 
 								textvalue = "%s - Prov: %s, Caid: %s, Reader: %s, %s (%s) - %ss, %s hops" % (source, prov, caid, reader, protocol, server, ecm_time, hops)
 							elif reader != "" and source != "net": 
