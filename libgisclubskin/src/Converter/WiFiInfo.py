@@ -1,4 +1,4 @@
-# WifiInfo by 2boom 2012 v.0.7
+# WifiInfo by 2boom 2012 v.0.8
 #<widget source="session.CurrentService" render="Progress" pixmap="750HD/icons/linkq_ico.png" position="1103,35" zPosition="3" size="28,15" transparent="1" >
 #    <convert type="WiFiInfo">linkqua</convert>
 #  </widget>
@@ -28,6 +28,7 @@ class WiFiInfo(Poll, Converter, object):
 	bitrate = 4
 	ssid = 5
 	encryption = 6
+	wifilabel = 7
 	
 	def __init__(self, type):
 		Converter.__init__(self, type)
@@ -46,6 +47,8 @@ class WiFiInfo(Poll, Converter, object):
 			self.type = self.ssid
 		elif type == "encryption":
 			self.type = self.encryption
+		elif type == "wifilabel":
+			self.type = self.wifilabel
 		self.poll_interval = 3000
 		self.poll_enabled = True
 		
@@ -63,12 +66,17 @@ class WiFiInfo(Poll, Converter, object):
 				try:
 					wifi = "%s" % ifobj.getEssid()
 				except:
-					wifi = "N/A"
+					wifi = " "
+			elif self.type == self.wifilabel and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
+				try:
+					wifi = "WiFi:"
+				except:
+					wifi = " "
 			elif self.type == self.bitrate and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				try:
 					wifi = "%s" % ifobj.getBitrate()
 				except:
-					wifi = "N/A"
+					wifi = " "
 			elif self.type == self.level and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
 				wifi = ("%s dBm" % line.split()[3])
 			elif self.type == self.noise and (line.split()[0] == "wlan0:" or line.split()[0] == "ra0:"):
