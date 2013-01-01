@@ -69,8 +69,11 @@ class MountSetup(Screen, ConfigListScreen):
 		Screen.__init__(self, session)
 		self.skinName = ["Setup"]
 		self.setTitle(_("HDD mount configuration"))
-		self.CreateSetup()
 		self.list = []
+		self.swapdevice = []
+		self.device = GetDevices()
+		self.Console = Console()
+		self.Console.ePopen("sfdisk -l /dev/sd? | grep swap", self.CheckSwap)
 		ConfigListScreen.__init__(self, self.list, session)
 		self["key_red"] = StaticText(_("Cancel"))
 		self["key_green"] = StaticText(_("Ok"))
@@ -82,11 +85,6 @@ class MountSetup(Screen, ConfigListScreen):
 				"red": self.Cancel,
 			}, -2)
 
-	def CreateSetup(self):
-		self.device = GetDevices()
-		self.Console = Console()
-		self.Console.ePopen("sfdisk -l /dev/sd? | grep swap", self.CheckSwap)
-
 	def CheckSwap(self, result, retval, extra_args):
 		if self.device:
 			for line in result.splitlines():
@@ -94,6 +92,7 @@ class MountSetup(Screen, ConfigListScreen):
 					swap = GetDeviceFromList(self.device, line[5:9])
 					if swap in self.device:
 						self.device.remove(swap)
+						self.swapdevice.append(swap)
 		self.CreateList()
 
 	def CreateList(self):
@@ -109,19 +108,26 @@ class MountSetup(Screen, ConfigListScreen):
 		self.SwapOnStart = ConfigYesNo(default = \
 			config.plugins.HddMount.SwapOnStart.value)
 		self.swap = "no"
-		if self.hdd != "nothing" and path.exists("/media/hdd/swapfile"):
+		if self.hdd != "nothing":
 			try:
+				print "self.swapdevice", self.swapdevice
 				f = open("/proc/swaps", "r")
 				for line in f.readlines():
+					print "/proc/swaps", line[5:9]
 					if line.startswith("/media/hdd/swapfile"):
 						self.swap = str(path.getsize("/media/hdd/swapfile") / 1024)
+					else:
+						for device in self.swapdevice:
+							if device.startswith(line[5:9]):
+								self.swap = device
 				f.close()
 			except:
 				print "[HddManager] ERROR in read /proc/swaps"
 		if self.device:
 			self.SwapFile = ConfigSelection(default = self.swap, \
 				choices = [("no", _("no")), ("65536", _("64MB")), 
-				("131072", _("128MB")), ("262144", _("256MB")), ("524288", _("512MB"))])
+				("131072", _("128MB")), ("262144", _("256MB")), ("524288", _("512MB"))]
+				+ self.swapdevice)
 		else:
 			self.SwapFile = ConfigSelection(default = self.swap, \
 				choices = [("no", _("no"))])
@@ -134,59 +140,60 @@ class MountSetup(Screen, ConfigListScreen):
 			self.MountOnMovie))
 		self.list.append(getConfigListEntry(_("Enable swap on receiver startup"),
 			self.SwapOnStart))
-		self.list.append(getConfigListEntry(_("Enable swapfile on /media/hdd"),
+		self.list.append(getConfigListEntry(_("Enable swapfile"),
 			self.SwapFile))
 		self["config"].list = self.list
 
 	def Ok(self):
-		config.plugins.HddMount.MountOnStart.value = self.MountOnStart.value
-		config.plugins.HddMount.MountOnHdd.value = self.MountOnHdd.value
-		if self.MountOnHdd.value != self.hdd:
-			if self.hdd != "nothing":
-				self.Console.ePopen("umount /media/hdd")
-			if self.MountOnHdd.value != "nothing":
-				CreateMountDir("/media/hdd")
-				print self.MountOnHdd.value
-				self.Console.ePopen("mount /dev/%s /media/hdd" % \
-					self.MountOnHdd.value[:4])
-		config.plugins.HddMount.MountOnMovie.value = self.MountOnMovie.value
-		if self.MountOnMovie.value != self.movie:
-			if self.movie != "nothing":
-				self.Console.ePopen("umount /media/hdd/movie")
-			if self.MountOnMovie.value != "nothing":
-				CreateMountDir("/media/hdd/movie")
-				self.Console.ePopen("mount /dev/%s /media/hdd/movie" % \
-					self.MountOnMovie.value[:4])
-		config.plugins.HddMount.SwapOnStart.value = self.SwapOnStart.value
-		config.plugins.HddMount.SwapFile.value = self.SwapFile.value
-		if self.SwapFile.value != self.swap:
-			if self.SwapFile.value != "no":
-				msg = _("Please wait, is currently to created a swap file.\nIt will take some time.")
-				self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
-			if self.swap != "no":
-				self.Console.ePopen("swapoff /media/hdd/swapfile", \
-					self.DeleteSwapFile, self.SwapFile.value)
-			elif self.SwapFile.value != "no":
-				self.CreateSwapFile()
-		config.plugins.HddMount.save()
-		self.close()
-
-	def DeleteSwapFile(self, result, retval, extra_args):
-		if extra_args != "no":
-			self.CreateSwapFile()
-		else:
-			Console().ePopen("rm -f /media/hdd/swapfile")
+		if self.list:
+			config.plugins.HddMount.MountOnStart.value = self.MountOnStart.value
+			config.plugins.HddMount.MountOnHdd.value = self.MountOnHdd.value
+			if self.MountOnHdd.value != self.hdd:
+				if self.hdd != "nothing":
+					self.Console.ePopen("umount /media/hdd")
+				if self.MountOnHdd.value != "nothing":
+					CreateMountDir("/media/hdd")
+					print self.MountOnHdd.value
+					self.Console.ePopen("mount /dev/%s /media/hdd" % \
+						self.MountOnHdd.value[:4])
+			config.plugins.HddMount.MountOnMovie.value = self.MountOnMovie.value
+			if self.MountOnMovie.value != self.movie:
+				if self.movie != "nothing":
+					self.Console.ePopen("umount /media/hdd/movie")
+				if self.MountOnMovie.value != "nothing":
+					CreateMountDir("/media/hdd/movie")
+					self.Console.ePopen("mount /dev/%s /media/hdd/movie" % \
+						self.MountOnMovie.value[:4])
+			config.plugins.HddMount.SwapOnStart.value = self.SwapOnStart.value
+			config.plugins.HddMount.SwapFile.value = self.SwapFile.value
+			if self.SwapFile.value != self.swap:
+				if self.swap.startswith("sd"):
+					self.Console.ePopen("swapoff /dev/%s" % self.swap[:4])
+				elif self.swap != "no":
+					self.Console.ePopen("swapoff /media/hdd/swapfile")
+					self.Console.ePopen("rm -f /media/hdd/swapfile")
+				if self.SwapFile.value != "no":
+					if not self.SwapFile.value.startswith("sd"):
+						msg = _("Please wait, is currently to created a swap file.\nIt will take some time.")
+						self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
+					self.CreateSwapFile()
+			config.plugins.HddMount.save()
+			self.close()
 
 	def CreateSwapFile(self):
-		Console().ePopen("dd if=/dev/zero of=/media/hdd/swapfile bs=1024 count=%s" \
-			% atoi(self.SwapFile.value), self.MakeSwapFile)
+		if self.SwapFile.value.startswith("sd"):
+			Console().ePopen("swapon /dev/%s" % self.SwapFile.value[:4])
+		else:
+			Console().ePopen("dd if=/dev/zero of=/media/hdd/swapfile bs=1024 count=%s" \
+				% atoi(self.SwapFile.value), self.MakeSwapFile)
 
 	def MakeSwapFile(self, result, retval, extra_args):
 		Console().ePopen("mkswap /media/hdd/swapfile", self.EnableSwapFile)
 
 	def EnableSwapFile(self, result, retval, extra_args):
 		Console().ePopen("swapon /media/hdd/swapfile")
-		self.mbox.close()
+		if self.mbox:
+			self.mbox.close()
 
 	def Cancel(self):
 		ConfigListScreen.keyCancel(self)
@@ -210,8 +217,11 @@ def OnStart(reason, **kwargs):
 				CreateMountDir("/media/hdd/movie")
 				Console().ePopen("mount /dev/%s /media/hdd/movie" % MountOnMovie[:4])
 		if config.plugins.HddMount.SwapOnStart.value \
-			and config.plugins.HddMount.SwapFile.value != "no" \
-			and path.exists("/media/hdd/swapfile"):
+			and config.plugins.HddMount.SwapFile.value != "no":
+			SwapFile = config.plugins.HddMount.SwapFile.value
+			if SwapFile.startswith("sd"):
+				Console().ePopen("swapon /dev/%s" % SwapFile[:4])
+			elif path.exists("/media/hdd/swapfile"):
 				Console().ePopen("swapon /media/hdd/swapfile")
 
 def Plugins(**kwargs):
