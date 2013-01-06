@@ -12,13 +12,11 @@ from Tools.HardwareInfo import HardwareInfo
 
 from Tools.Directories import copyfile, resolveFilename, SCOPE_PLUGINS, SCOPE_CONFIG
 
-from twisted.internet import reactor, ssl
+from twisted.internet import reactor
 from twisted.internet.error import CannotListenError
 from twisted.web import server, http, util, static, resource
 
-from zope.interface import Interface, implements
 from socket import gethostname as socket_gethostname
-from OpenSSL import SSL, crypto
 from time import gmtime
 from os.path import isfile as os_isfile, exists as os_exists
 
@@ -45,7 +43,7 @@ config.plugins.Webinterface.http.port = ConfigInteger(default = 80, limits=(1, 6
 config.plugins.Webinterface.http.auth = ConfigYesNo(default=False)
 
 config.plugins.Webinterface.https = ConfigSubsection()
-config.plugins.Webinterface.https.enabled = ConfigYesNo(default=True)
+config.plugins.Webinterface.https.enabled = ConfigYesNo(default=False)
 config.plugins.Webinterface.https.port = ConfigInteger(default = 443, limits=(1, 65535) )
 config.plugins.Webinterface.https.auth = ConfigYesNo(default=True)
 
@@ -260,7 +258,8 @@ def startServerInstance(session, ipaddress, port, useauth=False, l2k=None, usess
 		site = server.Site(toplevel)
 
 	if usessl:
-		ctx = ssl.DefaultOpenSSLContextFactory(KEY_FILE, CERT_FILE, sslmethod=SSL.SSLv23_METHOD)
+		from twisted.internet import ssl
+		from OpenSSL import SSL
 		try:
 			d = reactor.listenSSL(port, site, ctx, interface=ipaddress)			
 		except CannotListenError:

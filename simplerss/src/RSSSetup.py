@@ -201,6 +201,9 @@ class RSSSetup(ConfigListScreen, Screen):
 		# Handle ticker
 		self.notificationChanged(simpleRSS.update_notification)
 
+		# Handle ticker
+		self.notificationChanged(simpleRSS.update_notification)
+
 		# Keep feedcount sane
 		simpleRSS.feedcount.value = len(simpleRSS.feed)
 		simpleRSS.feedcount.save()

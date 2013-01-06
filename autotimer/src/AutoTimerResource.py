@@ -3,7 +3,7 @@ from AutoTimerConfiguration import CURRENT_CONFIG_VERSION
 from Components.config import config
 from RecordTimer import AFTEREVENT
 from twisted.web import http, resource, server
-import threading
+try:
 try:
 	from urllib import unquote
 except ImportError as ie:
@@ -74,7 +74,7 @@ class AutoTimerDoParseResource(AutoTimerBackgroundingResource):
 		autotimer = self.getAutoTimerInstance()
 
 		ret = autotimer.parseEPG()
-		output = _("Found a total of %d matching Events.\n%d Timer were added and\n%d modified,\n%d conflicts encountered,\n%d similars added.") % (ret[0], ret[1], ret[2], len(ret[4]), len(ret[5]))
+		output = _("Found a total of %d matching Events.\n%d Timer were added and %d modified, %d conflicts encountered, %d similars added.") % (ret[0], ret[1], ret[2], len(ret[4]), len(ret[5]))
 
 		if self._remove:
 			autotimer.writeXml()
@@ -488,7 +488,7 @@ class AutoTimerSettingsResource(resource.Resource):
 				config.plugins.autotimer.refresh.value,
 				config.plugins.autotimer.try_guessing.value,
 				config.plugins.autotimer.editor.value,
-				config.plugins.autotimer.addsimilar_on_conflict.value,
+				config.plugins.autotimer.addsimilar_on_conflict,
 				config.plugins.autotimer.disabled_on_conflict.value,
 				config.plugins.autotimer.show_in_extensionsmenu.value,
 				config.plugins.autotimer.fastscan.value,

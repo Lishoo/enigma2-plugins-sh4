@@ -45,7 +45,7 @@ def getTimeDiff(timer, begin, end):
 typeMap = {
 	"exact": eEPGCache.EXAKT_TITLE_SEARCH,
 	"partial": eEPGCache.PARTIAL_TITLE_SEARCH,
-	"description": -99
+	"start": eEPGCache.START_TITLE_SEARCH
 }
 
 caseMap = {
@@ -293,8 +293,7 @@ class AutoTimer:
 
 			else:
 				# Search EPG, default to empty list
-				epgmatches = epgcache.search( ('RITBDSE', 1000, typeMap[timer.searchType], match, caseMap[timer.searchCase]) ) or []
-
+			epgmatches = epgcache.search(('RITBDSE', 1000, typeMap[timer.searchType], match, caseMap[timer.searchCase])) or []
 			# Sort list of tuples by begin time 'B'
 			epgmatches.sort(key=itemgetter(3))
 
@@ -304,6 +303,11 @@ class AutoTimer:
 			# Loop over all EPG matches
 			for idx, ( serviceref, eit, name, begin, duration, shortdesc, extdesc ) in enumerate( epgmatches ):
 
+			# Loop over all EPG matches
+			for idx, ( serviceref, eit, name, begin, duration, shortdesc, extdesc ) in enumerate( epgmatches ):
+
+				#Question: Do we need this?
+				#Question: Move to separate function getRealService()
 				eserviceref = eServiceReference(serviceref)
 				evt = epgcache.lookupEventId(eserviceref, eit)
 				if not evt:
@@ -343,7 +347,7 @@ class AutoTimer:
 					dayofweek = str(timestamp.tm_wday)
 
 				# Check timer conditions
-				# NOTE: similar matches do not care about the day/time they are on, so ignore them
+				# NOTE: similar matches to not care about the day/time they are on, so ignore them
 				if timer.checkServices(serviceref) \
 					or timer.checkDuration(duration) \
 					or (not similarTimer and (\
@@ -381,12 +385,24 @@ class AutoTimer:
 					movieExists = False
 
 					if dest and dest not in moviedict:
-						self.addDirectoryToMovieDict(moviedict, dest, serviceHandler)
+						#Question: Move to a separate function getRecordDict()
+							print("[AutoTimer] listing of movies in " + dest + " failed")
+								event = info.getEvent(movieref)
+								if event is None:
+									continue
+									"shortdesc": info.getInfoString(movieref, iServiceInformation.sDescription),
+									"extdesc": event.getExtendedDescription() or '' # XXX: does event.getExtendedDescription() actually return None on no description or an empty string?
 					for movieinfo in moviedict.get(dest, ()):
-						if self.checkSimilarity(timer, name, movieinfo.get("name"), shortdesc, movieinfo.get("shortdesc"), extdesc, movieinfo.get("extdesc") ):
-							print("[AutoTimer] We found a matching recorded movie, skipping event:", name)
-							movieExists = True
-							break
+						if movieinfo.get("name") == name \
+							and movieinfo.get("shortdesc") == shortdesc:
+							# Some channels indicate replays in the extended descriptions
+							# If the similarity percent is higher then 0.8 it is a very close match
+							extdescM = movieinfo.get("extdesc")
+							if ( len(extdesc) == len(extdescM) and extdesc == extdescM ) \
+								or ( 0.8 < SequenceMatcher(lambda x: x == " ",extdesc, extdescM).ratio() ):
+								print("[AutoTimer] We found a matching recorded movie, skipping event:", name)
+								movieExists = True
+								break
 					if movieExists:
 						continue
 
@@ -427,9 +443,13 @@ class AutoTimer:
 
 						break
 					elif timer.avoidDuplicateDescription >= 1 \
-						and not rtimer.disabled:
-							if self.checkSimilarity(timer, name, rtimer.name, shortdesc, rtimer.description, extdesc, rtimer.extdesc ):
-							# if searchForDuplicateDescription > 1 then check short description
+						and not rtimer.disabled \
+						and rtimer.name == name \
+						and rtimer.description == shortdesc:
+							# Some channels indicate replays in the extended descriptions
+							# If the similarity percent is higher then 0.8 it is a very close match
+							if ( len(extdesc) == len(rtimer.extdesc) and extdesc == rtimer.extdesc ) \
+								or ( 0.8 < SequenceMatcher(lambda x: x == " ",extdesc, rtimer.extdesc).ratio() ):
 								oldExists = True
 								print("[AutoTimer] We found a timer (similar service) with same description, skipping event")
 								break
@@ -443,11 +463,16 @@ class AutoTimer:
 					# We want to search for possible doubles
 					if timer.avoidDuplicateDescription >= 2:
 						for rtimer in chain.from_iterable( itervalues(recorddict) ):
-							if not rtimer.disabled:
-								if self.checkSimilarity(timer, name, rtimer.name, shortdesc, rtimer.description, extdesc, rtimer.extdesc ):
-									oldExists = True
-									print("[AutoTimer] We found a timer (any service) with same description, skipping event")
-									break
+							if not rtimer.disabled \
+								and rtimer.name == name \
+								and rtimer.description == shortdesc:
+									# Some channels indicate replays in the extended descriptions
+									# If the similarity percent is higher then 0.8 it is a very close match
+									if ( len(extdesc) == len(rtimer.extdesc) and extdesc == rtimer.extdesc ) \
+										or ( 0.8 < SequenceMatcher(lambda x: x == " ",extdesc, rtimer.extdesc).ratio() ):
+										oldExists = True
+										print("[AutoTimer] We found a timer (any service) with same description, skipping event")
+										break
 						if oldExists:
 							continue
 
@@ -517,10 +542,11 @@ class AutoTimer:
 											# Event is before our actual epgmatch so we have to append it to the epgmatches list
 											epgmatches.append((servicerefS, eitS, nameS, beginS, durationS, shortdescS, extdescS))
 										# If we need a second similar it will be found the next time
+										break
 									else:
 										similarTimer = False
 										newEntry = similar[eitS]
-									break
+										break
 
 					if conflicts is None:
 						timer.decrementCounter()
@@ -583,4 +609,4 @@ class AutoTimer:
 			foundExt = ( len(extdesc1) == len(extdesc2) and extdesc1 == extdesc2 ) \
 			 or ( 0.8 < SequenceMatcher(lambda x: x == " ",extdesc1, extdesc2).ratio() )
 
-		return foundTitle and foundShort and foundExt
+		return (total, new, modified, timers, conflicting, similars)

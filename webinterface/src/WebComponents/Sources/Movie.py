@@ -160,10 +160,13 @@ class Movie(Source):
 
 		loadLength = config.plugins.Webinterface.loadmovielength.value
 		for (serviceref, info, begin, unknown) in self.movielist.list:
+			if serviceref.flags & eServiceReference.mustDescent:
+				# Skip subdirectories (TODO: Browse?)
+				continue
 			rtime = info.getInfo(serviceref, iServiceInformation.sTimeCreate)
 
 			if rtime > 0:
-				t = FuzzyTime(rtime)
+				t = FuzzyTime(rtime, inPast=True)
 				begin_string = t[0] + ", " + t[1]
 			else:
 				begin_string = "undefined"

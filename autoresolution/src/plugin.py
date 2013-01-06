@@ -22,6 +22,7 @@ videoresolution_dictionary = {}
 resolutionlabel = None
 
 resolutions = (('sd_i_50', (_("SD 25/50HZ Interlace Mode"))), ('sd_i_60', (_("SD 30/60HZ Interlace Mode"))), \
+			('sd_p_24', (_("SD 24HZ Progressive mode"))), \
 			('sd_p_50', (_("SD 25/50HZ Progressive Mode"))), ('sd_p_60', (_("SD 30/60HZ Progressive Mode"))), \
 			('hd_i', (_("HD Interlace Mode"))), ('hd_p', (_("HD Progressive Mode"))), \
 			('p720_24', (_("Enable 720p24 Mode"))), ('p1080_24', (_("Enable 1080p24 Mode"))), \
@@ -36,6 +37,7 @@ config.plugins.autoresolution.deinterlacer = ConfigSelection(default = "auto", c
 config.plugins.autoresolution.deinterlacer_progressive = ConfigSelection(default = "auto", choices =
 		[("off", _("off")), ("auto", _("auto")), ("on", _("on")), ("bob", _("bob"))])
 config.plugins.autoresolution.delay_switch_mode = ConfigSelection(default = "1000", choices = [
+		("0", "0 " + _("seconds")),
 		("1000", "1 " + _("second")), ("2000", "2 " + _("seconds")), ("3000", "3 " + _("seconds")),
 		("4000", "4 " + _("seconds")), ("5000", "5 " + _("seconds")), ("6000", "6 " + _("seconds")), ("7000", "7 " + _("seconds")),
 		("8000", "8 " + _("seconds")), ("9000", "9 " + _("seconds")), ("10000", "10 " + _("seconds"))])
@@ -99,7 +101,10 @@ class AutoRes(Screen):
 		if self.newService:
 			print "[AutoRes] service changed"
 			self.after_switch_delay = False
-			self.timer.start(int(config.plugins.autoresolution.delay_switch_mode.value))
+			if int(config.plugins.autoresolution.delay_switch_mode.value) > 0:
+				self.timer.start(int(config.plugins.autoresolution.delay_switch_mode.value))
+			else:
+				self.determineContent()
 			self.newService = False
 
 	def defaultModeChanged(self, configEntry):
@@ -127,12 +132,7 @@ class AutoRes(Screen):
 			videoresolution_dictionary = {}
 			config.plugins.autoresolution.videoresolution = ConfigSubDict()
 			for mode in resolutions:
-				if mode[0].startswith('p1080'):
-					choices = ['1080p24', '1080p25', '1080p30'] + preferedmodes
-				elif mode[0] == 'p720_24':
-					choices = ['720p24', '1080p24'] + preferedmodes
-				else:
-					choices = preferedmodes
+				choices = ['1080p24', '1080p25', '1080p30'] + preferedmodes
 				config.plugins.autoresolution.videoresolution[mode[0]] = ConfigSelection(default = default[0], choices = choices)
 				config.plugins.autoresolution.videoresolution[mode[0]].addNotifier(self.modeConfigChanged, initial_call = False, immediate_feedback = False)
 				videoresolution_dictionary[mode[0]] = (config.plugins.autoresolution.videoresolution[mode[0]])
@@ -182,7 +182,9 @@ class AutoRes(Screen):
 
 				prog = progressive == 1 and 'p' or 'i'
 
-				if (height >= 900 or width >= 1600) and frate in ('24', '25', '30') and prog == 'p': 	# 1080p content
+				if frate in ('24'):	# 1080p24 content
+					new_mode = 'p1080_24'
+				elif (height >= 900 or width >= 1600) and frate in ('24', '25', '30') and prog == 'p': 	# 1080p content
 					new_mode = 'p1080_%s' % frate
 				elif (height > 576 or width > 720) and frate == '24' and prog == 'p': 		# 720p24 detection
 					new_mode = 'p720_24'
@@ -214,7 +216,7 @@ class AutoRes(Screen):
 	def changeVideomode(self):
 		if usable:
 			mode = self.lastmode
-			if mode.find("1080p") != -1 or mode.find("720p24") != -1:
+			if mode.find("p24") != -1 or mode.find("p25") != -1 or mode.find("p30") != -1:
 				print "[AutoRes] switching to", mode
 				v = open('/proc/stb/video/videomode' , "w")
 				v.write("%s\n" % mode)

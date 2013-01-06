@@ -50,7 +50,7 @@ class AutoTimerComponent(object):
 			offset=None, afterevent=[], exclude=None, maxduration=None, \
 			destination=None, include=None, matchCount=0, matchLeft=0, \
 			matchLimit='', matchFormatString='', lastBegin=0, justplay=False, \
-			avoidDuplicateDescription=0, searchForDuplicateDescription=2, bouquets=None, \
+			tags = None, encoding = None, searchType = "partial", searchCase = "insensitive", \
 			tags=None, encoding=None, searchType="partial", searchCase="insensitive", \
 			overrideAlternatives=False, timeframe=None, vps_enabled=False, \
 			vps_overwrite=False, setEndtime=False):
@@ -151,7 +151,7 @@ class AutoTimerComponent(object):
 	searchCase = property(lambda self: self._searchCase, setSearchCase)
 
 	def setSearchType(self, type):
-		assert type in ("exact", "partial", "description"), "search type must be exact, partial or description"
+		assert type in ("exact", "partial", "start"), "search type must be exact, start or partial"
 		self._searchType = type
 
 	searchType = property(lambda self: self._searchType, setSearchType)

@@ -22,8 +22,8 @@ from twisted.python import util
 
 # Initialize Configuration
 config.plugins.autotimer = ConfigSubsection()
-config.plugins.autotimer.autopoll = ConfigEnableDisable(default = False)
-config.plugins.autotimer.interval = ConfigNumber(default = 3)
+config.plugins.autotimer.autopoll = ConfigEnableDisable(default = True)
+config.plugins.autotimer.interval = ConfigNumber(default = 12)
 config.plugins.autotimer.refresh = ConfigSelection(choices = [
 		("none", _("None")),
 		("auto", _("Only AutoTimers created during this session")),
@@ -156,7 +156,7 @@ def editCallback(session):
 		ret = autotimer.parseEPG()
 		session.open(
 			MessageBox,
-			_("Found a total of %d matching Events.\n%d Timer were added and\n%d modified,\n%d conflicts encountered,\n%d similars added.") % (ret[0], ret[1], ret[2], len(ret[4]), len(ret[5])),
+			_("Found a total of %d matching Events.\n%d Timer were added and %d modified, %d conflicts encountered, %d similars added.") % (ret[0], ret[1], ret[2], len(ret[4]), len(ret[5])),
 			type = MessageBox.TYPE_INFO,
 			timeout = 10
 		)

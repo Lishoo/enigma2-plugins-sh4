@@ -93,6 +93,7 @@ class NETcasterScreenBrowser(Screen):
         global streamplayer
         if streamplayer is not None:
              streamplayer.metadatachangelisteners.append(self.onMetadataChanged)
+             streamplayer.onStop.append(self._onStop)
 
     def disconnectFromMetadataUpdates(self):
         global streamplayer
@@ -100,10 +101,15 @@ class NETcasterScreenBrowser(Screen):
              streamplayer.metadatachangelisteners.remove(self.onMetadataChanged)
         except Exception,e:
             pass
+        try:
+             streamplayer.onStop.remove(self._onStop)
+        except Exception,e:
+            pass
 
     def onMetadataChanged(self,title):
         try:
              self["metadata"].setText(title)
+	     self.summaries.setText(title)
         except Exception,e:
             self.disconnectFromMetadataUpdates()
 
@@ -147,14 +153,17 @@ class NETcasterScreenBrowser(Screen):
     def yellow(self):
         pass
 
+    def _onStop(self):
+        self["pixred"].setText("")
+        self.setTitle("%s (%s)"%(myname,self.currentPlugin.nameshort))
+
     def stream_stop(self):
         global streamplayer
         if streamplayer.is_playing:
             print "[",myname,"] stream_startstop -> stop"
             streamplayer.stop()
             self.disconnectFromMetadataUpdates()
-            self["pixred"].setText("")
-            self.setTitle("%s (%s)"%(myname,self.currentPlugin.nameshort))
+            self._onStop()
 
     def stream_start(self):
         global streamplayer
@@ -200,7 +209,8 @@ class NETcasterScreenBrowser(Screen):
     def showHelp(self):
         self.session.open(NETcasterScreenHelp)
 
-
+    def createSummary(self):
+	return NETcastLCDScreen
 
 ###############################################################################
 class NETcasterScreenHelp(Screen):
@@ -275,3 +285,21 @@ class NETcasterScreenStreamDelete(Screen):
             self.config.deleteStreamWithName(self.stream2delete)
 
 ###############################################################################
+
+class NETcastLCDScreen(Screen):
+	skin = """
+	<screen position="0,0" size="132,64" title="NetCasterSummary">
+		<widget name="head" position="0,0" size="0,0" font="Regular;14" halign="left" valign="top"/>
+		<widget name="info" position="4,0" size="128,64" font="Regular;14" halign="left" valign="top"/>
+	</screen>"""
+
+	def __init__(self, session, parent):
+		print "[NetCast]: __init__"
+		Screen.__init__(self, session)
+		self["head"] = Label("")
+		self["info"] = Label("")
+		self["head"].setText("")
+		self["info"].setText("")
+
+	def setText(self, text):
+		self["info"].setText(text)

@@ -17,12 +17,12 @@ from Tools.Directories import resolveFilename, SCOPE_MEDIA
 from External.__init__ import importExternalModules
 externalChildren = []
 
-"""
-	.htc Files for IE Fixes need a certain Content-Type
-"""
-import mimetypes
-mimetypes.add_type('text/x-component', '.htc')
-static.File.contentTypes = static.loadMimeTypes()
+if hasattr(static.File, 'render_GET'):
+	class File(static.File):
+		def render_POST(self, request):
+			return self.render_GET(request)
+else:
+	File = static.File
 
 if hasattr(static.File, 'render_GET'):
 	class File(static.File):
@@ -52,8 +52,8 @@ def getToplevel(session):
 	root.putChild("streamcurrent", RedirecToCurrentStreamResource(session))
 		
 	if config.plugins.Webinterface.includemedia.value is True:
-		root.putChild("media", File(resolveFilename(SCOPE_MEDIA)))
-		root.putChild("hdd", File(resolveFilename(SCOPE_MEDIA, "hdd")))
+		root.putChild("media", File("/media"))
+		root.putChild("hdd", File("/media/hdd"))
 		
 	
 	importExternalModules()

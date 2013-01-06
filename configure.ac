@@ -32,6 +32,14 @@ PKG_CHECK_MODULES(GSTREAMER, gstreamer-0.10 gstreamer-pbutils-0.10)
 fi
 PKG_CHECK_MODULES(LIBCRYPTO, libcrypto)
 
+AC_ARG_WITH(tpm,
+	AS_HELP_STRING([--with-tpm], [enable plugins that require a TPM]),
+	[with_tpm="$withval"],[with_tpm="no"])
+if test "$with_tpm" = "yes"; then
+	AC_DEFINE([HAVE_TPM],[1],[Define to 1 to enable plugins that require a TPM])
+fi
+AM_CONDITIONAL(TPM, test "$with_tpm" = "yes")
+
 AC_ARG_WITH(debug,
 	AS_HELP_STRING([--without-debug],[disable debugging code]),
 	[with_debug="$withval"],[with_debug="yes"])
@@ -134,11 +142,6 @@ dreamirc/src/protocols/Makefile
 
 dreammediathek/Makefile
 dreammediathek/src/Makefile
-
-dvdbackup/Makefile
-dvdbackup/meta/Makefile
-dvdbackup/po/Makefile
-dvdbackup/src/Makefile
 
 dyndns/Makefile
 dyndns/src/Makefile
@@ -305,11 +308,7 @@ moviecut/Makefile
 moviecut/meta/Makefile
 moviecut/src_cc/Makefile
 moviecut/src_py/Makefile
-
-movielistpreview/Makefile
-movielistpreview/meta/Makefile
-movielistpreview/po/Makefile
-movielistpreview/src/Makefile
+moviecut/po/Makefile
 
 movieretitle/Makefile
 movieretitle/meta/Makefile
@@ -361,6 +360,7 @@ netcaster/src/etc/Makefile
 
 networkbrowser/Makefile
 networkbrowser/meta/Makefile
+networkbrowser/po/Makefile
 networkbrowser/src/Makefile
 networkbrowser/src/icons/Makefile
 networkbrowser/src/lib/Makefile
@@ -389,11 +389,6 @@ partnerbox/po/Makefile
 partnerbox/src/Makefile
 partnerbox/src/icons/Makefile
 partnerbox/src/servicewebts/Makefile
-
-passwordchanger/Makefile
-passwordchanger/meta/Makefile
-passwordchanger/po/Makefile
-passwordchanger/src/Makefile
 
 permanentclock/Makefile
 permanentclock/meta/Makefile
@@ -450,7 +445,6 @@ quickepg/src/Makefile
 
 reconstructapsc/Makefile
 reconstructapsc/meta/Makefile
-reconstructapsc/src_cc/Makefile
 reconstructapsc/src_py/Makefile
 
 remotetimer/Makefile

@@ -116,7 +116,7 @@ class IPKGConsoleStream:
 	def dataAvail(self, data):
 		print"[IPKGConsoleStream].dataAvail: '%s'" %data
 		#FIXME - filter strange reapeated outputs since we switched to opkg
-		if data != self.lastdata or self.lastdata is None and self.stillAlive:
+		if data != self.lastdata or self.lastdata is None:
 			self.lastdata = data
 			self.request.write(data.replace("\n", "<br>\n"))
 

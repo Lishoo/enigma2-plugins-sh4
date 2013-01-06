@@ -67,7 +67,7 @@ double strtotime(char* str)
 
 double inttotime(unsigned int t1, unsigned int t2)
 {
-  return (bswap_32(t2)*1.1111111111111112e-05 + bswap_32(t1)*47721.858844444447);
+  return (be32toh(t2)*1.1111111111111112e-05 + be32toh(t1)*47721.858844444447);
 }
 
 double lltotime(long long int t)
@@ -78,47 +78,45 @@ double lltotime(long long int t)
 void timetoint(double tm, unsigned int& t1, unsigned int& t2)
 {
   double tmp=tm/47721.858844444447;
-  t1 = bswap_32((unsigned int)tmp);
-  t2 = bswap_32((unsigned int)((tm - t1*47721.858844444447)*90000));
+  t1 = htobe32((unsigned int)tmp);
+  t2 = htobe32((unsigned int)((tm - t1*47721.858844444447)*90000));
 }
 
-void swapbuf(off64_t*& buf0, off64_t*& buf1)
+void swapbuf(off64_t buf0[], off64_t buf1[])
 {
-  off64_t* buf;
-  buf = buf0;
-  buf0 = buf1;
-  buf1 = buf;
+  off64_t buf[2];
+  buf[0] = buf0[0];
+  buf[1] = buf0[1];
+  buf0[0] = buf1[0];
+  buf0[1] = buf1[1];
+  buf1[0] = buf[0];
+  buf1[1] = buf[1];
 }
 
-int readbufinternal(int f, off64_t*& buf)
+int readbufinternal(int f, off64_t buf[])
 {
   if (read(f, buf, 16) != 16)
     return 0;
-  buf[0] = (off64_t)bswap_64((unsigned long long int)buf[0]);
-  buf[1] = (off64_t)bswap_64((unsigned long long int)buf[1]);
+  buf[0] = (off64_t)be64toh((unsigned long long int)buf[0]);
+  buf[1] = (off64_t)be64toh((unsigned long long int)buf[1]);
   return 1;
 }
 
-void writebufinternal(int f, off64_t* buf)
+void writebufinternal(int f, off64_t buf[])
 {
   off64_t tbuf[2];
-  tbuf[0] = (off64_t)bswap_64((unsigned long long int)buf[0] - curr_size_offset);
-  tbuf[1] = (off64_t)bswap_64((unsigned long long int)buf[1]);
+  tbuf[0] = (off64_t)htobe64((unsigned long long int)buf[0] - curr_size_offset);
+  tbuf[1] = (off64_t)htobe64((unsigned long long int)buf[1]);
   write(f, tbuf, 16);
 }
 
 void movesc(int fs, int fso, off64_t off, int beg)
 {
-  static off64_t* buf = 0;
-  static off64_t lastoff;
-  static int endp;
+  static off64_t buf[2];
+  static off64_t lastoff = 0;
+  static int endp = 0;
   if (fs == -1 || fso == -1)
     return;
-  if (!buf) {
-    buf = new off64_t[2];
-    lastoff = 0;
-    endp = 0;
-  }
   if (off < lastoff) {
     lseek(fs, 0, SEEK_SET);
     lastoff = 0;
@@ -140,22 +138,22 @@ void movesc(int fs, int fso, off64_t off, int beg)
 
 off64_t readoff(int fa, int fao, int fs, int fso, double t, int beg, double& tr)
 {
-  static off64_t* buf0 = 0;
-  static off64_t* buf1 = 0;
-  static off64_t lastreturn;
-  static double last;
-  static int endp;
-  off64_t sizetmp;
+  static off64_t buf0[2];
+  static off64_t buf1[2];
+  static bool buffilled = false;
+  static off64_t lastreturn = 0;
+  static double last = 0.0;
+  static int endp = 0;
+  off64_t sizetmp = 0;
   double tt, lt;
-  if (!buf0) {
-    buf0 = new off64_t[2];
-    buf1 = new off64_t[2];
+  if (!buffilled) {
     if (!(readbufinternal(fa, buf0) && readbufinternal(fa, buf1))) {
       printf("The corresponding \".ap\"-file is empty.\n");
       exit(8);
     }
+    buffilled = true;
     time_offset = buf0[1];
-    if (buf1[1] > buf0[1] && buf1[1] - buf0[1] < 450000)
+    if (buf1[1] > buf0[1] && buf1[1] - buf0[1] < 900000)
       time_offset -= (buf1[1]-buf0[1])*buf0[0]/(buf1[0]-buf0[0]);
     else if (buf1[1] > buf0[1] || buf0[1] - buf1[1] > 45000)
       time_offset = buf1[1];
@@ -170,7 +168,7 @@ off64_t readoff(int fa, int fao, int fs, int fso, double t, int beg, double& tr)
     readbufinternal(fa, buf0);
     readbufinternal(fa, buf1);
     time_offset = buf0[1];
-    if (buf1[1] > buf0[1] && buf1[1] - buf0[1] < 450000)
+    if (buf1[1] > buf0[1] && buf1[1] - buf0[1] < 900000)
       time_offset -= (buf1[1]-buf0[1])*buf0[0]/(buf1[0]-buf0[0]);
     else if (buf1[1] > buf0[1] || buf0[1] - buf1[1] > 45000)
       time_offset = buf1[1];
@@ -199,11 +197,11 @@ off64_t readoff(int fa, int fao, int fs, int fso, double t, int beg, double& tr)
       writebufinternal(fao, buf0);
     if (endp)
       break;
-    if (buf0[1] - buf1[1] > 45000 || buf1[1] - buf0[1] > 450000) {
-      if (absless(buf1[1] + ((long long int)1)<<33 - buf0[1], 450000))
-	time_offset -= ((long long int)1)<<33;
+    if (buf0[1] - buf1[1] > 45000 || buf1[1] - buf0[1] > 900000) {
+      if (absless(buf1[1] + ((long long int)1)<<33 - buf0[1], 900000))
+        time_offset -= ((long long int)1)<<33;
       else
-	time_offset += buf1[1] - buf0[1];
+        time_offset += buf1[1] - buf0[1];
     }
     lt = tt;
     if (buf0[1] - buf1[1] > 0 && buf0[1] - buf1[1] <= 45000)
@@ -388,10 +386,10 @@ int donextinterval1(int fc, int fco, int fa, int fao, int fs, int fso, int fts, 
     lseek(fc, 0, SEEK_SET);
     while (1) {
       if (n == 0)
-	return 0;
+        return 0;
       read(fc, buf, 12);
       n--;
-      tmp = bswap_32(buf[2]);
+      tmp = be32toh(buf[2]);
       if (tmp == 1) {
         c1 = readoff(fa, fao, fs, fso, 0.0, 1, toff);
         if (transfer_start(fts, ftso, c1, c1ret)) return -1;
@@ -401,32 +399,32 @@ int donextinterval1(int fc, int fco, int fa, int fao, int fs, int fso, int fts, 
         if (transfer_rest(fts, ftso, c1, c2, c2ret)) return -1;
         movesc(fs, fso, c2ret, 0);
         printf("Interval: %lld - %lld\n", c1ret, c2ret);
-	// move all passed marks
-	lseek(fc, 0, SEEK_SET);
-	read(fc, buf, 12);
-	while (bswap_32(buf[2]) != 1) {
-	  write(fco, buf, 12);
-	  read(fc, buf, 12);
-	}
-	return 1;
+        // move all passed marks
+        lseek(fc, 0, SEEK_SET);
+        read(fc, buf, 12);
+        while (be32toh(buf[2]) != 1) {
+          write(fco, buf, 12);
+          read(fc, buf, 12);
+        }
+        return 1;
       } else if (tmp == 0) {
         c1 = readoff(fa, fao, fs, fso, inttotime(buf[0], buf[1]), 1, toff);
         if (transfer_start(fts, ftso, c1, c1ret)) return -1;
         curr_size_offset = size_offset;
         movesc(fs, fso, c1ret, 1);
-	if (lcheck) {
-	  buf[0] = buf[1] = 0;
-	  write(fco, buf, 12);
-	}
-	break;
+        if (lcheck) {
+          buf[0] = buf[1] = 0;
+          write(fco, buf, 12);
+        }
+        break;
       } else if (tmp == 3)
-	lcheck = 1;
+        lcheck = 1;
     }
   } else {
     while (1) {
       read(fc, buf, 12);
       n--;
-      tmp = bswap_32(buf[2]);
+      tmp = be32toh(buf[2]);
       if (tmp == 0) {
         c1 = readoff(fa, fao, fs, fso, inttotime(buf[0], buf[1]), 1, ttmp);
         use_leadin = 0;
@@ -439,13 +437,13 @@ int donextinterval1(int fc, int fco, int fa, int fao, int fs, int fso, int fts, 
         }
         movesc(fs, fso, c1ret, 1);
         toff += ttmp - tlast;
-	break;
+        break;
       } else if (tmp == 3) {
-	timetoint(tlast-toff, buf[0], buf[1]);
-	write(fco, buf, 12);
+        timetoint(tlast-toff, buf[0], buf[1]);
+        write(fco, buf, 12);
       }
       if (n == 0)
-	return 0;
+        return 0;
     }
   }
   while (1) {
@@ -458,7 +456,7 @@ int donextinterval1(int fc, int fco, int fa, int fao, int fs, int fso, int fts, 
     }
     read(fc, buf, 12);
     n--;
-    tmp = bswap_32(buf[2]);
+    tmp = be32toh(buf[2]);
     if (tmp == 1) {
       c2 = readoff(fa, fao, fs, fso, inttotime(buf[0], buf[1]), 0, tlast);
       if (transfer_rest(fts, ftso, c1, c2, c2ret)) return -1;
@@ -489,7 +487,7 @@ int donextinterval2(int barg, int earg, char* argv[], int fc, int fco, int fa, i
       lseek(fc, 0, SEEK_SET);
       for (j=0; j<n; j++) {
         read(fc, buf, 12);
-        tmp = bswap_32(buf[2]);
+        tmp = be32toh(buf[2]);
         if (tmp == 3) {
           timetoint(tlast-toff, buf[0], buf[1]);
           write(fco, buf, 12);
@@ -521,7 +519,7 @@ int donextinterval2(int barg, int earg, char* argv[], int fc, int fco, int fa, i
   if (n > 0) lseek(fc, 0, SEEK_SET);
   for (j=0; j<n; j++) {
     read(fc, buf, 12);
-    tmp = bswap_32(buf[2]);
+    tmp = be32toh(buf[2]);
     ttmp2=inttotime(buf[0], buf[1]);
     if (tmp == 3) {
       if (!lcheck) {
@@ -538,7 +536,7 @@ int donextinterval2(int barg, int earg, char* argv[], int fc, int fco, int fa, i
     } else if (ttmp2 >= ttmp && ttmp2 <= tlast) {
       if (tmp < 2) {
         if (lio != io && lio != -1) {
-          buff[2] = bswap_32(io);
+          buff[2] = htobe32(io);
           timetoint(ttmp-toff, buff[0], buff[1]);
           write(fco, buff, 12);
         }
@@ -582,7 +580,7 @@ void copymeta(int n, int f1, int f2, const char* title, const char* suff, const 
     if (buf[i] == 10)
       break;
   write(f2, buf, i);
-  if (i == n) return;
+  if (i == n) goto exit;
   for (j=i+1; j<n; j++)
     if (buf[j] == 10)
       break;
@@ -595,7 +593,7 @@ void copymeta(int n, int f1, int f2, const char* title, const char* suff, const 
     if (suff && j-i>1)
       write(f2, suff, strlen(suff));
   }
-  if (j == n) return;
+  if (j == n) goto exit;
   i = j;
   for (j=i+1; j<n; j++)
     if (buf[j] == 10)
@@ -607,8 +605,38 @@ void copymeta(int n, int f1, int f2, const char* title, const char* suff, const 
   } else {
     write(f2, buf+i, j-i);
   }
+  /* creation time */
+  i = j;
+  for (j=i+1; j<n; j++)
+    if (buf[j] == 10)
+      break;
+  write(f2, buf+i, j-i);
+  /* tags */
+  i = j;
+  for (j=i+1; j<n; j++)
+    if (buf[j] == 10)
+      break;
+  write(f2, buf+i, j-i);
+  /* length in pts */
+  i = j;
+  for (j=i+1; j<n; j++)
+    if (buf[j] == 10)
+      break;
+  write(f2, buf+i, 1);
+  /* write 0, force length to be re-calculated */
+  write(f2, "0", 1);
+  /* file size */
+  i = j;
+  for (j=i+1; j<n; j++)
+    if (buf[j] == 10)
+      break;
+  write(f2, buf+i, 1);
+  /* write 0, force size to be re-calculated */
+  write(f2, "0", 1);
+  /* remaining fields */
   if (j < n)
     write(f2, buf+j, n-j);
+exit:
   delete [] buf;
 }
 

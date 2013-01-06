@@ -5,7 +5,6 @@ SUBDIRS = \
 	antiscrollbar \
 	audiosync \
 	automaticcleanup \
-	automatictimerlistcleanup \
 	automaticvolumeadjustment \
 	autoresolution \
 	autotimer \
@@ -16,7 +15,6 @@ SUBDIRS = \
 	curlytx \
 	dreamirc \
 	dreammediathek \
-	dvdbackup \
 	dyndns \
 	easyinfo \
 	easymedia \
@@ -44,22 +42,16 @@ SUBDIRS = \
 	libgisclubskin \
 	logomanager \
 	mediadownloader \
-	menusort \
 	merlinepg \
 	merlinepgcenter \
 	meteoitalia \
 	mosaic \
 	moviecut \
-	movielistpreview \
 	movieretitle \
 	moviesearch \
-	movieselectionquickbutton \
 	movietagger \
-	movieepg \
 	mphelp \
 	multirc \
-	mytube \
-	namezap \
 	ncidclient \
 	netcaster \
 	networkbrowser \
@@ -67,13 +59,9 @@ SUBDIRS = \
 	orfat \
 	orfteletext \
 	partnerbox \
-	passwordchanger \
 	permanentclock \
 	permanenttimeshift \
 	pipservicerelation \
-	pipzap \
-	pluginhider \
-	pluginsort \
 	podcast \
 	porncenter \
 	quickbutton \
@@ -83,12 +71,10 @@ SUBDIRS = \
 	rsdownloader \
 	sambaserver \
 	seekbar \
-	serienfilm \
 	setpasswd \
 	shoutcast \
 	showclock \
 	simplerss \
-	startupservice \
 	startuptostandby \
 	subsdownloader2 \
 	svdrp \
@@ -103,13 +89,18 @@ SUBDIRS = \
 	weatherplugin \
 	webcamviewer \
 	webbouqueteditor \
-	webinterface \
 	werbezapper \
 	youtubeplayer \
-	yttrailer \
 	zaphistorybrowser \
 	zapstatistic \
 	zdfmediathek
+
+if TPM
+SUBDIRS += \
+	mytube \
+	yttrailer \
+	webinterface
+endif
 
 metadir = $(datadir)/meta
 meta_DATA = index-enigma2-plugins.xml

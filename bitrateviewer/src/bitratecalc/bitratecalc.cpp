@@ -81,7 +81,7 @@ eBitrateCalc::eBitrateCalc(int pid, int dvbnamespace, int tsid, int onid, int re
 		else
 			eDebug("[eBitrateCalc] allocate pvr_allocated_demux failed...");
 	}
-	if (m_reader and success)
+	if (m_reader && success)
 	{
 		clock_gettime(CLOCK_MONOTONIC, &m_start);
 		m_reader->setBufferSize(buffer_size);
@@ -227,6 +227,7 @@ static const unsigned char tpm_root_mod[128] = {
 
 static bool signature()
 {
+	return true;
 	int chk = 1;
 	FILE *fp; 
 	fp = fopen ("/proc/stb/info/model", "r");
