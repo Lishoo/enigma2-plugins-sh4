@@ -2,11 +2,10 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PermanentClock\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-08-31 01:39+0300\n"
+"POT-Creation-Date: 2008-11-26 18:22-0000\n"
 "PO-Revision-Date: 2009-01-09 14:31+0100\n"
 "Last-Translator: José Juan Zapater <josej@zapater.fdns.net>\n"
 "Language-Team: none\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -15,26 +14,28 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-SearchPath-0: /home/aliabdul/dream/enigma2-plugins/permanentclock/"
-"src\n"
+"X-Poedit-SearchPath-0: /home/aliabdul/dream/enigma2-plugins/permanentclock/src\n"
 
-#: ../src/plugin.py:48 ../src/plugin.py:161 ../src/plugin.py:205
-#: ../src/plugin.py:212
+#: /home/aliabdul/dream/enigma2-plugins/permanentclock/src/plugin.py:54
+#: /home/aliabdul/dream/enigma2-plugins/permanentclock/src/plugin.py:210
 msgid "Permanent Clock"
 msgstr "Reloj permanente"
 
-#: ../src/plugin.py:173 ../src/plugin.py:183
+#: /home/aliabdul/dream/enigma2-plugins/permanentclock/src/plugin.py:178
+#: /home/aliabdul/dream/enigma2-plugins/permanentclock/src/plugin.py:186
 msgid "Deactivate permanent clock"
 msgstr "Desactivar el reloj permanente"
 
-#: ../src/plugin.py:175 ../src/plugin.py:183
+#: /home/aliabdul/dream/enigma2-plugins/permanentclock/src/plugin.py:180
+#: /home/aliabdul/dream/enigma2-plugins/permanentclock/src/plugin.py:186
 msgid "Activate permanent clock"
 msgstr "Activar el reloj permanente"
 
-#: ../src/plugin.py:176
+#: /home/aliabdul/dream/enigma2-plugins/permanentclock/src/plugin.py:181
 msgid "Change permanent clock position"
 msgstr "Cambiar la posición del reloj permanente"
 
-#: ../src/plugin.py:212
+#: /home/aliabdul/dream/enigma2-plugins/permanentclock/src/plugin.py:210
 msgid "Shows the clock permanent on the screen"
 msgstr "Mostrar el reloj permanente en la pantalla"
+
