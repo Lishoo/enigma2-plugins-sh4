@@ -120,7 +120,7 @@ class AutoMount():
 			self.MountConsole = Console()
 		command = None
 		path = os.path.join('/media/net', data['sharename'])
-		if os_path.exists("/media/net") is False:
+		if os.path.exists("/media/net") is False:
 			createDir("/media/net")
 		if self.activeMountsCounter == 0:
 			print "self.automounts without active mounts",self.automounts
@@ -147,18 +147,18 @@ class AutoMount():
 
 					elif data['mounttype'] == 'cifs':
 						if not os.path.ismount(path):
-						if os_path.exists("/lib/modules/cifs.ko") is True:
-							self.MountConsole.ePopen("insmod /lib/modules/cifs.ko")
-						else:
-							for linuxversion in os.listdir("/lib/modules"):
-								if os_path.exists("/lib/modules/%s/kernel/fs/cifs/cifs.ko" % linuxversion) is True:
-									self.MountConsole.ePopen("modprobe cifs")
+							if os.path.exists("/lib/modules/cifs.ko") is True:
+								self.MountConsole.ePopen("insmod /lib/modules/cifs.ko")
+							else:
+								for linuxversion in os.listdir("/lib/modules"):
+									if os.path.exists("/lib/modules/%s/kernel/fs/cifs/cifs.ko" % linuxversion) is True:
+										self.MountConsole.ePopen("modprobe cifs")
 							tmpusername = data['username'].replace(" ", "\\ ")
 							options = data['options'] + ',noatime,noserverino,iocharset=utf8,username='+ tmpusername + ',password='+ data['password']
 							tmpcmd = "mount -t cifs -o %s '//%s/%s' '%s'" % (options, data['ip'], data['sharedir'], path)
 							command = tmpcmd.encode("UTF-8")
 				except Exception, ex:
-				        print "[AutoMount.py] Failed to create", path, "Error:", ex
+					print "[AutoMount.py] Failed to create", path, "Error:", ex
 					command = None
 			if command:
 				print "[AutoMount.py] U/MOUNTCMD--->",command
