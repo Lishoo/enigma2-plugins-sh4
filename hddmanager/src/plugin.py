@@ -50,7 +50,7 @@ def CreateMountDir(list):
 def CheckMountDir(device):
 	hdd = "nothing"
 	movie = "nothing"
-	mounts = None
+	result = ""
 	try:
 		f = open("/proc/mounts", "r")
 		result = [line.strip().split(' ') for line in f]
