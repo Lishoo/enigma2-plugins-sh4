@@ -32,8 +32,8 @@ def GetDevices():
 					des = str(size / 1024) + "MB"
 				device.append(parts[3] + "  " + des)
 		f.close()
-	except:
-		print "[HddManager] ERROR in read /proc/partitions"
+	except IOError, ex:
+		print "[HddManager] Failed to open /proc/partitions", ex
 	return device
 
 def CreateMountDir(list):
@@ -45,13 +45,21 @@ def CreateMountDir(list):
 				mkdir(dir)
 				print "[HddManager] mkdir", dir
 			except:
-				print "[HddManager] ERROR mkdir", dir
+				print "[HddManager] Failed to mkdir", dir
 
 def CheckMountDir(device):
 	hdd = "nothing"
 	movie = "nothing"
-	from Components.Harddisk import getProcMounts
-	mounts = getProcMounts()
+	mounts = None
+	try:
+		f = open("/proc/mounts", "r")
+		result = [line.strip().split(' ') for line in f]
+		f.close()
+	except IOError, ex:
+		print "[HddManager] Failed to open /proc/mounts", ex
+	for item in result:
+		item[1] = item[1].replace('\\040', ' ')
+	mounts = result
 	for line in mounts:
 		if line[1][-3:] == "hdd":
 			hdd = GetDeviceFromList(device, line[0][5:])
@@ -120,8 +128,8 @@ class MountSetup(Screen, ConfigListScreen):
 						if device.startswith(line[5:9]):
 							self.swap = device
 			f.close()
-		except:
-			print "[HddManager] ERROR in read /proc/swaps"
+		except IOError, ex:
+			print "[HddManager] Failed to open /proc/swaps", ex
 		self.CreateList()
 
 	def CreateList(self):
