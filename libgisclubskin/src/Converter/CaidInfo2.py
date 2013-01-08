@@ -1,7 +1,6 @@
 #
 #  CaidInfo2 - Converter
-#
-#  ver 1.1.3 23/12/2012
+#  ver 1.1.4 06/01/2013
 #
 #  Coded by bigroma & 2boom
 
@@ -395,7 +394,7 @@ class CaidInfo2(Poll, Converter, object):
 							return textvalue[:-1]
 						if self.type == self.ALL:
 							if source == "emu":
-								textvalue = "%s - %s (Caid: %s)" % (source, self.systemTxtCaids.get(caid[:2]), caid)
+								textvalue = "%s - %s (Prov: %s, Caid: %s)" % (source, self.systemTxtCaids.get(caid[:2]), prov, caid)
 							#new oscam ecm.info with port parametr
 							elif reader != "" and source == "net" and port != "": 
 								textvalue = "%s - Prov: %s, Caid: %s, Reader: %s, %s (%s:%s) - %ss, %s hops" % (source, prov, caid, reader, protocol, server, port, ecm_time, hops)
