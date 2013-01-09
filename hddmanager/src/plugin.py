@@ -10,6 +10,7 @@ from Screens.Screen import Screen
 
 from os import mkdir, path
 from string import atoi
+from time import sleep
 
 config.plugins.HddMount = ConfigSubsection()
 config.plugins.HddMount.MountOnStart = ConfigYesNo(default = False)
@@ -223,6 +224,9 @@ def OnStart(reason, **kwargs):
 	if reason == 0: # Enigma start
 		if config.plugins.HddMount.MountOnStart.value:
 			device = GetDevices()
+			if not device:
+				sleep(3)
+				device = GetDevices()
 			mounts = CheckMountDir(device)
 			MountOnHdd = config.plugins.HddMount.MountOnHdd.value
 			if MountOnHdd != "nothing" and MountOnHdd in device \
@@ -241,6 +245,10 @@ def OnStart(reason, **kwargs):
 				Console().ePopen("swapon /dev/%s" % SwapFile[:4])
 			elif path.exists("/media/hdd/swapfile"):
 				Console().ePopen("swapon /media/hdd/swapfile")
+			else:
+				sleep(3)
+				if path.exists("/media/hdd/swapfile"):
+					Console().ePopen("swapon /media/hdd/swapfile")
 
 def Plugins(**kwargs):
 	return [PluginDescriptor(name=_("HDD mount manager"),
