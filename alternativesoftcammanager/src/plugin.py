@@ -25,7 +25,7 @@ config.plugins.AltSoftcam = ConfigSubsection()
 config.plugins.AltSoftcam.actcam = ConfigText(default = "none")
 config.plugins.AltSoftcam.camconfig = ConfigText(default = "/var/keys",
 	visible_width = 100, fixed_size = False)
-config.plugins.AltSoftcam.camdir = ConfigText(default = "/usr/bin/cam",
+config.plugins.AltSoftcam.camdir = ConfigText(default = "/var/emu",
 	visible_width = 100, fixed_size = False)
 AltSoftcamConfigError = False
 if not path.isdir(config.plugins.AltSoftcam.camconfig.value):
@@ -36,32 +36,55 @@ if not path.isdir(config.plugins.AltSoftcam.camdir.value):
 	AltSoftcamConfigError = True
 
 def getcamcmd(cam):
-	cam = cam.lower()
-	if "oscam" in cam:
-		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -bc " + \
-			config.plugins.AltSoftcam.camconfig.value + "/"
-	elif "wicard" in cam:
-		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -d -c " + \
-			config.plugins.AltSoftcam.camconfig.value + "/wicardd.conf"
-	elif "camd3" in cam:
-		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " " + \
-			config.plugins.AltSoftcam.camconfig.value + "/camd3.config"
-	elif "mbox" in cam:
-		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " " + \
-			config.plugins.AltSoftcam.camconfig.value + "/mbox.cfg"
-	elif "mpcs" in cam:
-		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -c " + \
-			config.plugins.AltSoftcam.camconfig.value
-	elif "newcs" in cam:
-		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -C " + \
-			config.plugins.AltSoftcam.camconfig.value + "/newcs.conf"
-	elif "vizcam" in cam:
-		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -b -c " + \
-			config.plugins.AltSoftcam.camconfig.value + "/"
-	elif "rucam" in cam:
-		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -b"
+	if getcamscript(cam):
+		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " start"
 	else:
-		return config.plugins.AltSoftcam.camdir.value + "/" + cam
+		cam = cam.lower()
+		if "oscam" in cam:
+			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -bc " + \
+				config.plugins.AltSoftcam.camconfig.value + "/"
+		elif "wicard" in cam:
+			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -d -c " + \
+				config.plugins.AltSoftcam.camconfig.value + "/wicardd.conf"
+		elif "camd3" in cam:
+			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " " + \
+				config.plugins.AltSoftcam.camconfig.value + "/camd3.config"
+		elif "mbox" in cam:
+			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " " + \
+				config.plugins.AltSoftcam.camconfig.value + "/mbox.cfg"
+		elif "mpcs" in cam:
+			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -c " + \
+				config.plugins.AltSoftcam.camconfig.value
+		elif "newcs" in cam:
+			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -C " + \
+				config.plugins.AltSoftcam.camconfig.value + "/newcs.conf"
+		elif "vizcam" in cam:
+			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -b -c " + \
+				config.plugins.AltSoftcam.camconfig.value + "/"
+		elif "rucam" in cam:
+			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -b"
+		else:
+			return config.plugins.AltSoftcam.camdir.value + "/" + cam
+
+def getcamscript(cam):
+	cam = cam.lower()
+	if cam.endswith('.sh') or cam.startswith('softcam') \
+		or cam.startswith('cardserver'):
+		return True
+	else:
+		return False
+
+def stopcam(cam):
+	if getcamscript(cam):
+		cmd = config.plugins.AltSoftcam.camdir.value + "/" + cam + " stop"
+	else:
+		cmd = "killall -9 " + cam
+	Console().ePopen(cmd)
+	print "[Alternative SoftCam Manager] stopping", cam
+	try:
+		remove("/tmp/ecm.info")
+	except:
+		pass
 
 class AltCamManager(Screen):
 	skin = """
@@ -156,7 +179,10 @@ class AltCamManager(Screen):
 			self.softcamlist = result
 			self.Console.ePopen("chmod 755 %s/*" %
 				config.plugins.AltSoftcam.camdir.value)
-			self.Console.ePopen("pidof %s" % self.actcam, self.CamActive)
+			if self.actcam != "none" and getcamscript(self.actcam):
+				self.CreateCamList()
+			else:
+				self.Console.ePopen("pidof %s" % self.actcam, self.CamActive)
 
 	def CamActive(self, result, retval, extra_args):
 		if result.strip():
@@ -199,7 +225,9 @@ class AltCamManager(Screen):
 
 	def checkcam (self, cam):
 		cam = cam.lower()
-		if "oscam" in cam:
+		if getcamscript(cam):
+			return "Script"
+		elif "oscam" in cam:
 			return "Oscam"
 		elif "mgcamd" in cam:
 			return "Mgcamd"
@@ -247,12 +275,7 @@ class AltCamManager(Screen):
 
 	def stop(self):
 		if self.actcam != "none":
-			self.Console.ePopen("killall -9 %s" % self.actcam)
-			print "[Alternative SoftCam Manager] stop ", self.actcam
-			try:
-				remove("/tmp/ecm.info")
-			except:
-				pass
+			stopcam(self.actcam)
 			msg  = _("Stopping %s") % self.actcam
 			self.actcam = "none"
 			self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
@@ -272,7 +295,7 @@ class AltCamManager(Screen):
 			self.camstart = self.actcam
 			if self.camstartcmd == "":
 				self.camstartcmd = getcamcmd(self.camstart)
-			msg  = _("Restarting %s") % self.actcam
+			msg = _("Restarting %s") % self.actcam
 			self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
 			self.activityTimer = eTimer()
 			self.activityTimer.timeout.get().append(self.Stopping)
@@ -280,12 +303,7 @@ class AltCamManager(Screen):
 
 	def Stopping(self):
 		self.activityTimer.stop()
-		self.Console.ePopen("killall -9 %s" % self.actcam)
-		print "[Alternative SoftCam Manager] stopping ", self.actcam
-		try:
-			remove("/tmp/ecm.info")
-		except:
-			pass
+		stopcam(self.actcam)
 		self.actcam = self.camstart
 		service = self.session.nav.getCurrentlyPlayingServiceReference()
 		if service:
@@ -400,10 +418,7 @@ def StartCam(reason, **kwargs):
 				pass
 		elif reason == 1: # Enigma stop
 			try:
-				Console().ePopen("killall -9 %s" %
-					config.plugins.AltSoftcam.actcam.value)
-				print "[Alternative SoftCam Manager] stopping ", \
-					config.plugins.AltSoftcam.actcam.value
+				stopcam(config.plugins.AltSoftcam.actcam.value)
 			except:
 				pass
 
