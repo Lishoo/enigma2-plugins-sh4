@@ -105,6 +105,7 @@ class QuickEPGPlugin(Screen):
 	try:
 		epgcache = new.instancemethod(_enigma.eEPGCache_load,None,eEPGCache)
 		epgcache = eEPGCache.getInstance().load()
+		self.close()
 	except:
 		restartbox = self.session.openWithCallback(self.restartGUI,MessageBox,_("Restart GUI now?"), MessageBox.TYPE_YESNO)
 		restartbox.setTitle(_("Restart GUI now?"))
