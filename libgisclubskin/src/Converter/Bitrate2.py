@@ -22,8 +22,7 @@ from Components.Element import cached
 try:
 	from bitratecalc import eBitrateCalculator
 except:
-	export os
-	sys.exit(1)
+	pass
 
 
 class Bitrate2(Converter, object):

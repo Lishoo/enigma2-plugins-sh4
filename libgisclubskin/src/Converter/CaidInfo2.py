@@ -1,6 +1,6 @@
 #
 #  CaidInfo2 - Converter
-#  ver 1.1.4 06/01/2013
+#  ver 1.1.4 17/01/2013
 #
 #  Coded by bigroma & 2boom
 
@@ -46,6 +46,8 @@ class CaidInfo2(Poll, Converter, object):
 	DELAY = 28
 	FORMAT = 29
 	CRYPT2 = 30
+	CRD = 31
+	CRDTXT = 32
 	my_interval = 1000
 
 
@@ -110,6 +112,10 @@ class CaidInfo2(Poll, Converter, object):
 			self.type = self.BISS
 		elif type == "BisEcm":
 			self.type = self.BISS_C
+		elif type == "Crd":
+			self.type = self.CRD
+		elif type == "CrdTxt":
+			self.type = self.CRDTXT
 		elif type == "Default" or type == "" or type == None or type == "%":
 			self.type = self.ALL
 		else:
@@ -259,6 +265,15 @@ class CaidInfo2(Poll, Converter, object):
 				#cccam	
 				using = ecm_info.get("using", "")
 				#mgcamd
+				source = ecm_info.get("source", "")
+				if self.type == self.CRD:
+					#oscam
+					if source == "sci":
+						return True
+					#wicardd
+					if source != "cache" and source != "net" and source.find("emu") == -1:
+						return True
+					return False
 				source = ecm_info.get("source", None)
 				if self.type == self.IS_EMU:
 					return using == "emu" or source == "emu" or reader == "emu"
@@ -337,6 +352,15 @@ class CaidInfo2(Poll, Converter, object):
 						provider = ecm_info.get("provider", "")
 						# reader
 						reader = ecm_info.get("reader", "")
+						if self.type == self.CRDTXT:
+							info_card = "False"
+							#oscam
+							if source == "sci":
+								info_card = "True"
+							#wicardd
+							if source != "cache" and source != "net" and source.find("emu") == -1:
+								info_card = "True"
+							return info_card
 						if self.type == self.HOST:
 							return server
 						if self.type == self.FORMAT:
