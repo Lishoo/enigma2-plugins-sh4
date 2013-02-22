@@ -21,8 +21,12 @@ class EmuName(Poll, Converter, object):
 		camdname = None
 		cardname = None
 		camdlist = None
+		# Alternative SoftCam Manager
+		if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/AlternativeSoftCamManager/plugin.py"):
+			if config.plugins.AltSoftcam.actcam.value != "none":
+				camdlist = config.plugins.AltSoftcam.actcam.value.split()
 		# VTI 	
-		if fileExists("/tmp/.emu.info"):
+		elif fileExists("/tmp/.emu.info"):
 			try:
 				camdname = open("/tmp/.emu.info", "r")
 			except:
@@ -69,10 +73,6 @@ class EmuName(Poll, Converter, object):
 				cardname = open("/etc/init.d/cardserver", "r")
 			except:
 				cardname = None 
-		# Alternative SoftCam Manager
-		elif config.plugins.AltSoftcam.actcam.value:
-			if config.plugins.AltSoftcam.actcam.value != "none":
-				camdlist = config.plugins.AltSoftcam.actcam.value.split()
 		if cardname:
 			for line in cardname:
 				if line.lower().find('oscam') > -1:
