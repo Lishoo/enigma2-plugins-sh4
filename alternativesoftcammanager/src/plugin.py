@@ -81,7 +81,7 @@ def stopcam(cam):
 	if getcamscript(cam):
 		cmd = config.plugins.AltSoftcam.camdir.value + "/" + cam + " stop"
 	else:
-		cmd = "killall -9 " + cam
+		cmd = "killall -15 " + cam
 	Console().ePopen(cmd)
 	print "[Alternative SoftCam Manager] stopping", cam
 	try:
