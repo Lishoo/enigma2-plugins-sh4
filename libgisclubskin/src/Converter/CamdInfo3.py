@@ -32,8 +32,14 @@ class CamdInfo3(Poll, Converter, object):
 		nameser = []
 		if not info:
 			return ""
+		# Alternative SoftCam Manager
+		if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/AlternativeSoftCamManager/plugin.py"):
+			if config.plugins.AltSoftcam.actcam.value != "none":
+				return config.plugins.AltSoftcam.actcam.value
+			else:
+				return None
 		# TS-Panel
-		if fileExists("/etc/startcam.sh"):
+		elif fileExists("/etc/startcam.sh"):
 			try:
 				for line in open("/etc/startcam.sh"):
 					if line.find("script") > -1:
