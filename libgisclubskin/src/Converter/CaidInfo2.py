@@ -1,6 +1,6 @@
 #
 #  CaidInfo2 - Converter
-#  ver 1.1.4 17/01/2013
+#  ver 1.1.5 05/02/2013
 #
 #  Coded by bigroma & 2boom
 
@@ -546,8 +546,11 @@ class CaidInfo2(Poll, Converter, object):
 								x = line.lower().find("pid")
 								if x != -1:
 									y = line.find(" =")
+									z = line.find(" *")
 									if y != -1:
 										info["pid"] = line[x+4:y]
+									elif z != -1:
+										info["pid"] = line[x+4:z]
 				ecmf.close()
 		return info
 

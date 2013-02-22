@@ -1,6 +1,6 @@
 Package: enigma2-plugin-systemplugins-libgisclubskin
-Version: 3.5-r6
+Version: 3.6-r1
 Description: gisclub skin lib
-Maintainer: 2boom & Sirius0103
+Maintainer: 2boom
 Homepage: gisclub.tv
 Depends:

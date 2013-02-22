@@ -1,4 +1,4 @@
-# mod by 2boom 2012 v. 0.9 
+# mod by 2boom 2012-13 v. 1.1 
 from Components.Converter.Converter import Converter
 from Components.Element import cached
 from enigma import eEPGCache
@@ -13,6 +13,8 @@ class EventName2(Converter, object):
 	NEXT_NAME = 5
 	NEXT_DESCRIPTION = 6
 	NEXT_NAMEWT = 7
+	NEXT_NAME_NEXT = 8
+	NEXT_NAME_NEXTWT = 9
 	
 	def __init__(self, type):
 		Converter.__init__(self, type)
@@ -27,6 +29,10 @@ class EventName2(Converter, object):
 			self.type = self.ID
 		elif type == "NextName":
 			self.type = self.NEXT_NAME
+		elif type == "NextNameNext":
+			self.type = self.NEXT_NAME_NEXT
+		elif type == "NextNameNextWithOutTime":
+			self.type = self.NEXT_NAME_NEXTWT
 		elif type == "NextNameWithOutTime":
 			self.type = self.NEXT_NAMEWT
 		elif type == "NextDescription" or type == "NextEvent":
@@ -53,16 +59,35 @@ class EventName2(Converter, object):
 			return description + extended
 		elif self.type == self.ID:
 			return str(event.getEventId())
-		elif self.type == self.NEXT_NAME or self.type == self.NEXT_DESCRIPTION or self.type == self.NEXT_NAMEWT:
+		elif self.type == self.NEXT_NAME or self.type == self.NEXT_NAME_NEXTWT or self.type == self.NEXT_NAME_NEXT or self.type == self.NEXT_DESCRIPTION or self.type == self.NEXT_NAMEWT:
 			reference = self.source.service
 			info = reference and self.source.info
 			if info is not None:
 				eventNext = self.epgcache.lookupEvent(['IBDCTSERNX', (reference.toString(), 1, -1)])
+				eventNextNext = self.epgcache.lookupEvent(["IBDCT", (reference.toString(), 0, -1, -1)])
 				if self.type == self.NEXT_NAME:
 					if len(eventNext[0]) > 4 and eventNext[0][4]:
 						t = localtime(eventNext[0][1])
 						duration = _("%d min") %  (eventNext[0][2] / 60)
 						return "%02d:%02d  (%s)  %s" % (t[3], t[4], duration, eventNext[0][4])
+					else:
+						return ""
+				elif self.type == self.NEXT_NAME_NEXT:
+					if len(eventNextNext) >= 3:
+						if len(eventNextNext[2]) > 4 and eventNextNext[2][4]:
+							t = localtime(eventNextNext[2][1])
+							duration = _("%d min") %  (eventNextNext[2][2] / 60)
+							return "%02d:%02d  (%s)  %s" % (t[3], t[4], duration, eventNextNext[2][4])
+						else:
+							return ""
+					else:
+						return ""
+				elif self.type == self.NEXT_NAME_NEXTWT:
+					if len(eventNextNext) >= 3:
+						if len(eventNextNext[2]) > 4 and eventNextNext[2][4]:
+							return "%s" %  eventNextNext[2][4]
+						else:
+							return ""
 					else:
 						return ""
 				elif self.type == self.NEXT_NAMEWT:
