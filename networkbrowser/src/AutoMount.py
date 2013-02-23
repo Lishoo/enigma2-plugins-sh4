@@ -154,7 +154,7 @@ class AutoMount():
 									if os.path.exists("/lib/modules/%s/kernel/fs/cifs/cifs.ko" % linuxversion) is True:
 										self.MountConsole.ePopen("modprobe cifs")
 							tmpusername = data['username'].replace(" ", "\\ ")
-							options = data['options'] + ',noatime,noserverino,iocharset=utf8,sec=ntlmv2,username='+ tmpusername + ',password='+ data['password']
+							options = data['options'] + ',noatime,noserverino,iocharset=utf8,username='+ tmpusername + ',password='+ data['password']
 							tmpcmd = "mount -t cifs -o %s '//%s/%s' '%s'" % (options, data['ip'], data['sharedir'], path)
 							command = tmpcmd.encode("UTF-8")
 				except Exception, ex:
