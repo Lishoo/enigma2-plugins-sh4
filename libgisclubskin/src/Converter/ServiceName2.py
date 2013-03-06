@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 #
 # Extended ServiceName Converter for Enigma2 Dreamboxes (ServiceName2.py)
-# Coded by vlamo (c) 2011
+# Coded by vlamo (c) 2011 mod by nikolasi for name  SHURA in providers
 #
 # Version: 0.4 (03.06.2011 18:40)
-# Version: 0.5 (08.09.2012) add Alternative numbering mode support - Dmitry73 & 2boom
-# Version: 0.6 (19.10.2012) add stream mapping
 # Support: http://dream.altmaster.net/
 #
 
@@ -109,6 +107,14 @@ class ServiceName2(Converter, object):
 
 	def getProviderName(self, ref):
 		if isinstance(ref, eServiceReference):
+		        sname = ref and ref.toString()
+		        pos = sname.rfind('tvshka')
+		        if 'tvshka' in sname:
+                              sname2 = "SCHURA"
+		        elif 'vsadmin' in sname:
+                              sname2 = "Vsadmin"
+                        else:
+                               sname2 = "N/A"
 			from Screens.ChannelSelection import service_types_radio, service_types_tv
 			typestr = ref.getData(0) in (2,10) and service_types_radio or service_types_tv
 			pos = typestr.rfind(':')
@@ -129,7 +135,7 @@ class ServiceName2(Converter, object):
 								if service == ref:
 									info = serviceHandler.info(provider)
 									return info and info.getName(provider) or "Unknown"
-		return 'N/A'
+		return sname2
 
 	def getTransponderInfo(self, info, ref, fmt):
 		result = ''
@@ -249,6 +255,8 @@ class ServiceName2(Converter, object):
 				name = _("Cable")
 			elif orbpos == 0xEEEE: #Terrestrial
 				name = _("Terrestrial")
+			elif orbpos == 0: #Terrestrial
+				name = _("Iptv(0.0)")
 			else: #Satellite
 				orbpos = ref.getData(4) >> 16
 				if orbpos < 0: orbpos += 3600
@@ -256,17 +264,12 @@ class ServiceName2(Converter, object):
 					from Components.NimManager import nimmanager
 					name = str(nimmanager.getSatDescription(orbpos))
 				except:
-					refString = ref.toString().lower()
-					if "%3a//" in refString:
-						name = _("Stream")
-					elif refString.startswith("1:134:"):
-						name = _("Altern")
-					else:
-						name = orbpos > 1800 and "%d.%d°W"%((3600-orbpos)/10, (3600-orbpos)%10) or "%d.%d°E"%(orbpos/10, orbpos%10)
+					name = orbpos > 1800 and "%d.%d°W"%((3600-orbpos)/10, (3600-orbpos)%10) or "%d.%d°E"%(orbpos/10, orbpos%10)
 		return name
-		
+
 	@cached
 	def getText(self):
+                sname2 = ""
 		service = self.source.service
 		if isinstance(service, iPlayableServicePtr):
 			info = service and service.info()
@@ -275,26 +278,23 @@ class ServiceName2(Converter, object):
 			info = service and self.source.info
 			ref = service
 		if info is None: return ""
-		
+		sname = ref and ref.toString() or info.getInfoString(iServiceInformation.sServiceref)
+		if 'tvshka' in sname:
+                        sname2 = "SCHURA"
+		elif 'vsadmin' in sname:
+                        sname2 = "Vsadmin"
+
 		if self.type == self.NAME:
 			name = ref and (info.getName(ref) or 'N/A') or (info.getName() or 'N/A')
 			return name.replace('\xc2\x86', '').replace('\xc2\x87', '')
 		elif self.type == self.NUMBER:
-			try:
-				service = self.source.serviceref
-				num = service and service.getChannelNum() or None
-			except:
-				num = None
-			if num:
-				return str(num)
-			else:
-				num, bouq = self.getServiceNumber(ref or eServiceReference(info.getInfoString(iServiceInformation.sServiceref)))
-				return num and str(num) or ''
+			num, bouq = self.getServiceNumber(ref or eServiceReference(info.getInfoString(iServiceInformation.sServiceref)))
+			return num and str(num) or ''
 		elif self.type == self.BOUQUET:
 			num, bouq = self.getServiceNumber(ref or eServiceReference(info.getInfoString(iServiceInformation.sServiceref)))
 			return bouq
 		elif self.type == self.PROVIDER:
-			return ref and self.getProviderName(ref) or info.getInfoString(iServiceInformation.sProvider)
+			return ref and self.getProviderName(ref) or info.getInfoString(iServiceInformation.sProvider) or sname2
 		elif self.type == self.REFERENCE:
 			return ref and ref.toString() or info.getInfoString(iServiceInformation.sServiceref)
 		elif self.type == self.ORBPOS:
@@ -305,8 +305,8 @@ class ServiceName2(Converter, object):
 			return self.getSatelliteName(ref or eServiceReference(info.getInfoString(iServiceInformation.sServiceref)))
 		elif self.type == self.FORMAT:
 			ret = num = bouq = ''
-			#if '%n' in self.sfmt or '%B' in self.sfmt:
-				#num, bouq = self.getServiceNumber(ref or eServiceReference(info.getInfoString(iServiceInformation.sServiceref)))
+			if '%n' in self.sfmt or '%B' in self.sfmt:
+				num, bouq = self.getServiceNumber(ref or eServiceReference(info.getInfoString(iServiceInformation.sServiceref)))
 			tmp = self.sfmt[:]
 			while True:
 				pos = tmp.find('%')
@@ -321,18 +321,8 @@ class ServiceName2(Converter, object):
 					name = ref and (info.getName(ref) or 'N/A') or (info.getName() or 'N/A')
 					ret += name.replace('\xc2\x86', '').replace('\xc2\x87', '')
 				elif f == 'n':	# %n - Number
-					try:
-						service = self.source.serviceref
-						num = service and service.getChannelNum() or None
-					except:
-						num = None
-					if num:
-						ret += str(num)
-					else:
-						num, bouq = self.getServiceNumber(ref or eServiceReference(info.getInfoString(iServiceInformation.sServiceref)))
-						ret += num and str(num) or ''
+					ret += num and str(num) or ''
 				elif f == 'B':	# %B - Bouquet
-					num, bouq = self.getServiceNumber(ref or eServiceReference(info.getInfoString(iServiceInformation.sServiceref)))
 					ret += bouq
 				elif f == 'P':	# %P - Provider
 					ret += ref and self.getProviderName(ref) or info.getInfoString(iServiceInformation.sProvider)
