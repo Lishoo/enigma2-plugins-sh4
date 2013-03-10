@@ -19,7 +19,8 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from Tools.LoadPixmap import LoadPixmap
 
 from enigma import eTimer
-from os import path, remove 
+from os import path, remove
+from time import sleep
 
 config.plugins.AltSoftcam = ConfigSubsection()
 config.plugins.AltSoftcam.actcam = ConfigText(default = "none")
@@ -413,6 +414,7 @@ def StartCam(reason, **kwargs):
 	if not AltSoftcamConfigError \
 		and config.plugins.AltSoftcam.actcam.value != "none":
 		if reason == 0: # Enigma start
+			sleep(2)
 			try:
 				cmd = getcamcmd(config.plugins.AltSoftcam.actcam.value)
 				Console().ePopen(cmd)
