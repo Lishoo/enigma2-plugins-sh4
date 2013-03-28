@@ -48,7 +48,7 @@ def getcamcmd(cam):
 			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -bc " + \
 				config.plugins.AltSoftcam.camconfig.value + "/"
 		elif "wicard" in cam:
-			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -d -c " + \
+			return "ulimit -s 512; " + config.plugins.AltSoftcam.camdir.value + "/" + cam + " -d -c " + \
 				config.plugins.AltSoftcam.camconfig.value + "/wicardd.conf"
 		elif "camd3" in cam:
 			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " " + \
