@@ -19,25 +19,8 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from Tools.LoadPixmap import LoadPixmap
 
 from enigma import eTimer
-from os import path, remove
+from os import mkdir, path, remove
 from time import sleep
-
-config.plugins.AltSoftcam = ConfigSubsection()
-config.plugins.AltSoftcam.actcam = ConfigText(default = "none")
-config.plugins.AltSoftcam.camconfig = ConfigText(default = "/var/keys",
-	visible_width = 100, fixed_size = False)
-config.plugins.AltSoftcam.camdir = ConfigText(default = "/var/emu",
-	visible_width = 100, fixed_size = False)
-AltSoftcamConfigError = False
-if not path.isdir(config.plugins.AltSoftcam.camconfig.value):
-	config.plugins.AltSoftcam.camconfig.value = "none"
-	AltSoftcamConfigError = True
-if not path.isdir(config.plugins.AltSoftcam.camdir.value):
-	if path.isdir("/usr/bin/cam"):
-		config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
-	else:
-		config.plugins.AltSoftcam.camdir.value = "none"
-		AltSoftcamConfigError = True
 
 def getcamcmd(cam):
 	if getcamscript(cam):
@@ -48,8 +31,9 @@ def getcamcmd(cam):
 			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -bc " + \
 				config.plugins.AltSoftcam.camconfig.value + "/"
 		elif "wicard" in cam:
-			return "ulimit -s 512; " + config.plugins.AltSoftcam.camdir.value + "/" + cam + " -d -c " + \
-				config.plugins.AltSoftcam.camconfig.value + "/wicardd.conf"
+			return "ulimit -s 512; " + config.plugins.AltSoftcam.camdir.value + \
+			"/" + cam + " -d -c " + config.plugins.AltSoftcam.camconfig.value + \
+			"/wicardd.conf"
 		elif "camd3" in cam:
 			return config.plugins.AltSoftcam.camdir.value + "/" + cam + " " + \
 				config.plugins.AltSoftcam.camconfig.value + "/camd3.config"
@@ -89,6 +73,35 @@ def stopcam(cam):
 		remove("/tmp/ecm.info")
 	except:
 		pass
+
+def createdir(list):
+	dir = ""
+	for line in list[1:].split("/"):
+		dir += "/" + line
+		if not path.exists(dir):
+			try:
+				mkdir(dir)
+			except:
+				print "[Alternative SoftCam Manager] Failed to mkdir", dir
+
+def checkconfigdir():
+	if not path.exists(config.plugins.AltSoftcam.camconfig.value):
+		createdir("/var/keys")
+		config.plugins.AltSoftcam.camconfig.value = "/var/keys"
+	if not path.isdir(config.plugins.AltSoftcam.camdir.value):
+		if path.exists("/usr/bin/cam"):
+			config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
+		else:
+			createdir("/var/emu")
+			config.plugins.AltSoftcam.camdir.value = "/var/emu"
+
+config.plugins.AltSoftcam = ConfigSubsection()
+config.plugins.AltSoftcam.actcam = ConfigText(default = "none")
+config.plugins.AltSoftcam.camconfig = ConfigText(default = "/var/keys",
+	visible_width = 100, fixed_size = False)
+config.plugins.AltSoftcam.camdir = ConfigText(default = "/var/emu",
+	visible_width = 100, fixed_size = False)
+checkconfigdir()
 
 class AltCamManager(Screen):
 	skin = """
@@ -145,6 +158,7 @@ class AltCamManager(Screen):
 			}, -1)
 		self["status"] = ScrollLabel()
 		self["list"] = List([])
+		checkconfigdir()
 		self.actcam = config.plugins.AltSoftcam.actcam.value
 		self.camstartcmd = ""
 		self.CreateInfo()
@@ -153,10 +167,9 @@ class AltCamManager(Screen):
 		self.Timer.start(1000*4, False)
 
 	def CreateInfo(self):
-		global AltSoftcamConfigError
-		if not AltSoftcamConfigError:
-			self.StartCreateCamlist()
-			self.listecminfo()
+		self.iscam = False
+		self.StartCreateCamlist()
+		self.listecminfo()
 
 	def listecminfo(self):
 		listecm = ""
@@ -179,7 +192,8 @@ class AltCamManager(Screen):
 			self.CamListStart)
 
 	def CamListStart(self, result, retval, extra_args):
-		if not result.startswith('ls: '):
+		if result.strip() and not result.startswith('ls: '):
+			self.iscam = True
 			self.softcamlist = result
 			self.Console.ePopen("chmod 755 %s/*" %
 				config.plugins.AltSoftcam.camdir.value)
@@ -187,6 +201,18 @@ class AltCamManager(Screen):
 				self.CreateCamList()
 			else:
 				self.Console.ePopen("pidof %s" % self.actcam, self.CamActive)
+		else:
+			if path.exists("/usr/bin/cam") and not self.iscam and \
+				config.plugins.AltSoftcam.camdir.value != "/usr/bin/cam":
+				self.iscam = True
+				config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
+				self.StartCreateCamlist()
+			elif config.plugins.AltSoftcam.camdir.value != "/var/emu":
+				self.iscam = False
+				config.plugins.AltSoftcam.camdir.value = "/var/emu"
+				self.StartCreateCamlist()
+			else:
+				self.iscam = False
 
 	def CamActive(self, result, retval, extra_args):
 		if result.strip():
@@ -209,22 +235,16 @@ class AltCamManager(Screen):
 		except:
 			self.actcam = "none"
 		if self.actcam != "none":
-			try:
-				softpng = LoadPixmap(cached=True,
-					path=resolveFilename(SCOPE_PLUGINS,
-					"Extensions/AlternativeSoftCamManager/images/actcam.png"))
-				self.list.append((self.actcam, softpng, self.checkcam(self.actcam)))
-			except:
-				pass
-		try:
 			softpng = LoadPixmap(cached=True,
 				path=resolveFilename(SCOPE_PLUGINS,
-				"Extensions/AlternativeSoftCamManager/images/defcam.png"))
-			for line in self.softcamlist.splitlines():
-				if line != self.actcam:
-					self.list.append((line, softpng, self.checkcam(line)))
-		except:
-			pass
+				"Extensions/AlternativeSoftCamManager/images/actcam.png"))
+			self.list.append((self.actcam, softpng, self.checkcam(self.actcam)))
+		softpng = LoadPixmap(cached=True,
+			path=resolveFilename(SCOPE_PLUGINS,
+			"Extensions/AlternativeSoftCamManager/images/defcam.png"))
+		for line in self.softcamlist.splitlines():
+			if line != self.actcam:
+				self.list.append((line, softpng, self.checkcam(line)))
 		self["list"].setList(self.list)
 
 	def checkcam (self, cam):
@@ -265,8 +285,7 @@ class AltCamManager(Screen):
 			return cam[0:6]
 
 	def start(self):
-		global AltSoftcamConfigError
-		if not AltSoftcamConfigError:
+		if self.iscam:
 			self.camstart = self["list"].getCurrent()[0]
 			if self.camstart != self.actcam:
 				print "[Alternative SoftCam Manager] Start SoftCam"
@@ -278,7 +297,7 @@ class AltCamManager(Screen):
 				self.activityTimer.start(100, False)
 
 	def stop(self):
-		if self.actcam != "none":
+		if self.iscam and self.actcam != "none":
 			stopcam(self.actcam)
 			msg  = _("Stopping %s") % self.actcam
 			self.actcam = "none"
@@ -293,8 +312,7 @@ class AltCamManager(Screen):
 		self.CreateInfo()
 
 	def restart(self):
-		global AltSoftcamConfigError
-		if not AltSoftcamConfigError:
+		if self.iscam:
 			print "[Alternative SoftCam Manager] restart SoftCam"
 			self.camstart = self.actcam
 			if self.camstartcmd == "":
@@ -321,10 +339,11 @@ class AltCamManager(Screen):
 		self.CreateInfo()
 
 	def ok(self):
-		if self["list"].getCurrent()[0] != self.actcam:
-			self.start()
-		else:
-			self.restart()
+		if self.iscam:
+			if self["list"].getCurrent()[0] != self.actcam:
+				self.start()
+			else:
+				self.restart()
 
 	def cancel(self):
 		if config.plugins.AltSoftcam.actcam.value != self.actcam:
@@ -383,7 +402,6 @@ class ConfigEdit(Screen, ConfigListScreen):
 
 	def updateConfig(self, ret = False):
 		if ret == True:
-			global AltSoftcamConfigError
 			msg = [ ]
 			if not path.isdir(config.plugins.AltSoftcam.camconfig.value):
 				msg.append("%s " % config.plugins.AltSoftcam.camconfig.value)
@@ -398,10 +416,8 @@ class ConfigEdit(Screen, ConfigListScreen):
 						config.plugins.AltSoftcam.camdir.value[:-1]
 				config.plugins.AltSoftcam.camconfig.save()
 				config.plugins.AltSoftcam.camdir.save()
-				AltSoftcamConfigError = False
 				self.close()
 			else:
-				AltSoftcamConfigError = True
 				self.mbox = self.session.open(MessageBox,
 					_("Directory %s does not exist!\nPlease set the correct directorypath!")
 					% msg, MessageBox.TYPE_INFO, timeout = 5 )
@@ -410,9 +426,7 @@ def main(session, **kwargs):
 	session.open(AltCamManager)
 
 def StartCam(reason, **kwargs):
-	global AltSoftcamConfigError
-	if not AltSoftcamConfigError \
-		and config.plugins.AltSoftcam.actcam.value != "none":
+	if config.plugins.AltSoftcam.actcam.value != "none":
 		if reason == 0: # Enigma start
 			sleep(2)
 			try:
