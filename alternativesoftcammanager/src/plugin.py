@@ -88,7 +88,7 @@ def checkconfigdir():
 	if not path.exists(config.plugins.AltSoftcam.camconfig.value):
 		createdir("/var/keys")
 		config.plugins.AltSoftcam.camconfig.value = "/var/keys"
-	if not path.isdir(config.plugins.AltSoftcam.camdir.value):
+	if not path.exists(config.plugins.AltSoftcam.camdir.value):
 		if path.exists("/usr/bin/cam"):
 			config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
 		else:
@@ -395,7 +395,7 @@ class ConfigEdit(Screen, ConfigListScreen):
 			or self.camdirold != config.plugins.AltSoftcam.camdir.value:
 			self.session.openWithCallback(self.updateConfig, MessageBox,
 				(_("Are you sure you want to save this configuration?\n\n")))
-		elif not path.isdir(self.camconfigold) or not path.isdir(self.camdirold):
+		elif not path.exists(self.camconfigold) or not path.exists(self.camdirold):
 			self.updateConfig(True)
 		else:
 			self.close()
@@ -403,9 +403,9 @@ class ConfigEdit(Screen, ConfigListScreen):
 	def updateConfig(self, ret = False):
 		if ret == True:
 			msg = [ ]
-			if not path.isdir(config.plugins.AltSoftcam.camconfig.value):
+			if not path.exists(config.plugins.AltSoftcam.camconfig.value):
 				msg.append("%s " % config.plugins.AltSoftcam.camconfig.value)
-			if not path.isdir(config.plugins.AltSoftcam.camdir.value):
+			if not path.exists(config.plugins.AltSoftcam.camdir.value):
 				msg.append("%s " % config.plugins.AltSoftcam.camdir.value)
 			if msg == [ ]:
 				if config.plugins.AltSoftcam.camconfig.value[-1] == "/":
