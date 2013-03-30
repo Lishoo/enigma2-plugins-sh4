@@ -64,11 +64,6 @@ def GetDeviceFromList(list, device):
 		if line.startswith(device):
 			return line
 
-def GetDeviceFromList(list, device):
-	for line in list:
-		if line.startswith(device):
-			return line
-
 class MountDevice:
 	def __init__(self):
 		self.Console = Console()
