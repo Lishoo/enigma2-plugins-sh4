@@ -50,7 +50,7 @@ class CamdInfo3(Poll, Converter, object):
 		elif fileExists("/etc/init.d/cam"):
 			for line in open("/etc/enigma2/settings"):
 				if line.find("config.plugins.emuman.cam") > -1:
-					return line.split("=")[-1].strip('\n')
+					return line.split("=")[-1]
 		# VTI 	
 		elif fileExists("/tmp/.emu.info"):
 			try:
@@ -89,7 +89,7 @@ class CamdInfo3(Poll, Converter, object):
 				for line in open("/etc/init.d/cardserver"):
 					if line.find("echo") > -1:
 						nameser.append(line)
-				serlist = "%s & " % nameser[1].split('"')[1]
+				serlist = "%s" % nameser[1].split('"')[1]
 			except:
 				pass
 			if serlist is None:
@@ -150,7 +150,7 @@ class CamdInfo3(Poll, Converter, object):
 		else:
 			emu = " "
 			
-		return " %s %s" % (cardserver.split('\n')[0], emu.split('\n')[0])
+		return "%s %s" % (cardserver.split('\n')[0], emu.split('\n')[0])
 		
 	text = property(getText)
 

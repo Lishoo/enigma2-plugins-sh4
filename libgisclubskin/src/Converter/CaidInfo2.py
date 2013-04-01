@@ -1,6 +1,6 @@
 #
 #  CaidInfo2 - Converter
-#  ver 1.1.5 05/02/2013
+#  ver 1.1.7 02.03.2013
 #
 #  Coded by bigroma & 2boom
 
@@ -48,6 +48,7 @@ class CaidInfo2(Poll, Converter, object):
 	CRYPT2 = 30
 	CRD = 31
 	CRDTXT = 32
+	SHORT = 33
 	my_interval = 1000
 
 
@@ -116,6 +117,8 @@ class CaidInfo2(Poll, Converter, object):
 			self.type = self.CRD
 		elif type == "CrdTxt":
 			self.type = self.CRDTXT
+		elif type == "Short":
+			self.type = self.SHORT
 		elif type == "Default" or type == "" or type == None or type == "%":
 			self.type = self.ALL
 		else:
@@ -276,7 +279,7 @@ class CaidInfo2(Poll, Converter, object):
 					return False
 				source = ecm_info.get("source", None)
 				if self.type == self.IS_EMU:
-					return using == "emu" or source == "emu" or reader == "emu"
+					return using == "emu" or source == "emu" or reader == "emu" or source.find("emu") > -1
 				if self.type == self.IS_NET:
 					if using == "CCcam-s2s":
 						return 1
@@ -333,7 +336,10 @@ class CaidInfo2(Poll, Converter, object):
 							prov = ecm_info.get("prov", "")
 						if self.type == self.PROV:
 							return prov
-						ecm_time = ecm_info.get("ecm time", "")
+						if ecm_info.get("ecm time", "").find("msec") > -1:
+							ecm_time = ecm_info.get("ecm time", "")
+						else:
+							ecm_time = ecm_info.get("ecm time", "").replace(".","").lstrip("0") + " msec"
 						if self.type == self.DELAY:
 							return ecm_time
 						#protocol
@@ -421,23 +427,35 @@ class CaidInfo2(Poll, Converter, object):
 								textvalue = "%s - %s (Prov: %s, Caid: %s)" % (source, self.systemTxtCaids.get(caid[:2]), prov, caid)
 							#new oscam ecm.info with port parametr
 							elif reader != "" and source == "net" and port != "": 
-								textvalue = "%s - Prov: %s, Caid: %s, Reader: %s, %s (%s:%s) - %ss, %s hops" % (source, prov, caid, reader, protocol, server, port, ecm_time, hops)
+								textvalue = "%s - Prov: %s, Caid: %s, Reader: %s, %s (%s:%s) - %s, %s hops" % (source, prov, caid, reader, protocol, server, port, ecm_time, hops)
 							elif reader != "" and source == "net": 
-								textvalue = "%s - Prov: %s, Caid: %s, Reader: %s, %s (%s) - %ss, %s hops" % (source, prov, caid, reader, protocol, server, ecm_time, hops)
+								textvalue = "%s - Prov: %s, Caid: %s, Reader: %s, %s (%s) - %s, %s hops" % (source, prov, caid, reader, protocol, server, ecm_time, hops)
 							elif reader != "" and source != "net": 
-								textvalue = "%s - Prov: %s, Caid: %s, Reader: %s, %s (local) - %ss, %s hops" % (source, prov, caid, reader, protocol, ecm_time, hops)
-							elif server == "" and port == "": 
-								textvalue = "%s - Prov: %s, Caid: %s %s - %s" % (source, prov, caid, protocol, ecm_time)
+								textvalue = "%s - Prov: %s, Caid: %s, Reader: %s, %s (local) - %s, %s hops" % (source, prov, caid, reader, protocol, ecm_time, hops)
+							elif server == "" and port == "" and protocol != "": 
+								textvalue = "%s - Prov: %s, Caid: %s, %s - %s" % (source, prov, caid, protocol, ecm_time)
+							elif server == "" and port == "" and protocol == "": 
+								textvalue = "%s - Prov: %s, Caid: %s - %s" % (source, prov, caid, ecm_time)
 							else:
 								try:
 									textvalue = "%s - Prov: %s, Caid: %s, %s (%s:%s) - %s" % (source, prov, caid, protocol, server, port, ecm_time)
 								except:
 									pass
+						if self.type == self.SHORT:
+							if source == "emu":
+								textvalue = "%s - %s (Prov: %s, Caid: %s)" % (source, self.systemTxtCaids.get(caid[:2]), prov, caid)
+							elif server == "" and port == "": 
+								textvalue = "%s - Prov: %s, Caid: %s - %s" % (source, prov, caid, ecm_time)
+							else:
+								try:
+									textvalue = "%s - Prov: %s, Caid: %s, %s:%s - %s" % (source, prov, caid, server, port, ecm_time)
+								except:
+									pass
 					else:
-						if self.type == self.ALL or (self.type == self.FORMAT and (self.sfmt.count("%") > 3 )):
+						if self.type == self.ALL or self.type == self.SHORT or (self.type == self.FORMAT and (self.sfmt.count("%") > 3 )):
 							textvalue = "No parse cannot emu"
 				else:
-					if self.type == self.ALL or (self.type == self.FORMAT and (self.sfmt.count("%") > 3 )):
+					if self.type == self.ALL or self.type == self.SHORT or (self.type == self.FORMAT and (self.sfmt.count("%") > 3 )):
 						textvalue = "Free-to-air"
 		return textvalue
 
@@ -486,8 +504,19 @@ class CaidInfo2(Poll, Converter, object):
 								if y !=-1:
 									info["server"] = it_tmp[-1][:y]
 									info["protocol"] = it_tmp[-1][y+1:-1]
-								item[0]="port"
-								item[1] = ""
+								#item[0]="port"
+								#item[1] = ""
+								y = it_tmp[-1].find('(')
+								if y !=-1:
+									info["server"] = it_tmp[-1].split("(")[-1].split(":")[0]
+									info["port"] = it_tmp[-1].split("(")[-1].split(":")[-1].rstrip(")")
+								elif y == -1:
+									item[0] = "source"
+									item[1] = "sci"
+								#y = it_tmp[-1].find('emu')
+								if it_tmp[-1].find('emu') !=-1 or it_tmp[-1].find('cache') > -1:
+									item[0] = "source"
+									item[1] = "emu"
 							elif item[0] == "hops":
 								item[1] = item[1].strip("\n")
 							elif item[0] == "system":
