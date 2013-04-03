@@ -6,7 +6,11 @@ root = Element("index")
 
 for file in sys.argv[1:]:
 	p = ElementTree()
-	p.parse(file)
+	try:
+		p.parse(file)
+	except Exception as e:
+		print >> sys.stderr, "Error while parsing", file
+		raise(e)
 	
 	package = Element("package")
 	package.set("details", os.path.basename(file))
