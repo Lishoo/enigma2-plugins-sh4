@@ -88,12 +88,14 @@ def checkconfigdir():
 	if not path.exists(config.plugins.AltSoftcam.camconfig.value):
 		createdir("/var/keys")
 		config.plugins.AltSoftcam.camconfig.value = "/var/keys"
+		config.plugins.AltSoftcam.camconfig.save()
 	if not path.exists(config.plugins.AltSoftcam.camdir.value):
 		if path.exists("/usr/bin/cam"):
 			config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
 		else:
 			createdir("/var/emu")
 			config.plugins.AltSoftcam.camdir.value = "/var/emu"
+		config.plugins.AltSoftcam.camdir.save()
 
 config.plugins.AltSoftcam = ConfigSubsection()
 config.plugins.AltSoftcam.actcam = ConfigText(default = "none")
@@ -348,7 +350,7 @@ class AltCamManager(Screen):
 	def cancel(self):
 		if config.plugins.AltSoftcam.actcam.value != self.actcam:
 			config.plugins.AltSoftcam.actcam.value = self.actcam
-			config.plugins.AltSoftcam.actcam.save()
+		config.plugins.AltSoftcam.save()
 		self.close()
 
 	def setup(self):
@@ -414,8 +416,6 @@ class ConfigEdit(Screen, ConfigListScreen):
 				if config.plugins.AltSoftcam.camdir.value[-1] == "/":
 					config.plugins.AltSoftcam.camdir.value = \
 						config.plugins.AltSoftcam.camdir.value[:-1]
-				config.plugins.AltSoftcam.camconfig.save()
-				config.plugins.AltSoftcam.camdir.save()
 				self.close()
 			else:
 				self.mbox = self.session.open(MessageBox,

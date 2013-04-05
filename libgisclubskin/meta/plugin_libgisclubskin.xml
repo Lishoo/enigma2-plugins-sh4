@@ -3,7 +3,7 @@
                     <tag type="System" />
 	  </prerequisites>
           <info>
-                    <author>2boom & other</author>
+                    <author>2boom and others</author>
                     <name>LibGisclubSkin</name>
                     <packagename>enigma2-plugin-systemplugins-libgisclubskin</packagename>
                     <shortdescription>Gisclub skin lib</shortdescription>
