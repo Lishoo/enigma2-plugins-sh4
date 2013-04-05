@@ -1,0 +1,20 @@
+<default>
+	  <prerequisites>
+                    <hardware type="dm8000" />
+                    <hardware type="dm800" />		    
+                    <hardware type="dm500hd" />	
+                    <tag type="System" />
+	  </prerequisites>
+          <info>
+                    <author>Emanuel CLI</author>
+                    <name>MultiQuickButton</name>
+                    <packagename>enigma2-plugin-extensions-multiquickbutton</packagename>
+                    <shortdescription></shortdescription>
+                    <description></description>
+                    <screenshot src="http://spark.sat-universum.de/preview/multiquickbutton.jpg" />		    
+          </info>
+
+	  <files type="package"> <!-- without version, without .ipk -->
+		<file type="package" name="enigma2-plugin-extensions-multiquickbutton" />
+	  </files>
+</default>

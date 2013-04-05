@@ -51,6 +51,7 @@ SUBDIRS = \
 	moviesearch \
 	movietagger \
 	mphelp \
+	multiquickbutton \
 	multirc \
 	ncidclient \
 	netcaster \

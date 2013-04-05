@@ -342,6 +342,15 @@ multirc/Makefile
 multirc/src/Makefile
 multirc/meta/Makefile
 
+multiquickbutton/Makefile
+multiquickbutton/po/Makefile
+multiquickbutton/src/Makefile
+multiquickbutton/src/images/Makefile
+multiquickbutton/src/images/cli_default/Makefile
+multiquickbutton/src/etc/Makefile
+multiquickbutton/meta/Makefile
+
+
 mytube/Makefile
 mytube/meta/Makefile
 mytube/src/Makefile

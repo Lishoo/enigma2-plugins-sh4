@@ -1,0 +1,190 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-04-05 22:37+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=CHARSET\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: ../src/MultiQuickButton.py:27
+msgid "Autostart"
+msgstr "Автозапуск"
+
+#: ../src/MultiQuickButton.py:28 ../src/MultiQuickButton.py:233
+msgid "Main menu"
+msgstr "Главное меню"
+
+#: ../src/MultiQuickButton.py:81
+msgid "Restore"
+msgstr "Восстановление"
+
+#: ../src/MultiQuickButton.py:82
+msgid "Backup"
+msgstr "Резервная копия"
+
+#: ../src/MultiQuickButton.py:84
+msgid "red"
+msgstr "красная"
+
+#: ../src/MultiQuickButton.py:85
+msgid "green"
+msgstr "зеленая"
+
+#: ../src/MultiQuickButton.py:86
+msgid "yellow"
+msgstr "желтая"
+
+#: ../src/MultiQuickButton.py:87
+msgid "blue"
+msgstr "синяя"
+
+#: ../src/MultiQuickButton.py:92
+msgid "FIND"
+msgstr "поиск"
+
+#: ../src/MultiQuickButton.py:93
+msgid "F1"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:94
+msgid "F2"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:95
+msgid "F3"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:96
+msgid "F4"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:97
+msgid "SLEEP"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:98
+msgid "SPARK"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:99
+msgid "TV/RADIO"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:100
+msgid "SAT"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:101
+msgid "FAV"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:102
+msgid "INFO"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:103
+msgid "EPG"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:104
+msgid "FILELIST"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:105
+msgid "PLAYMODE"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:106
+msgid "USB"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:107
+msgid "RECALL"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:108
+msgid "TV/SAT"
+msgstr ""
+
+#: ../src/MultiQuickButton.py:128 ../src/MultiQuickButton.py:133
+msgid "on"
+msgstr "вкл"
+
+#: ../src/MultiQuickButton.py:130 ../src/MultiQuickButton.py:135
+msgid "off"
+msgstr "выкл"
+
+#: ../src/MultiQuickButton.py:158
+msgid "Please select the backup path..."
+msgstr "Пожалуйста, выберите папку для резервного копирования"
+
+#: ../src/MultiQuickButton.py:170
+msgid "Overwrite existing Backup?."
+msgstr "Перезаписать сществующую резервную копию"
+
+#: ../src/MultiQuickButton.py:173 ../src/MultiQuickButton.py:187
+msgid "Backup Settings..."
+msgstr "Настройки резервных копий"
+
+#: ../src/MultiQuickButton.py:177
+#, python-format
+msgid "Directory %s nonexistent."
+msgstr "Папка %s не существует"
+
+#: ../src/MultiQuickButton.py:193
+msgid "Please select the restore path..."
+msgstr "Пожалуйста, выберите путь для восстановления"
+
+#: ../src/MultiQuickButton.py:202
+msgid "Overwrite existing Settings?."
+msgstr "Перезаписать существующие настройки?"
+
+#: ../src/MultiQuickButton.py:204
+#, python-format
+msgid "File %s nonexistent."
+msgstr "Файл %s не существует"
+
+#: ../src/MultiQuickButton.py:211
+msgid "Restore Settings..."
+msgstr "Восстановление настроек..."
+
+#: ../src/MultiQuickButton.py:313
+msgid "Cancel"
+msgstr "Отмена"
+
+#: ../src/MultiQuickButton.py:314
+msgid "Save"
+msgstr "Сохранить"
+
+#: ../src/MultiQuickButton.py:315
+msgid "delete"
+msgstr "удалить"
+
+#: ../src/MultiQuickButton.py:316
+msgid "Add"
+msgstr "Добавить"
+
+#: ../src/MultiQuickButton.py:335 ../src/plugin.py:109 ../src/plugin.py:149
+#: ../src/plugin.py:152 ../src/plugin.py:158
+msgid "Error"
+msgstr "Ошибка"
+
+#: ../src/MultiQuickButton.py:428
+#, python-format
+msgid "Entry %s already exists."
+msgstr ""
+
+#: ../src/plugin.py:185
+msgid "Multi Quickbutton"
+msgstr ""
