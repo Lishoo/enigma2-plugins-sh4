@@ -9,7 +9,7 @@
                     <author>Emanuel CLI</author>
                     <name>MultiQuickButton</name>
                     <packagename>enigma2-plugin-extensions-multiquickbutton</packagename>
-                    <shortdescription></shortdescription>
+                    <shortdescription>Assign shortcuts to different keys</shortdescription>
                     <description></description>
                     <screenshot src="http://spark.sat-universum.de/preview/multiquickbutton.jpg" />		    
           </info>
