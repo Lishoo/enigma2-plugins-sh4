@@ -22,7 +22,7 @@ from Components.Element import cached
 try:
 	from bitratecalc import eBitrateCalculator
 except:
-	pass
+	self.close()
 
 
 class Bitrate2(Converter, object):
