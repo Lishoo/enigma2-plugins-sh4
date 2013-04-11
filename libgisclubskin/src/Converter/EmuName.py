@@ -1,4 +1,4 @@
-# 2boom & Taapat (c) 2012 0.5
+# 2boom & Taapat (c) 2012-13 0.6
 from enigma import iServiceInformation
 from Components.Converter.Converter import Converter
 from Components.config import config

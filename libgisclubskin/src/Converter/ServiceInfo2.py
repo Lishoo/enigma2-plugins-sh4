@@ -87,7 +87,10 @@ class ServiceInfo2(Poll, Converter, object):
 		if not info:
 			return ""
 		if self.type == self.xAPID:
-			return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sAudioPID))
+			try:
+				return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sAudioPID))
+			except:
+				return "N/A"
 		elif self.type == self.xVTYPE:
 			return ("MPEG2", "MPEG4", "MPEG1", "MPEG4-II", "VC1", "VC1-SM", "")[info.getInfo(iServiceInformation.sVideoType)]
 		elif self.type == self.xALLTYPE:

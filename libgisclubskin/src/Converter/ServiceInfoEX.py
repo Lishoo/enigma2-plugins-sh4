@@ -1,10 +1,11 @@
 #2boom (c) 2013
-# v.0.2 06.02.13
+# v.0.4 03.04.13
+from Poll import Poll
 from Components.Converter.Converter import Converter
 from enigma import iServiceInformation, iPlayableService
 from Components.Element import cached
 
-class ServiceInfoEX(Converter, object):
+class ServiceInfoEX(Poll, Converter, object):
 	apid = 0
 	vpid = 1
 	sid = 2
@@ -25,6 +26,7 @@ class ServiceInfoEX(Converter, object):
 	
 	def __init__(self, type):
 		Converter.__init__(self, type)
+		Poll.__init__(self)
 		if type == "apid":
 			self.type = self.apid
 		elif type == "vpid":
@@ -62,6 +64,8 @@ class ServiceInfoEX(Converter, object):
 		else: 
 			self.type = self.format
 			self.sfmt = type[:]
+		self.poll_interval = 1000
+		self.poll_enabled = True
 		
 	def getServiceInfoString(self, info, what, convert = lambda x: "%d" % x):
 		v = info.getInfo(what)
@@ -170,3 +174,8 @@ class ServiceInfoEX(Converter, object):
 		if what[0] == self.CHANGED_SPECIFIC:
 			if what[1] == iPlayableService.evStart or what[1] == iPlayableService.evVideoSizeChanged or what[1] == iPlayableService.evUpdatedInfo:
 				Converter.changed(self, what)
+		elif what[0] != self.CHANGED_SPECIFIC or what[1] in self.interesting_events:
+			Converter.changed(self, what)
+		elif what[0] == self.CHANGED_POLL:
+			self.downstream_elements.changed(what)
+
