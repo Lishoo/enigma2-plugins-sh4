@@ -1,0 +1,64 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: 2013-04-12 23:40+0200\n"
+"Last-Translator: Tapat <taapat@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+"Language-Team: \n"
+
+msgid "Alternative SoftCam Manager"
+msgstr "Альтернативный Softcam менеджер"
+
+msgid "Directory %s does not exist!\n"
+"Please set the correct directory path!"
+msgstr "Каталог %s не существует!\n"
+"Пожалуйста укажите правильный путь к каталогу!"
+
+msgid "Exit"
+msgstr "Выход"
+
+msgid "Really close without saving settings?"
+msgstr "Действительно закрыть без сохранения настроек?"
+
+msgid "Restart"
+msgstr "Перезагрузить"
+
+msgid "Restarting %s"
+msgstr "Перезагружается %s"
+
+msgid "Ok"
+msgstr "Ок"
+
+msgid "Setup"
+msgstr "Настройка"
+
+msgid "SoftCam config directory"
+msgstr "Каталог файлов конфигурации"
+
+msgid "SoftCam directory"
+msgstr "Каталог SoftCam"
+
+msgid "SoftCam manager"
+msgstr "Softcam менеджер"
+
+msgid "SoftCam path configuration"
+msgstr "Настройка путей конфигурации"
+
+msgid "Start"
+msgstr "Запустить"
+
+msgid "Starting %s"
+msgstr "Запускается %s"
+
+msgid "Start, stop, restart SoftCams, change settings."
+msgstr "Запускает, останавливает, перезапускает SoftCams, управляет настройками."
+
+msgid "Stop"
+msgstr "Остановить"
+
+msgid "Stopping %s"
+msgstr "Останавливается %s"
