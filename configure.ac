@@ -68,6 +68,7 @@ Makefile
 
 alternativesoftcammanager/Makefile
 alternativesoftcammanager/meta/Makefile
+alternativesoftcammanager/po/Makefile
 alternativesoftcammanager/src/Makefile
 alternativesoftcammanager/src/images/Makefile
 
