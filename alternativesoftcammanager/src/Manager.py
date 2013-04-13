@@ -113,7 +113,7 @@ class AltCamManager(Screen):
 			self.Console.ePopen("chmod 755 %s/*" %
 				config.plugins.AltSoftcam.camdir.value)
 			if self.actcam != "none" and Softcam.getcamscript(self.actcam):
-				self.createcamList()
+				self.createcamlist()
 			else:
 				self.Console.ePopen("pidof %s" % self.actcam, self.camactive)
 		else:
@@ -131,7 +131,7 @@ class AltCamManager(Screen):
 
 	def camactive(self, result, retval, extra_args):
 		if result.strip():
-			self.createcamList()
+			self.createcamlist()
 		else:
 			for line in self.softcamlist:
 				if line != self.actcam:
@@ -141,9 +141,9 @@ class AltCamManager(Screen):
 	def camactivefromlist(self, result, retval, extra_args):
 		if result.strip():
 			self.actcam = extra_args
-			self.createcamList()
+			self.createcamlist()
 
-	def createcamList(self):
+	def createcamlist(self):
 		self.list = []
 		try:
 			test = self.actcam
@@ -298,6 +298,15 @@ class ConfigEdit(Screen, ConfigListScreen):
 				"green": self.ok,
 			}, -2)
 
+	def createsetup(self):
+		self.list = []
+		self.list.append(getConfigListEntry(_("SoftCam config directory"),
+			config.plugins.AltSoftcam.camconfig))
+		self.list.append(getConfigListEntry(_("SoftCam directory"),
+			config.plugins.AltSoftcam.camdir))
+		self["config"].list = self.list
+		self["config"].l.setList(self.list)
+
 	def ok(self):
 		msg = [ ]
 		if not path.exists(config.plugins.AltSoftcam.camconfig.value):
@@ -317,15 +326,6 @@ class ConfigEdit(Screen, ConfigListScreen):
 			self.mbox = self.session.open(MessageBox,
 				_("Directory %s does not exist!\nPlease set the correct directory path!")
 				% msg, MessageBox.TYPE_INFO, timeout = 5 )
-
-	def createsetup(self):
-		self.list = []
-		self.list.append(getConfigListEntry(_("SoftCam config directory"),
-			config.plugins.AltSoftcam.camconfig))
-		self.list.append(getConfigListEntry(_("SoftCam directory"),
-			config.plugins.AltSoftcam.camdir))
-		self["config"].list = self.list
-		self["config"].l.setList(self.list)
 
 	def cancel(self, answer = None):
 		if answer is None:

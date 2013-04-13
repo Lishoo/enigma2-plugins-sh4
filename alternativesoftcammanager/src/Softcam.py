@@ -55,7 +55,7 @@ def stopcam(cam):
 	except:
 		pass
 
-def createdir(list):
+def __createdir(list):
 	dir = ""
 	for line in list[1:].split("/"):
 		dir += "/" + line
@@ -67,13 +67,13 @@ def createdir(list):
 
 def checkconfigdir():
 	if not path.exists(config.plugins.AltSoftcam.camconfig.value):
-		createdir("/var/keys")
+		__createdir("/var/keys")
 		config.plugins.AltSoftcam.camconfig.value = "/var/keys"
 		config.plugins.AltSoftcam.camconfig.save()
 	if not path.exists(config.plugins.AltSoftcam.camdir.value):
 		if path.exists("/usr/bin/cam"):
 			config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
 		else:
-			createdir("/var/emu")
+			__createdir("/var/emu")
 			config.plugins.AltSoftcam.camdir.value = "/var/emu"
 		config.plugins.AltSoftcam.camdir.save()
