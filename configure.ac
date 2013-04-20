@@ -542,6 +542,9 @@ trafficinfo/Makefile
 trafficinfo/meta/Makefile
 trafficinfo/src/Makefile
 
+toolkit/Makefile
+toolkit/src/Makefile
+
 tvcharts/Makefile
 tvcharts/meta/Makefile
 tvcharts/src/Makefile

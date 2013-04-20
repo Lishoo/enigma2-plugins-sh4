@@ -1,3 +1,6 @@
+# for localized messages
+from . import _
+
 from Screens.Screen import Screen
 from Components.ActionMap import ActionMap
 from Components.ScrollLabel import ScrollLabel
@@ -36,9 +39,8 @@ class MPHelp(Screen):
 	def __init__(self, session, pages, title="", additionalSkin=""):
 		Screen.__init__(self, session)
 		if additionalSkin:
-			self.skinName = [additionalSkin, "MPHelp"]
+			self.skinName = [additionalSkin, "MPHelp", "AutoTimerHelp"]
 		self.designatedTitle = title
-
 		self["key_red"] = StaticText(_("Close"))
 		self["key_green"] = StaticText()
 		self["key_yellow"] = StaticText("")
@@ -52,7 +54,7 @@ class MPHelp(Screen):
 		self.pages = pages
 		self.curPage = 0
 
-		self["actions"] = ActionMap(["ShortcutActions", "WizardActions"],
+		self["actions"] = ActionMap(["ShortcutActions", "WizardActions", 'DirectionActions'],
 		{
 			"back": self.close,
 			"red": self.close,
@@ -78,8 +80,8 @@ class MPHelp(Screen):
 			title = "Invalid Help Page"
 			text = "You managed to jump to an invalid page. Stop it :-)"
 			newPage = self.curPage
-		self["title"].text = title.encode('utf-8', 'ignore')
-		self["detailtext"].setText(text.encode('utf-8', 'ignore'))
+		self["title"].text = _(title).encode('utf-8', 'ignore')
+		self["detailtext"].setText(_(text).encode('utf-8', 'ignore'))
 		self.curPage = newPage
 	
 	def pageUp(self):
