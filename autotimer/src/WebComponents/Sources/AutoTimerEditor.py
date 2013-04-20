@@ -55,8 +55,7 @@ class AutoTimerEditor(Source):
 			return (False, "Error while preparing backup file.")
 
 	def restoreFiles(self, param):
-		tarFilename = param
-		backupFilename = tarFilename #path.join(self.BACKUP_PATH, tarFilename)
+		backupFilename = param
 		if path.exists(backupFilename):
 			check_tar = False
 			lines = popen('tar -tf %s' % backupFilename).readlines()
@@ -66,12 +65,18 @@ class AutoTimerEditor(Source):
 					check_tar = True
 					break
 			if check_tar:
-				files = []
-				for autotimerfile in files:
-					if path.exists(autotimerfile):
-						remove(autotimerfile)
-				lines = popen('tar xvf %s -C / --exclude tmp/.autotimeredit' % backupFilename).readlines()
+				lines = popen('tar xvf %s -C /' % backupFilename).readlines()
 
+				from Plugins.Extensions.AutoTimer.plugin import autotimer
+				if autotimer is not None:
+					try:
+						# Force config reload
+						autotimer.configMtime = -1
+						autotimer.readXml()
+					except Exception:
+						# TODO: proper error handling
+						pass
+				
 				remove(backupFilename)
 				return (True, "AutoTimer-settings were restored successfully")
 			else:

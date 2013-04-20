@@ -1,5 +1,5 @@
 # for localized messages
-from . import _
+from . import _, config
 
 # GUI (Screens)
 from Screens.Screen import Screen
@@ -15,7 +15,6 @@ from AutoTimerWizard import AutoTimerWizard
 # GUI (Components)
 from AutoTimerList import AutoTimerList
 from Components.ActionMap import HelpableActionMap
-from Components.config import config
 from Components.Sources.StaticText import StaticText
 
 class AutoTimerOverviewSummary(Screen):
@@ -68,6 +67,7 @@ class AutoTimerOverview(Screen, HelpableScreen):
 		self.changed = False
 
 		# Button Labels
+		self["key_red"] = StaticText(_("Close"))
 		self["key_green"] = StaticText(_("Save"))
 		self["key_yellow"] = StaticText(_("Delete"))
 		self["key_blue"] = StaticText(_("Add"))
@@ -113,7 +113,7 @@ class AutoTimerOverview(Screen, HelpableScreen):
 			autotimerHelp.open(self.session)
 
 	def setCustomTitle(self):
-		self.setTitle(_("AutoTimer overview"))
+		self.setTitle(_("AutoTimer"))
 
 	def createSummary(self):
 		return AutoTimerOverviewSummary
@@ -139,9 +139,9 @@ class AutoTimerOverview(Screen, HelpableScreen):
 			)
 		else:
 			self.session.openWithCallback(
-				self.addCallback,
-				AutoTimerEditor,
-				newTimer
+				self.refresh,
+				AutoTimerChannelSelection,
+				self.autotimer
 			)
 
 	def editCallback(self, ret):
@@ -187,6 +187,7 @@ class AutoTimerOverview(Screen, HelpableScreen):
 				self.removeCallback,
 				MessageBox,
 				_("Do you really want to delete %s?") % (cur.name),
+				default = False,
 			)
 
 	def removeCallback(self, ret):
@@ -215,7 +216,7 @@ class AutoTimerOverview(Screen, HelpableScreen):
 
 	def menu(self):
 		list = [
-			(_("Preview"), "preview"),
+			#(_("Preview"), "preview"),
 			(_("Import existing Timer"), "import"),
 			(_("Import from EPG"), "import_epg"),
 			(_("Setup"), "setup"),
@@ -250,12 +251,12 @@ class AutoTimerOverview(Screen, HelpableScreen):
 				reader = XMLHelpReader(resolveFilename(SCOPE_PLUGINS, "Extensions/AutoTimer/faq.xml"))
 				autotimerFaq = PluginHelp(*reader)
 				autotimerFaq.open(self.session)
-			elif ret == "preview":
-				total, new, modified, timers, conflicts, similars = self.autotimer.parseEPG(simulateOnly = True)
-				self.session.open(
-					AutoTimerPreview,
-					timers
-				)
+			#elif ret == "preview":
+				#total, new, modified, timers, conflicts, similars = self.autotimer.parseEPG(simulateOnly = True)
+				#self.session.open(
+					#AutoTimerPreview,
+					#timers
+				#)
 			elif ret == "import":
 				newTimer = self.autotimer.defaultTimer.clone()
 				newTimer.id = self.autotimer.getUniqueId()

@@ -7,7 +7,7 @@
 	<meta content="text/html; charset=UTF-8" http-equiv="content-type">
 	<META HTTP-EQUIV="CACHE-CONTROL" CONTENT="NO-CACHE">
 	
-	<title>Dreambox AutoTimerEditor</title>
+	<title>Receiver AutoTimerEditor</title>
 	
 	<link href="/autotimereditor/style.css" type="text/css" rel="stylesheet">
 	<link rel="shortcut icon" type="/web-data/image/x-icon" href="/web-data/img/favicon.ico">
@@ -17,7 +17,7 @@
 	<script type="text/javascript" src="/web-data/lib/trimpath-template-1.0.38.js"></script>
 	<script type="text/javascript" src="/web-data/lib/hashlistener2.js"></script>
 	<script type="text/javascript" src="/web-data/lib/datepicker/datepicker.js">
- 	{
+	{
 		"nodrag":1,
 		"lang":"en",
 		"buttontabindex":true,
@@ -35,7 +35,7 @@
 		"titleformat":["Y-ds-m-ds-d"]
 	}
 	</script>
- 	<script language="javascript" type="text/javascript">
+	<script language="javascript" type="text/javascript">
 	 	if (!window.$) {
 			window.$ = function(id) { return document.getElementById(id); }
 		}
@@ -45,6 +45,7 @@
 		}
 	</script>
 	<!-- Webinterface Stuff -->
+	<script type="text/javascript" src="/web/strings.js"></script>
 	<script type="text/javascript" src="/web-data/userprefs.js"></script>
 	<script type="text/javascript" src="/web-data/statics.js" ></script>
 	<script type="text/javascript" src="/web-data/helpers.js" ></script>
@@ -67,7 +68,7 @@
 			<span id="notification"><div></div></span>
 			<div id="bannerCenter">
 				<div id="bannerText">
-					<img src="/autotimereditor/dreambox_autotimereditor.png" alt="Dreambox AutoTimerEditor">
+					<img src="/autotimereditor/dreambox_autotimereditor.png" alt="Receiver AutoTimerEditor">
 				</div>
 			</div>
 		</div>
@@ -117,8 +118,8 @@
 		}
 		
 		// Instantiate the AutotimerEditor
+		var atTemplateEngine = new TemplateEngine('/autotimereditor/');
 		autotimereditorcore = new AutoTimerEditorCore(GET('name'), GET('servicename'), GET('servicereference'), GET('from'), GET('to'));
-		
 	</script>
 
 </body>

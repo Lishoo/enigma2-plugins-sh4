@@ -1,9 +1,10 @@
+# -*- coding: UTF-8 -*-
 from AutoTimer import AutoTimer
 from AutoTimerConfiguration import CURRENT_CONFIG_VERSION
-from Components.config import config
 from RecordTimer import AFTEREVENT
+from twisted.internet import reactor
 from twisted.web import http, resource, server
-try:
+import threading
 try:
 	from urllib import unquote
 except ImportError as ie:
@@ -11,25 +12,12 @@ except ImportError as ie:
 from ServiceReference import ServiceReference
 from Tools.XMLTools import stringToXML
 from enigma import eServiceReference
-from . import _, iteritems
-from . import plugin
+from . import _, config, iteritems
+from plugin import autotimer
 
-API_VERSION = "1.2"
+API_VERSION = "1.3"
 
 class AutoTimerBaseResource(resource.Resource):
-	_remove = False
-	def getAutoTimerInstance(self):
-		if plugin.autotimer is None:
-			self._remove = True
-			autotimer = AutoTimer()
-			try:
-				autotimer.readXml()
-			except Exception:
-				# TODO: proper error handling
-				pass
-			return autotimer
-		self._remove = False
-		return plugin.autotimer
 	def returnResult(self, req, state, statetext):
 		req.setResponseCode(http.OK)
 		req.setHeader('Content-type', 'application/xhtml+xml')
@@ -58,8 +46,10 @@ class AutoTimerBackgroundThread(threading.Thread):
 		req = self.__req
 		ret = self.__fnc(req)
 		if self.__stillAlive and ret != server.NOT_DONE_YET:
-			req.write(ret)
-			req.finish()
+			def finishRequest():
+				req.write(ret)
+				req.finish()
+			reactor.callFromThread(finishRequest)
 
 class AutoTimerBackgroundingResource(AutoTimerBaseResource, threading.Thread):
 	def render(self, req):
@@ -71,20 +61,13 @@ class AutoTimerBackgroundingResource(AutoTimerBaseResource, threading.Thread):
 
 class AutoTimerDoParseResource(AutoTimerBackgroundingResource):
 	def renderBackground(self, req):
-		autotimer = self.getAutoTimerInstance()
-
 		ret = autotimer.parseEPG()
-		output = _("Found a total of %d matching Events.\n%d Timer were added and %d modified, %d conflicts encountered, %d similars added.") % (ret[0], ret[1], ret[2], len(ret[4]), len(ret[5]))
-
-		if self._remove:
-			autotimer.writeXml()
+		output = _("Found a total of %d matching Events.\n%d Timer were added and\n%d modified,\n%d conflicts encountered,\n%d similars added.") % (ret[0], ret[1], ret[2], len(ret[4]), len(ret[5]))
 
 		return self.returnResult(req, True, output)
 
 class AutoTimerSimulateResource(AutoTimerBackgroundingResource):
 	def renderBackground(self, req):
-		autotimer = self.getAutoTimerInstance()
-
 		ret = autotimer.parseEPG(simulateOnly=True)
 
 		returnlist = ["<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<e2autotimersimulate api_version=\"", str(API_VERSION), "\">\n"]
@@ -111,8 +94,11 @@ class AutoTimerSimulateResource(AutoTimerBackgroundingResource):
 
 class AutoTimerListAutoTimerResource(AutoTimerBaseResource):
 	def render(self, req):
-		autotimer = self.getAutoTimerInstance()
-
+		# We re-read the config so we won't display empty or wrong information
+		try:
+			autotimer.readXml()
+		except Exception:
+			return self.returnResult(req, False, _("Couldn't load config file!"))
 		# show xml
 		req.setResponseCode(http.OK)
 		req.setHeader('Content-type', 'application/xhtml+xml')
@@ -121,13 +107,9 @@ class AutoTimerListAutoTimerResource(AutoTimerBaseResource):
 
 class AutoTimerRemoveAutoTimerResource(AutoTimerBaseResource):
 	def render(self, req):
-		autotimer = self.getAutoTimerInstance()
-
 		id = req.args.get("id")
 		if id:
 			autotimer.remove(int(id[0]))
-			if self._remove:
-				autotimer.writeXml()
 			return self.returnResult(req, True, _("AutoTimer was removed"))
 		else:
 			return self.returnResult(req, False, _("missing parameter \"id\""))
@@ -136,7 +118,6 @@ class AutoTimerAddOrEditAutoTimerResource(AutoTimerBaseResource):
 	# TODO: recheck if we can modify regular config parser to work on this
 	# TODO: allow to edit defaults?
 	def render(self, req):
-		autotimer = self.getAutoTimerInstance()
 		def get(name, default=None):
 			ret = req.args.get(name)
 			return ret[0] if ret else default
@@ -347,15 +328,18 @@ class AutoTimerAddOrEditAutoTimerResource(AutoTimerBaseResource):
 		if not timer.vps_enabled and timer.vps_overwrite:
 			timer.vps_overwrite = False
 
+		# SeriesPlugin
+		series_labeling = get("series_labeling")
+		if series_labeling is not None:
+			try: series_labeling = int(series_labeling)
+			except ValueError: series_labeling = series_labeling == "yes"
+			timer.series_labeling = series_labeling
+
 		if newTimer:
 			autotimer.add(timer)
 			message = _("AutoTimer was added successfully")
 		else:
 			message = _("AutoTimer was changed successfully")
-
-		# eventually save config
-		if self._remove:
-			autotimer.writeXml()
 
 		return self.returnResult(req, True, message)
 
@@ -387,23 +371,20 @@ class AutoTimerChangeSettingsResource(AutoTimerBaseResource):
 				config.plugins.autotimer.notifsimilar.value = True if value == "true" else False
 			elif key == "maxdaysinfuture":
 				config.plugins.autotimer.maxdaysinfuture.value = int(value)
+			elif key == "add_autotimer_to_tags":
+				config.plugins.autotimer.add_autotimer_to_tags.value = True if value == "true" else False
+			elif key == "add_name_to_tags":
+				config.plugins.autotimer.add_name_to_tags.value = True if value == "true" else False
 
 		if config.plugins.autotimer.autopoll.value:
 			if plugin.autopoller is None:
 				from AutoPoller import AutoPoller
 				plugin.autopoller = AutoPoller()
-			if plugin.autotimer is None:
-				plugin.autotimer = AutoTimer()
 			plugin.autopoller.start(initial = False)
 		else:
 			if plugin.autopoller is not None:
 				plugin.autopoller.stop()
 				plugin.autopoller = None
-			if plugin.autotimer is not None:
-				try: plugin.autotimer.readXml()
-				except Exception: pass
-				else: plugin.autotimer.writeXml()
-				plugin.autotimer = None
 
 		return self.returnResult(req, True, _("config changed."))
 
@@ -419,6 +400,13 @@ class AutoTimerSettingsResource(resource.Resource):
 			hasVps = False
 		else:
 			hasVps = True
+
+		try:
+			from Plugins.Extensions.SeriesPlugin.plugin import Plugins
+		except ImportError as ie:
+			hasSeriesPlugin = False
+		else:
+			hasSeriesPlugin = True
 
 		return """<?xml version=\"1.0\" encoding=\"UTF-8\" ?>
 <e2settings>
@@ -471,7 +459,19 @@ class AutoTimerSettingsResource(resource.Resource):
 		<e2settingvalue>%s</e2settingvalue>
 	</e2setting>
 	<e2setting>
+		<e2settingname>config.plugins.autotimer.add_autotimer_to_tags</e2settingname>
+		<e2settingvalue>%s</e2settingvalue>
+	</e2setting>
+	<e2setting>
+		<e2settingname>config.plugins.autotimer.add_name_to_tags</e2settingname>
+		<e2settingvalue>%s</e2settingvalue>
+	</e2setting>
+	<e2setting>
 		<e2settingname>hasVps</e2settingname>
+		<e2settingvalue>%s</e2settingvalue>
+	</e2setting>
+	<e2setting>
+		<e2settingname>hasSeriesPlugin</e2settingname>
 		<e2settingvalue>%s</e2settingvalue>
 	</e2setting>
 	<e2setting>
@@ -488,14 +488,17 @@ class AutoTimerSettingsResource(resource.Resource):
 				config.plugins.autotimer.refresh.value,
 				config.plugins.autotimer.try_guessing.value,
 				config.plugins.autotimer.editor.value,
-				config.plugins.autotimer.addsimilar_on_conflict,
+				config.plugins.autotimer.addsimilar_on_conflict.value,
 				config.plugins.autotimer.disabled_on_conflict.value,
 				config.plugins.autotimer.show_in_extensionsmenu.value,
 				config.plugins.autotimer.fastscan.value,
 				config.plugins.autotimer.notifconflict.value,
 				config.plugins.autotimer.notifsimilar.value,
 				config.plugins.autotimer.maxdaysinfuture.value,
+				config.plugins.autotimer.add_autotimer_to_tags.value,
+				config.plugins.autotimer.add_name_to_tags.value,
 				hasVps,
+				hasSeriesPlugin,
 				CURRENT_CONFIG_VERSION,
 				API_VERSION,
 			)

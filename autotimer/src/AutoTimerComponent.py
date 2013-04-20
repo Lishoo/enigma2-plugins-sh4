@@ -50,10 +50,10 @@ class AutoTimerComponent(object):
 			offset=None, afterevent=[], exclude=None, maxduration=None, \
 			destination=None, include=None, matchCount=0, matchLeft=0, \
 			matchLimit='', matchFormatString='', lastBegin=0, justplay=False, \
-			tags = None, encoding = None, searchType = "partial", searchCase = "insensitive", \
+			avoidDuplicateDescription=0, searchForDuplicateDescription=2, bouquets=None, \
 			tags=None, encoding=None, searchType="partial", searchCase="insensitive", \
-			overrideAlternatives=False, timeframe=None, vps_enabled=False, \
-			vps_overwrite=False, setEndtime=False):
+			overrideAlternatives=True, timeframe=None, vps_enabled=False, \
+			vps_overwrite=False, setEndtime=False, series_labeling=False):
 		self.name = name
 		self.match = match
 		self.enabled = enabled
@@ -82,6 +82,7 @@ class AutoTimerComponent(object):
 		self.timeframe = timeframe
 		self.vps_enabled = vps_enabled
 		self.vps_overwrite = vps_overwrite
+		self.series_labeling = series_labeling
 		self.setEndtime = setEndtime
 
 ### Attributes / Properties
@@ -151,7 +152,7 @@ class AutoTimerComponent(object):
 	searchCase = property(lambda self: self._searchCase, setSearchCase)
 
 	def setSearchType(self, type):
-		assert type in ("exact", "partial", "start"), "search type must be exact, start or partial"
+		assert type in ("exact", "partial", "start", "description"), "search type must be exact, partial, start or description"
 		self._searchType = type
 
 	searchType = property(lambda self: self._searchType, setSearchType)
@@ -490,7 +491,7 @@ class AutoTimerComponent(object):
 	def checkTimeframe(self, begin):
 		if self.timeframe is not None:
 			start, end = self.timeframe
-			if begin > start and begin < end:
+			if begin > start and begin < (end + 24*60*60):
 				return False
 			return True
 		return False
@@ -528,6 +529,7 @@ class AutoTimerComponent(object):
 			timeframe = self.timeframe,
 			vps_enabled = self.vps_enabled,
 			vps_overwrite = self.vps_overwrite,
+			series_labeling = self.series_labeling,
 		)
 
 	def __deepcopy__(self, memo):
@@ -561,6 +563,7 @@ class AutoTimerComponent(object):
 			timeframe = self.timeframe,
 			vps_enabled = self.vps_enabled,
 			vps_overwrite = self.vps_overwrite,
+			series_labeling = self.series_labeling,
 		)
 
 	def __eq__(self, other):
@@ -617,6 +620,7 @@ class AutoTimerComponent(object):
 					str(self.timeframe),
 					str(self.vps_enabled),
 					str(self.vps_overwrite),
+					str(self.series_labeling),
 			 )),
 			 ")>"
 		))

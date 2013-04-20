@@ -106,6 +106,11 @@ def parseEntry(element, baseTimer, defaults = False):
 		baseTimer.vps_overwrite = True if vps_overwrite == "yes" else False
 		del vps_enabled, vps_overwrite
 
+		# SeriesPlugin settings
+		series_labeling = element.get("series_labeling", "no")
+		baseTimer.series_labeling = True if series_labeling == "yes" else False
+		del series_labeling
+
 	# Read out encoding (won't change if no value is set)
 	baseTimer.encoding = element.get("encoding")
 
@@ -570,7 +575,8 @@ def buildConfig(defaultTimer, timers, webif = False):
 	if defaultTimer.encoding != defaultEncoding or webif:
 		extend((' encoding="', str(defaultTimer.encoding), '"'))
 
-	if defaultTimer.searchType:
+	# SearchType
+	if defaultTimer.searchType != "partial":
 		extend((' searchType="', str(defaultTimer.searchType), '"'))
 
 	# Only display searchCase if sensitive
@@ -707,6 +713,7 @@ def buildConfig(defaultTimer, timers, webif = False):
 		if timer.encoding != defaultEncoding or webif:
 			extend((' encoding="', str(timer.encoding), '"'))
 
+		# SearchType
 		if timer.searchType != "partial":
 			extend((' searchType="', str(timer.searchType), '"'))
 
@@ -723,6 +730,10 @@ def buildConfig(defaultTimer, timers, webif = False):
 			append(' vps_enabled="yes"')
 			if timer.vps_overwrite:
 				append(' vps_overwrite="yes"')
+
+		# Only add seriesl related entry if true
+		if timer.series_labeling:
+			append(' series_labeling="yes"')
 
 		# Close still opened timer tag
 		append('>\n')
