@@ -82,6 +82,7 @@ SUBDIRS = \
 	tageditor \
 	trafficinfo \
 	tvcharts \
+	toolkit \
 	unwetterinfo \
 	valixdcontrol \
 	virtualzap \
