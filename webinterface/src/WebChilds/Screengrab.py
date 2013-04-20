@@ -4,13 +4,13 @@ from twisted.web import resource, http, http_headers, server
 
 from os import path as os_path, remove as os_remove
 from os.path import getsize as os_path_getsize
-				
+
 class GrabResource(resource.Resource):
 	'''
 		this is a interface to Seddis AiO Dreambox Screengrabber
 	'''
 	GRAB_BIN = '/usr/bin/grab'
-	SPECIAL_ARGS = ('format', 'filename', 'save', 'refresh')
+	SPECIAL_ARGS = ('format', 'filename', 'save')
 
 	def render(self, request):
 		args = []
@@ -22,7 +22,6 @@ class GrabResource(resource.Resource):
 		osdOnly = False
 		videoOnly = False
 		save = False
-		refresh = None
 
 		for key, value in request.args.items():
 			if key in GrabResource.SPECIAL_ARGS:
@@ -50,9 +49,6 @@ class GrabResource(resource.Resource):
 
 				elif key == 'save':
 					save = True
-
-				elif key == 'refresh':
-					refresh = value[0]
 			else:
 				if key == "o" and videoOnly is True:
 					continue
@@ -67,15 +63,14 @@ class GrabResource(resource.Resource):
 
 		if not os_path.exists(self.GRAB_BIN):
 			request.setResponseCode(http.OK)
-			request.write('Grab is not installed at %s. Please install package aio-grab.' %self.GRAB_BIN)
-			request.finish()
+			return 'Grab is not installed at %s. Please install package aio-grab.' %self.GRAB_BIN
 
 		else:
 			request.setHeader('Content-Disposition', 'inline; filename=screenshot.%s;' %imageformat)
 			mimetype = imageformat
-			if refresh:
-				request.setHeader('Refresh', str(refresh))
-				
+			if mimetype == 'jpg':
+				mimetype = 'jpeg'
+
 			request.setHeader('Content-Type','image/%s' %mimetype)
 
 			filename = "%s.%s" %(filename,imageformat)
@@ -99,33 +94,44 @@ class GrabStream:
 
 		self.container = eConsoleAppContainer()
 		self.container.appClosed.append(self.cmdFinished)
-		self.container.dataAvail.append(self.dataAvail)
+
+		self.stillAlive = True
+		if hasattr(self.request, 'notifyFinish'):
+			self.request.notifyFinish().addErrback(self.connectionLost)
 
 		print '[Screengrab.py] starting AiO grab with cmdline:', cmd
 		self.container.execute(*cmd)
 
+	def connectionLost(self, err):
+		self.stillAlive = False
+
 	def cmdFinished(self, data):
 		print '[Screengrab.py] cmdFinished'
-		if int(data) is 0 and self.target is not None:
-			try:
-				self.request.setHeader('Content-Length', '%i' %os_path_getsize(self.target))
-				fp = open(self.target)
-				self.request.write(fp.read())
-				fp.close()
-				if self.save is False:
-					os_remove(self.target)
-					print '[Screengrab.py] %s removed' %self.target
-			except Exception,e:
-				self.request.write('Internal error while reading target file')
-		elif int(data) is 0 and self.target is None:
-			self.request.write(self.output)
-		elif int(data) is 1:
-			self.request.write(self.output)
+		if self.stillAlive:
+			self.request.setResponseCode(http.OK)
+			if int(data) is 0 and self.target is not None:
+				try:
+					self.request.setHeader('Content-Length', '%i' %os_path_getsize(self.target))
+					with open(self.target) as fp:
+						self.request.write(fp.read())
+					if self.save is False:
+						os_remove(self.target)
+						print '[Screengrab.py] %s removed' %self.target
+				except Exception,e:
+					self.request.write('Internal error while reading target file')
+					self.request.setResponseCode(http.INTERNAL_SERVER_ERROR)
+
+			elif int(data) is 0 and self.target is None:
+				self.request.write(self.output)
+			elif int(data) is 1:
+				self.request.write(self.output)
+			else:
+				self.request.setResponseCode(http.INTERNAL_SERVER_ERROR)
+
+			self.request.finish()
 		else:
-			self.request.write('Internal error')
+			print '[Screengrab.py] already disconnected!'
 
-		self.request.finish()
-
-	def dataAvail(self, data):
-		print '[Screengrab.py] data Available ', data
+	def requestFinished(self, val):
+		pass
 

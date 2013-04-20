@@ -22,11 +22,19 @@ a,a:visited,a:active {
 	padding: 0px;
 }
 
+.mEpgColEven{
+	border-right: 1px solid #000;
+	background: #FFF;
+}
+
+.mEpgColOdd{
+	border-right: 1px solid #000;
+	background: #DEF;
+}
+
 .mEpgItem {
 	padding: 0px;
-	background: #FFF;
 	border-top: 1px solid #485052;
-	border-right: 1px solid #485052;
 	display: block;
 	overflow: hidden;
 	margin-bottom: -1px;
@@ -84,6 +92,7 @@ a.mEpgItem:hover {
 #mEpg * th,#mEpg * td {
 	width: 175px;
 	min-width: 175px;
+	max-width: 175px;
 }
 
 .mEpgDate {

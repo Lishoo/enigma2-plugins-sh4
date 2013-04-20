@@ -1,9 +1,10 @@
+# -*- coding: utf-8 -*-
 import Plugins.Plugin
 from Components.Language import language
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS, SCOPE_LANGUAGE
-import os, gettext, hashlib
+import os, gettext
 
-__version__ = "1.7.1"
+__version__ = "1.7.5"
 
 PluginLanguageDomain = "WebInterface"
 PluginLanguagePath = "Extensions/WebInterface/locale"
@@ -14,7 +15,7 @@ def localeInit():
 def _(txt):
 	t = gettext.dgettext(PluginLanguageDomain, txt)
 	if t == txt:
-		print "[WebInterface] fallback to default translation for", txt
+		print "[" + PluginLanguageDomain + "] fallback to default translation for " + txt
 		t = gettext.gettext(txt)
 	return t
 

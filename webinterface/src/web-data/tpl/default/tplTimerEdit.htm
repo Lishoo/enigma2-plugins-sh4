@@ -6,7 +6,7 @@
 									<form id='timerEditForm' onSubmit="return false;">
 										<table>
 											<tr>
-												<td>Action:</td>
+												<td>${strings.action}:</td>
 												<td>
 													<select name="justplay" id="justplay" size="1">
 														{for a in action}
@@ -17,10 +17,10 @@
 											</tr>
 											<tr>
 												<td>&nbsp;</td>
-												<td style="font-size: 12px;">Note: For recurring events dates are not mandatory.</td>
+												<td style="font-size: 12px;">${strings.note_recurring_events}</td>
 											</tr>
 											<tr>
-												<td>Start:</td>
+												<td>${strings.begins}:</td>
 												<td>
 													<input type="text" id="sdate" name="sdate" value="${timer.beginDate}" size="10" maxlength="10">
 													<select name="shour" id="shour" size="1">
@@ -37,7 +37,7 @@
 												</td>
 											</tr>
 											<tr>
-												<td>End:</td>
+												<td>${strings.ends}:</td>
 												<td>
 													<input type="text" id="edate" name="edate" value="${timer.endDate}" size="10" maxlength="10">
 													<select name="ehour" id="ehour" size="1">
@@ -55,50 +55,50 @@
 											</tr>
 											<tr>
 												<td>&nbsp;</td>
-												<td style="font-size: 12px;">Note: For one-time events the days don't have to be specified.</td>
+												<td style="font-size: 12px;">${strings.note_onetime_events}</td>
 											</tr>
 											<tr>
-												<td>Days:</td>
+												<td>${strings.days}:</td>
 												<td>{for r in repeated}
-													<input 
-														class="tEditRepeated" 
-														type="checkbox" 
-														id="${r.id}" 
-														name="${r.name}" 
-														value="${r.value}" 
-														title="${r.long}" 
+													<input
+														class="tEditRepeated"
+														type="checkbox"
+														id="${r.id}"
+														name="${r.name}"
+														value="${r.value}"
+														title="${r.long}"
 														${r.checked}>&nbsp;${r.txt}&nbsp;&nbsp;</input>{/for}
 												</td>
 											</tr>
 											<tr>
-												<td>Channel:</td>
+												<td>${strings.channel}:</td>
 												<td>
 													<select class="tEditBouquet" name="bouquet" id="bouquet" size="1">
 														{for b in bouquets}
 														<option value="${b.servicereference}">${b.servicename}</option>
-														{/for}	
+														{/for}
 													</select>
 													<select name="service" id="service" size="1">
 														{for s in services}
 														<option value="${s.servicereference}" ${s.selected}>${s.servicename}</option>
-														{/for}	
+														{/for}
 													</select>
 												</td>
 											</tr>
 											<tr>
-												<td>Name:</td>
+												<td>${strings.name}:</td>
 												<td>
 													<input name="name" id="name" type="text" size="70" maxlength="255" value="${timer.name.e()}">
 												</td>
 											</tr>
 											<tr>
-												<td>Description:</td>
+												<td>${strings.description}:</td>
 												<td>
 													<input name="description" id="description" type="text" size="70" maxlength="255" value="${timer.description.e()}">
 												</td>
 											</tr>
 											<tr>
-												<td>Location:</td>
+												<td>${strings.location}:</td>
 												<td>
 													<select id="dirname" name="dirname" size="1">
 														{for d in dirname}
@@ -108,7 +108,7 @@
 												</td>
 											</tr>
 											<tr>
-												<td>Tags:</td>
+												<td>${strings.tags}:</td>
 												<td>
 													<div>
 														{for t in tags}
@@ -118,7 +118,7 @@
 												</td>
 											</tr>
 											<tr>
-												<td>After event:</td>
+												<td>${strings.afterevent}:</td>
 												<td>
 													<select id="afterevent" name="afterevent" size="1">
 														{for event in afterEvent}
@@ -131,12 +131,12 @@
 											<tr>
 												<td>&nbsp;</td><td>
 													<input name="disabled" id="disabled" type="hidden" value="${timer.disabled}">
-													<input name="eventId" id="eventId" type="hidden" value="${timer.eventId}">
+													<input name="eventid" id="eventid" type="hidden" value="${timer.eventid}">
 													<input name="deleteOldOnSave" id="deleteOldOnSave" type="hidden" value="${timer.deleteOldOnSave}">
 													<input name="servicereferenceOld" id="servicereferenceOld" type="hidden" value="${encodeURIComponent(timer.servicereferenceOld)}">
 													<input name="beginOld" id="beginOld" type="hidden" value="${timer.beginOld}">
 													<input name="endOld" id="endOld" type="hidden" value="${timer.endOld}">
-													<button class="tEditSave">Save Timer</button>
+													<button class="tEditSave">${strings.save}</button>
 												</td>
 											</tr>
 										</table>

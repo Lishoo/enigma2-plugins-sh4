@@ -37,7 +37,16 @@ Element.addMethods({
 });
 
 String.prototype.e = function(){
-	return this.replace("\"","&quot;");
+	return this.gsub("\"","&quot;");
+};
+
+String.prototype.format = function(){
+
+	var data = this;
+	for(var i = 0; i < arguments.length; i++){
+		data = data.replace('%s', arguments[i]);
+	}
+	return data;
 };
 
 //General Helpers
@@ -205,8 +214,22 @@ function dateToString(date){
 	return dateString;
 }
 
-// store all objects here
 
+var RequestCounter = {
+	count : 0,
+	callbacks : [],
+	addChangedCallback : function(callback){
+		RequestCounter.callbacks[RequestCounter.callbacks.length] = callback
+	},
+	change: function(count){
+		RequestCounter.count += count;
+		RequestCounter.callbacks.each(function(callback){
+			callback(RequestCounter.count);
+		})
+	}
+};
+
+var global_sessionid = "0";
 var AjaxThing = Class.create({
 	/**
 	 * getUrl
@@ -218,28 +241,45 @@ var AjaxThing = Class.create({
 	 * @errorback - function to call @ onError;
 	 */
 	getUrl: function(url, parms, callback, errorback){
+		if(parms == undefined)
+			parms = {}
+		parms['sessionid'] = global_sessionid;
+
 		debug("[AjaxThing].getUrl :: url=" + url + " :: parms=" + Object.toJSON(parms));
 		try{
-			new Ajax.Request(url,
-					{
+			RequestCounter.change(1);
+			new Ajax.Request(url, {
 						parameters: parms,
 						asynchronous: true,
 						method: 'POST',
 						requestHeaders: ['Cache-Control', 'no-cache,no-store', 'Expires', '-1'],
 						onException: function(o,e){
-								console.log(o);
-								console.log(e);
-								throw(e);
-							}.bind(this),
+							RequestCounter.change(-1);
+							console.log(o);
+							console.log(e);
+						}.bind(this),
 						onSuccess: function (transport, json) {
 							if(callback !== undefined){
-								callback(transport);
+								try{
+									callback(transport);
+								} catch(e) {
+									debug('ERROR in callback!');
+									debug(e);
+								}
 							}
 						}.bind(this),
 						onFailure: function(transport){
 							if(errorback !== undefined){
-								errorback(transport);
+								try {
+									errorback(transport);
+								} catch(e) {
+									debug('ERROR in errorback!');
+									debug(e);
+								}
 							}
+						}.bind(this),
+						onComplete: function(transport){
+							RequestCounter.change(-1);
 						}.bind(this)
 					});
 		} catch(e) {
@@ -248,10 +288,10 @@ var AjaxThing = Class.create({
 	}
 });
 
-
 var TemplateEngine = Class.create(AjaxThing, {
-	initialize: function(){
+	initialize: function(tplUrl){
 		this.templates = {};
+		this.tplUrl = tplUrl;
 	},
 
 	cache: function(request, tplName){
@@ -261,7 +301,7 @@ var TemplateEngine = Class.create(AjaxThing, {
 
 	fetch: function(tplName, callback){
 		if(this.templates[tplName] === undefined) {
-			var url = URL.tpl+tplName+".htm";
+			var url = this.tplUrl + tplName + ".htm";
 
 			this.getUrl(
 					url,
@@ -280,32 +320,43 @@ var TemplateEngine = Class.create(AjaxThing, {
 		}
 	},
 
-	render: function(tpl, data, domElement) {
+	render: function(tpl, data, target) {
+		if(data == null || data == undefined)
+			data = {};
+		data.strings = strings;
 		var result = tpl.process(data);
-
-		try{
-			$(domElement).update( result );
-		}catch(ex){
-			debug("[TemplateEngine].render catched an exception!");
-			throw ex;
+		if(typeof(target) == 'function'){
+			try{
+				target(result);
+				return;
+			} catch(exc){
+				debug("[TemplateEngine].render callback failed!");
+			}
+		} else {
+			try{
+				$(target).update( result );
+			}catch(ex){
+				debug("[TemplateEngine].render catched an exception!");
+				throw ex;
+			}
 		}
 	},
 
-	onTemplateReady: function(tpl, data, domElement, callback){
-		this.render(tpl, data, domElement);
+	onTemplateReady: function(tpl, data, target, callback){
+		this.render(tpl, data, target);
 		if(typeof(callback) == 'function') {
 			callback();
 		}
 	},
 
-	process: function(tplName, data, domElement, callback){
+	process: function(tplName, data, target, callback){
 		this.fetch( tplName,
 				function(tpl){
-					this.onTemplateReady(tpl, data, domElement, callback);
+					this.onTemplateReady(tpl, data, target, callback);
 				}.bind(this) );
 	}
 });
-templateEngine = new TemplateEngine();
+var templateEngine = new TemplateEngine(URL.tpl);
 
 //START class EPGEvent
 function EPGEvent(xml, number){
@@ -411,7 +462,7 @@ function EPGEvent(xml, number){
 		return this.serviceName;
 	};
 	this.isMarker = function(){
-		return this.serviceRef.startsWith("1:64:0:0:0:0:0:0:0:0");
+		return this.serviceRef.startsWith("1:64:");
 	};
 
 	this.json = {
@@ -481,7 +532,7 @@ function EPGList(xml){
 	};
 
 	this.sortFunction = function(a, b){
-	  return a[0] - b[0];
+	return a[0] - b[0];
 	};
 }
 
@@ -496,13 +547,14 @@ function EPGListNowNext(xml){
 	this.getArray = function(){
 		list = [];
 		var len = this.xmlitems.length;
-		var cssclass = 'even';
+		var cssclass = 'odd';
 		var _this = this;
 		for (var i=0; i < len; i += 2){
-			cssclass = cssclass == 'even' ? 'odd' : 'even';
 			now = new EPGEvent(_this.xmlitems.item(i)).toJSON();
 			next = new EPGEvent(_this.xmlitems.item(i+1)).toJSON();
 			list.push({"now" : now, "next" : next, "cssclass": cssclass});
+			if(!now.ismarker)
+				cssclass = cssclass == 'even' ? 'odd' : 'even';
 		}
 		return list;
 	};
@@ -618,7 +670,7 @@ function Service(xml, cssclass){
 	};
 
 	this.getServiceName = function(){
-		return this.servicename.replace('&quot;', '"');
+		return this.servicename.gsub('&quot;', '"');
 	};
 
 	this.setServiceReference = function(sref){
@@ -626,7 +678,7 @@ function Service(xml, cssclass){
 	};
 
 	this.setServiceName = function(sname){
-		this.servicename = sname.replace('&quot;', '"');
+		this.servicename = sname.gsub('&quot;', '"');
 	};
 
 	if( typeof( cssclass ) == undefined ){
@@ -634,7 +686,7 @@ function Service(xml, cssclass){
 	}
 
 	this.isMarker = function(){
-		return this.getClearServiceReference().startsWith("1:64:0:0:0:0:0:0:0:0");
+		return this.getClearServiceReference().startsWith("1:64:");
 	};
 
 	this.json = {
@@ -668,13 +720,14 @@ function ServiceList(xml){
 	this.servicelist = [];
 	this.getArray = function(){
 		if(this.servicelist.length === 0){
-			var cssclass = 'even';
+			var cssclass = 'odd';
 
 			var len = this.xmlitems.length;
 			for (var i=0; i<len; i++){
-				cssclass = cssclass == 'even' ? 'odd' : 'even';
 				var service = new Service(this.xmlitems.item(i), cssclass).toJSON();
 				this.servicelist.push(service);
+				if(!service.ismarker)
+					cssclass = cssclass == 'even' ? 'odd' : 'even';
 			}
 		}
 
@@ -729,7 +782,7 @@ function Movie(xml, cssclass){
 		return encodeURIComponent(this.servicereference);
 	};
 	this.getServiceName = function(){
-		return this.servicename.replace('&quot;', '"');
+		return this.servicename.gsub('&quot;', '"');
 	};
 
 	this.getTitle = function(){
@@ -821,7 +874,7 @@ function Timer(xml, cssclass){
 	this.startprepare = getNodeContent(xml, 'e2startprepare');
 	this.justplay = getNodeContent(xml, 'e2justplay', '');
 	this.afterevent = getNodeContent(xml, 'e2afterevent', '0');
-	this.dirname = getNodeContent(xml, 'e2dirname', '/hdd/movie/');
+	this.dirname = getNodeContent(xml, 'e2location', '/hdd/movie/');
 	this.tags = getNodeContent(xml, 'e2tags', '');
 	this.logentries = getNodeContent(xml, 'e2logentries');
 	this.tfilename = getNodeContent(xml, 'e2filename');
@@ -849,7 +902,7 @@ function Timer(xml, cssclass){
 	};
 
 	this.getToggleDisabledText = function(){
-		var retVal = this.toggledisabled == "0" ? "Enable" : "Disable";
+		var retVal = this.toggledisabled == "0" ? strings.activate : strings.deactivate;
 		return retVal;
 	};
 
@@ -858,7 +911,7 @@ function Timer(xml, cssclass){
 	};
 
 	this.getServiceName = function(){
-		return this.servicename.replace('&quot;', '"');
+		return this.servicename.gsub('&quot;', '"');
 	};
 
 	this.getEventID = function(){
@@ -956,14 +1009,15 @@ function Timer(xml, cssclass){
 	this.beginDate = new Date(Number(this.getTimeBegin()) * 1000);
 	this.endDate = new Date(Number(this.getTimeEnd()) * 1000);
 
-	this.aftereventReadable = [ 'Nothing', 'Standby',
-	                            'Deepstandby/Shutdown', 'Auto' ];
+	this.aftereventReadable = [ strings.do_nothing, strings.standby,
+								strings.shutdown, strings.auto ];
 
 	this.justplayReadable = [ 'record', 'zap' ];
 
 	this.json = {
 			'servicereference' : this.getServiceReference(),
 			'servicename' : quotes2html(this.getServiceName()),
+			'eventid' : quotes2html(this.getEventID()),
 			'name' : quotes2html(this.getName()),
 			'description' : quotes2html(this.getDescription()),
 			'descriptionextended' : quotes2html(this.getDescriptionExtended()),
@@ -1326,12 +1380,14 @@ var External = Class.create({
 		this.name = getNodeContent(xml, 'e2name');
 		this.version = getNodeContent(xml, 'e2externalversion');
 		this.hasGui = getNodeContent(xml, 'e2hasgui') == "True";
+		this.target = getNodeContent(xml, 'e2guitarget');
 
 		this.json = {
 			'path' : this.path,
 			'name' : this.name,
 			'version' : this.version,
-			'hasGui' : this.hasGui
+			'hasGui' : this.hasGui,
+			'target' : this.target
 		};
 	},
 
@@ -1363,6 +1419,21 @@ var ExternalList = Class.create({
 
 	getArray: function(){
 		return this.list;
+	}
+});
+
+var WebSession = Class.create({
+	initialize: function(xml){
+		this.session = this.parse(xml);
+	},
+
+	parse: function(xml){
+		var session = getNodeContent(xml, "e2sessionid");
+		return session;
+	},
+
+	get: function(){
+		return this.session;
 	}
 });
 //END class Volume

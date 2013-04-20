@@ -498,13 +498,20 @@ var MovieListHandler  = Class.create(AbstractContentHandler, {
 });
 
 var MovieNavHandler = Class.create(AbstractContentHandler,{
-	initialize: function($super, target){
-		$super('tplNavMovies', target);
+	initialize: function($super, tagTarget, locTarget){
+		$super('tplMovieTags', tagTarget);
+		this.targetLocations = locTarget;
+		this.tplLocations = 'tplMovieLocations';
 	},
 
 	load: function(locations, tags){
 		data = { 'locations' : locations, 'tags' : tags};
 		this.show(data);
+		this.showLocations(data);
+	},
+
+	showLocations: function(data){
+		templateEngine.process(this.tplLocations, data, this.targetLocations);
 	}
 });
 
@@ -537,7 +544,8 @@ var ScreenshotHandler = Class.create(AbstractContentHandler, {
 });
 
 var SimpleRequestHandler = Class.create(AbstractContentHandler,{
-	initialize: function(){
+	initialize: function($super){
+		$super();
 		this.provider = new SimpleRequestProvider();
 	},
 
@@ -556,6 +564,7 @@ var RemoteControlHandler = Class.create(SimpleRequestHandler,{
 	},
 
 	showSimpleResult: function(result){
+		this.finished();
 		if(!result.getState())
 			this.notify(result.getStateText(), result.getState());
 	}
@@ -579,13 +588,13 @@ var TimerListHandler  = Class.create(AbstractContentHandler, {
 });
 
 var TimerHandler = Class.create(AbstractContentHandler, {
-	ACTIONS: [{value : 0, txt : 'Record'},
-	          {value : 1, txt : 'Zap'}],
+	ACTIONS: [{value : 0, txt : strings.record},
+			{value : 1, txt : strings.zap}],
 
-	AFTEREVENTS: [{value : 0, txt : 'Nothing'},
-	              {value : 1, txt : 'Standby'},
-	              {value : 2, txt : 'Deepstandby/Shutdown'},
-	              {value : 3, txt : 'Auto'}],
+	AFTEREVENTS: [{value : 0, txt : strings.do_nothing},
+				{value : 1, txt : strings.standby},
+				{value : 2, txt : strings.shutdown},
+				{value : 3, txt : strings.auto}],
 
 	SELECTED : "selected",
 	CHECKED: "checked",
@@ -671,7 +680,7 @@ var TimerHandler = Class.create(AbstractContentHandler, {
 				servicename : unescape(parent.readAttribute('data-servicename')),
 				description : unescape(parent.readAttribute('data-description')),
 				name : unescape(parent.readAttribute('data-name')),
-				eventId : unescape(parent.readAttribute('data-eventid')),
+				eventid : unescape(parent.readAttribute('data-eventid')),
 				begin : begin,
 				beginDate : this.toReadableDate(beginD),
 				end : end,
@@ -710,7 +719,7 @@ var TimerHandler = Class.create(AbstractContentHandler, {
 				servicename : unescape(parent.readAttribute('data-servicename')),
 				description : unescape(parent.readAttribute('data-description')),
 				name : unescape(parent.readAttribute('data-title')),
-				eventId : unescape(parent.readAttribute('data-eventid')),
+				eventid : unescape(parent.readAttribute('data-eventid')),
 				begin : begin,
 				beginDate : this.toReadableDate(beginD),
 				end : end,
@@ -749,7 +758,7 @@ var TimerHandler = Class.create(AbstractContentHandler, {
 				servicename : "",
 				description : "",
 				name : "",
-				eventId : "0",
+				eventid : "0",
 				begin : "0",
 				beginDate : this.toReadableDate(begin),
 				end : "0",
@@ -778,9 +787,15 @@ var TimerHandler = Class.create(AbstractContentHandler, {
 		var eMinutes = this.numericalOptionList(0, 59, end.getMinutes());
 
 		var actions = this.ACTIONS;
+		for (var i = 0; i < actions.length; i++) {
+			delete actions[i].selected;
+		}
 		actions[t.justplay].selected = this.SELECTED;
 
 		var afterevents = this.AFTEREVENTS;
+		for (var i = 0; i < afterevents.length; i++) {
+			delete afterevents[i].selected;
+		}
 		afterevents[t.afterevent].selected = this.SELECTED;
 
 		var repeated = this.repeatedDaysList(t.repeated);
@@ -802,7 +817,10 @@ var TimerHandler = Class.create(AbstractContentHandler, {
 	},
 
 	onLocationsAndTagsReady: function(data, currentLocation, locations, tags, initial){
-		var l = toOptionList(locations, currentLocation);
+		var dirname = data.timer.dirname;
+		if(dirname == "")
+			dirname = currentLocation;
+		var l = toOptionList(locations, dirname);
 		var t = toOptionList(tags, data.timer.tags, " ");
 		t.shift();
 		l.shift();
@@ -829,11 +847,14 @@ var TimerHandler = Class.create(AbstractContentHandler, {
 			if(decodeURIComponent(service.servicereference) == timer.servicereference){
 				service['selected'] = 'selected';
 				serviceFound = true;
-			}else{
+			} else if (decodeURIComponent(service.servicereference)
+				   .startsWith("1:64:")) {
+				service['selected'] = 'disabled';
+			} else {
 				service['selected'] = '';
 			}
 		}.bind(this));
-		if(!serviceFound){
+		if ((timer.servicereference != "") && !serviceFound) {
 			services.push( {'servicereference' : timer.servicereference, 'servicename' : timer.servicename, 'selected' : 'selected'});
 		}
 
@@ -880,12 +901,11 @@ var TimerHandler = Class.create(AbstractContentHandler, {
 			'begin' : t.begin,
 			'end' : t.end,
 			'name' : t.name,
-			'eventID' : t.eventId,
 			'description' : t.description,
 			'dirname' : t.dirname,
 			'tags' : t.tags,
 			'afterevent' : t.afterevent,
-			'eit' : '0',
+			'eit' : t.eventid,
 			'disabled' : t.disabled,
 			'justplay' : t.justplay,
 			'repeated' : t.repeated
@@ -1071,7 +1091,7 @@ var TimerHandler = Class.create(AbstractContentHandler, {
 			'begin' : begin,
 			'end' : end,
 			'name' : values.name,
-			'eventId' : values.eventId,
+			'eventid' : values.eventid,
 			'description' : values.description,
 			'dirname' : values.dirname,
 			'tags' : tags.join(" "),

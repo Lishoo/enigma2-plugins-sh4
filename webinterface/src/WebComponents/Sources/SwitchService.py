@@ -9,7 +9,7 @@ class SwitchService(Source):
 		Source.__init__(self)
 		self.session = session
 		self.info = None
-		self.res = ( False, "Parameter sRef is missing" )
+		self.res = ( False, _("Obligatory parameter sRef is missing") )
 
 	def handleCommand(self, cmd):
 		self.res = self.switchService(cmd)
@@ -29,9 +29,8 @@ class SwitchService(Source):
 					if cmd["title"] is not None:
 						eref.setName(cmd["title"])
 
-					isRec = False
-					if cmd["sRef"].startswith("1:0:0:0:0:0:0:0:0:0:"): # lame check for recordings
-						isRec = True
+					isRec = eref.getPath()
+					isRec = isRec and isRec.startswith("/")
 					if not isRec:
 						# if this is not a recording and the movie player is open, close it
 						if isinstance(self.session.current_dialog, MoviePlayer):
@@ -65,12 +64,12 @@ class SwitchService(Source):
 					elif eref.getName() != "":
 						name = eref.getName()
 
-					return ( True, "Active service is now '%s'" %name )
+					return ( True, _("Active service is now '%s'") %name )
 				else:
-					return ( False, "Obligatory Parameter 'sRef' is missing" )
+					return ( False, _("Obligatory parameter 'sRef' is missing") )
 			else:
-				return ( False, "Cannot zap while device is in Standby" )
+				return ( False, _("Cannot zap while device is in Standby") )
 		else:
-			return ( False, "Zapping is disabled in WebInterface Configuration" )
+			return ( False, _("Zapping is disabled in WebInterface Configuration") )
 
 	result = property(lambda self: self.res)

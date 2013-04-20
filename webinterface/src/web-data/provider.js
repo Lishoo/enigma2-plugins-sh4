@@ -572,9 +572,7 @@ var MovieListProvider = Class.create(AbstractContentProvider, {
 var ScreenshotProvider = Class.create(AbstractContentProvider, {
 	initialize: function($super, showFnc){
 		$super(URL.grab, showFnc);
-		this.buffer = new Image();
-		this.buffer.onload = this.callback.bind(this);
-		this.buffer.onerror = this.errorback.bind(this);
+		this.src = "";
 	},
 
 	load: function(parms, fnc){
@@ -582,11 +580,12 @@ var ScreenshotProvider = Class.create(AbstractContentProvider, {
 		if(fnc !== undefined){
 			this.callback = fnc;
 		}
-		this.buffer.src = this.url + '?' + $H(parms).toQueryString();
+		var src = this.url + '?' + $H(parms).toQueryString()
+		this.callback(src);
 	},
 
-	callback: function(transport){
-		var data = { img : { src : this.buffer.src } };
+	callback: function(src){
+		var data = { img : { 'src' : src } };
 		this.show(data);
 	}
 });
@@ -645,5 +644,16 @@ var VolumeProvider = Class.create(AbstractContentProvider, {
 		var vol = new Vol(xml).toJSON();
 		var data = { 'volume' : vol};
 		return data;
+	}
+});
+
+var SessionProvider = Class.create(AbstractContentProvider, {
+	initialize: function($super, showFnc){
+		$super(URL.session, showFnc);
+	},
+
+	renderXML: function(xml){
+		var session = new WebSession(xml).get();
+		return session;
 	}
 });

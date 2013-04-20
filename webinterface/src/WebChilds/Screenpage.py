@@ -11,8 +11,8 @@ from os import path as os_path
 AppTextHeaderFiles = frozenset(('stream.m3u.xml', 'ts.m3u.xml', 'streamcurrent.m3u.xml', 'movielist.m3u.xml', 'services.m3u.xml', ))
 
 """
- Actualy, the TextHtmlHeaderFiles should contain the updates.html.xml, but the IE then
- has problems with unicode-characters
+Actualy, the TextHtmlHeaderFiles should contain the updates.html.xml, but the IE then
+has problems with unicode-characters
 """
 TextHtmlHeaderFiles = frozenset(('wapremote.xml', 'stream.xml', ))
 
@@ -21,6 +21,11 @@ TextHtmlHeaderFiles = frozenset(('wapremote.xml', 'stream.xml', ))
 	all files listed here will get an Content-Type: text/html charset: UTF-8
 """
 NoExplicitHeaderFiles = frozenset(('getpid.xml', 'tvbrowser.xml', ))
+
+"""
+	define all files in /web with a text/javascript header
+"""
+TextJavascriptHeaderFiles = frozenset(('strings.js.xml', ))
 
 class ScreenPage(resource.Resource):
 	def __init__(self, session, path, addSlash = False):
@@ -36,26 +41,26 @@ class ScreenPage(resource.Resource):
 			lastComponent = path.split('/')[-1]
 
 			# Set the Header according to what's requested
-			request.setResponseCode(http.OK)
 			if lastComponent in AppTextHeaderFiles:
 				request.setHeader('Content-Type', 'application/text')
 			elif lastComponent in TextHtmlHeaderFiles or (path.endswith(".html.xml") and lastComponent != "updates.html.xml"):
 				request.setHeader('Content-Type', 'text/html; charset=UTF-8')
+			elif lastComponent in TextJavascriptHeaderFiles:
+				request.setHeader('Content-Type', 'text/javascript; charset=UTF-8')
 			elif lastComponent not in NoExplicitHeaderFiles:
 				request.setHeader('Content-Type', 'application/xhtml+xml; charset=UTF-8')
-
 			# now go and write the Output
 			# request.finish() is called inside webif.py (requestFinish() which is called via renderPage())
 			webif.renderPage(request, path, self.session) # login?
+			request.setResponseCode(http.OK)
 
 		elif os_path.isdir(path) and self.addSlash is True:
-			return self.getChild("/", request).render(request)
+			uri = "%s/" % (request.path)
+			request.redirect(uri)
+			return "";
 
 		else:
-			request.setResponseCode(http.NOT_FOUND)
-			request.write('<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n')
-			request.write("<html><head><title>Enigma2 WebControl</title></head><body><h1>404 - Page not found</h1></body></html>")
-			request.finish()
+			return resource.ErrorPage(http.NOT_FOUND, "Error 404 - Page not found", "The requested resource is not available").render(request);
 
 		return server.NOT_DONE_YET
 
