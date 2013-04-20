@@ -94,14 +94,10 @@ SUBDIRS = \
 	youtubeplayer \
 	zaphistorybrowser \
 	zapstatistic \
-	zdfmediathek
-
-if TPM
-SUBDIRS += \
+	zdfmediathek \
 	mytube \
 	yttrailer \
 	webinterface
-endif
 
 metadir = $(datadir)/meta
 meta_DATA = index-enigma2-plugins.xml
