@@ -132,7 +132,6 @@ for plugin in plugins.getPlugins([PluginDescriptor.WHERE_PLUGINMENU ,PluginDescr
 		</content>
 		<content>
 			<name>Alternative SoftCam Manager</name>
-				<sel>1</sel>
 			<code><![CDATA[
 for plugin in plugins.getPlugins([PluginDescriptor.WHERE_PLUGINMENU ,PluginDescriptor.WHERE_EXTENSIONSMENU, PluginDescriptor.WHERE_EVENTINFO]):
 	if plugin.name == _("Alternative SoftCam Manager"):
@@ -154,6 +153,16 @@ for plugin in plugins.getPlugins([PluginDescriptor.WHERE_PLUGINMENU ,PluginDescr
 			<code><![CDATA[
 for plugin in plugins.getPlugins([PluginDescriptor.WHERE_PLUGINMENU ,PluginDescriptor.WHERE_EXTENSIONSMENU, PluginDescriptor.WHERE_EVENTINFO]):
 	if plugin.name == _("Настройка эмуляторов"):
+		runPlugin(self, plugin)
+		break
+]]></code>
+		</content>
+		<content>
+			<name>Альтернативный Softcam менеджер</name>
+			<sel>1</sel>
+			<code><![CDATA[
+for plugin in plugins.getPlugins([PluginDescriptor.WHERE_PLUGINMENU ,PluginDescriptor.WHERE_EXTENSIONSMENU, PluginDescriptor.WHERE_EVENTINFO]):
+	if plugin.name == _("Альтернативный Softcam менеджер"):
 		runPlugin(self, plugin)
 		break
 ]]></code>
