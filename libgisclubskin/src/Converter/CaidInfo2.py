@@ -1,6 +1,6 @@
 #
 #  CaidInfo2 - Converter
-#  ver 1.1.8 05.04.2013
+#  ver 1.1.9 09.04.2013
 #
 #  Coded by bigroma & 2boom
 
@@ -42,8 +42,8 @@ class CaidInfo2(Poll, Converter, object):
 	VIA_C = 24
 	BISS = 25
 	BISS_C = 26
-	PRO = 27
-	PRO_C = 28
+	EXS = 27
+	EXS_C = 28
 	HOST = 29
 	DELAY = 30
 	FORMAT = 31
@@ -83,8 +83,8 @@ class CaidInfo2(Poll, Converter, object):
 			self.type = self.CRW
 		elif type == "DreamCrypt":
 			self.type = self.DRE
-		elif type == "ProCrypt":
-			self.type = self.PRO
+		elif type == "ExsCrypt":
+			self.type = self.EXS
 		elif type == "IrdCrypt":
 			self.type = self.IRD
 		elif type == "NagraCrypt":
@@ -103,8 +103,8 @@ class CaidInfo2(Poll, Converter, object):
 			self.type = self.CRW_C
 		elif type == "DreamEcm":
 			self.type = self.DRE_C
-		elif type == "ProEcm":
-			self.type = self.PRO_C
+		elif type == "ExsEcm":
+			self.type = self.EXS_C
 		elif type == "IrdEcm":
 			self.type = self.IRD_C
 		elif type == "NagraEcm":
@@ -141,8 +141,8 @@ class CaidInfo2(Poll, Converter, object):
 			"09" : "NDS-Videoguard",
 			"0B" : "Conax",
 			"0D" : "Cryptoworks",
-			"4A" : "Pro-Crypt",
-			"27" : "DRE-Crypt",
+			"4A" : "DRE-Crypt",
+			"27" : "ExSet",
 			"0E" : "PowerVu",
 			"22" : "Codicrypt",
 			"07" : "DigiCipher",
@@ -160,9 +160,9 @@ class CaidInfo2(Poll, Converter, object):
 			"09" : "NDS",
 			"0B" : "CON",
 			"0D" : "CRW",
+			"27" : "EXS",
 			"7B" : "DRE",
-			"7B" : "DRE",
-			"4A" : "PRO" }
+			"4A" : "DRE" }
 
 	@cached
 	def getBoolean(self):
@@ -196,12 +196,12 @@ class CaidInfo2(Poll, Converter, object):
 				return False
 			if self.type == self.DRE:
 				for caid in caids:
-					if ("%0.4X" % int(caid))[:2] == "7B" or ("%0.4X" % int(caid))[:2] == "27":
+					if ("%0.4X" % int(caid))[:2] == "7B" or ("%0.4X" % int(caid))[:2] == "4A" :
 						return True
 				return False
-			if self.type == self.PRO:
+			if self.type == self.EXS:
 				for caid in caids:
-					if ("%0.4X" % int(caid))[:2] == "4A":
+					if ("%0.4X" % int(caid))[:2] == "27":
 						return True
 			if self.type == self.NAGRA:
 				for caid in caids:
@@ -250,11 +250,11 @@ class CaidInfo2(Poll, Converter, object):
 						return True
 					return False
 				if self.type == self.DRE_C:
-					if caid == "27" or caid == "7B":
+					if caid == "4A" or caid == "7B":
 						return True
 					return False
-				if self.type == self.PRO_C:
-					if caid == "4A":
+				if self.type == self.EXS_C:
+					if caid == "27":
 						return True
 					return False
 				if self.type == self.NAGRA_C:
