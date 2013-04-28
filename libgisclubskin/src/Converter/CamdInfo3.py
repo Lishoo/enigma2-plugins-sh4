@@ -50,21 +50,40 @@ class CamdInfo3(Poll, Converter, object):
 		elif fileExists("/etc/init.d/cam"):
 			for line in open("/etc/enigma2/settings"):
 				if line.find("config.plugins.emuman.cam") > -1:
-					return line.split("=")[-1]
+					return line.split("=")[-1].strip('\n')
+		#PKT
+		elif fileExists("//usr/lib/enigma2/python/Plugins/Extensions/PKT/plugin.pyo"):
+			for line in open("/etc/enigma2/settings"):
+				if line.find("config.plugins.emuman.cam=") > -1:
+					return line.split("=")[-1].strip('\n')
 		#HDMU
-		elif fileExists("/etc/.emustart"):
+		elif fileExists("/etc/.emustart") and fileExists("/etc/image-version"):
 			try:
 				for line in open("/etc/.emustart"):
 					return line.split()[0].split('/')[-1]
 			except:
 				return None
 		# AAF
-		elif fileExists("/etc/image-version"):
+		elif fileExists("/etc/image-version") and not fileExists("/etc/.emustart"):
 			for line in open("/etc/image-version"):
 				if line.find("=AAF") > -1:
 					for line in open("/etc/enigma2/settings"):
 						if line.find("config.softcam.actCam=") > -1:
 							return line.split("=")[-1].strip('\n')
+		# AAF & ATV
+		elif fileExists("/etc/image-version") and not fileExists("/etc/.emustart"):
+			emu = ""
+			server = ""
+			for line in open("/etc/image-version"):
+				if line.find("=AAF") > -1 or line.find("=openATV") > -1:
+					for line in open("/etc/enigma2/settings"):
+						if line.find("config.softcam.actCam=") > -1:
+							emu = line.split("=")[-1].strip('\n')
+						if line.find("config.softcam.actCam2=") > -1:
+							server = line.split("=")[-1].strip('\n')
+							if server.find("no CAM 2 active") > -1:
+								server = ""
+			return "%s %s" % (emu, server)
 		# VTI 	
 		elif fileExists("/tmp/.emu.info"):
 			try:
