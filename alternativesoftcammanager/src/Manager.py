@@ -91,12 +91,11 @@ class AltCamManager(Screen):
 		try:
 			ecmfiles = open("/tmp/ecm.info", "r")
 			for line in ecmfiles:
-				if line[32:]:
-					linebreak = line[23:].find(' ') + 23
-					listecm += line[0:linebreak]
-					listecm += "\n" + line[linebreak + 1:]
-				else:
-					listecm += line
+				while len(line) > 32:
+					linebreak = line.rfind(' ', 0, 32)
+					listecm += line[:linebreak] + "\n"
+					line = line[linebreak+1:]
+				listecm += line
 			self["status"].setText(listecm)
 			ecmfiles.close()
 		except:
