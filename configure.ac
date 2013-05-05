@@ -31,6 +31,7 @@ if ! test "$enable_libeplayer3" = "yes"; then
 PKG_CHECK_MODULES(GSTREAMER, gstreamer-0.10 gstreamer-pbutils-0.10)
 fi
 PKG_CHECK_MODULES(LIBCRYPTO, libcrypto)
+PKG_CHECK_MODULES(SIGC,sigc++-1.2)
 
 AC_ARG_WITH(tpm,
 	AS_HELP_STRING([--with-tpm], [enable plugins that require a TPM]),

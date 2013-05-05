@@ -9,10 +9,11 @@ bitratecalc_la_SOURCES = \
 	bitratecalc.h
 
 bitratecalc_la_LDFLAGS = \
-	-avoid-version -module
+	-avoid-version -module -shared
 
 bitratecalc_la_LIBADD = \
-	@LIBCRYPTO_LIBS@
+	@LIBCRYPTO_LIBS@ \
+	@SIGC_LIBS@
 
 install-data-hook:
 	rm $(DESTDIR)$(libdir)/enigma2/python/Components/Converter/bitratecalc.*a
