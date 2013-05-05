@@ -93,6 +93,8 @@ class AltCamManager(Screen):
 			for line in ecmfiles:
 				while len(line) > 32:
 					linebreak = line.rfind(' ', 0, 32)
+					if linebreak == -1:
+						linebreak = 32
 					listecm += line[:linebreak] + "\n"
 					line = line[linebreak+1:]
 				listecm += line
