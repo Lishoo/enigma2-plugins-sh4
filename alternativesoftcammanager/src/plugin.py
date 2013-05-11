@@ -1,10 +1,13 @@
 from . import _
+import Softcam
+
 from Components.config import config, ConfigSubsection, ConfigText
 from Components.Console import Console
 from Plugins.Plugin import PluginDescriptor
+
 from os import mkdir, path, remove
 from time import sleep
-import Softcam
+
 
 config.plugins.AltSoftcam = ConfigSubsection()
 config.plugins.AltSoftcam.actcam = ConfigText(default="none")

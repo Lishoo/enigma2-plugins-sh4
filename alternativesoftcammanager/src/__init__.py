@@ -1,8 +1,9 @@
-# -*- coding: utf-8 -*-
 from Components.Language import language
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
+
 from gettext import bindtextdomain, dgettext, gettext
 from os import environ
+
 
 def localeInit():
 	environ["LANGUAGE"] = language.getLanguage()[:2]

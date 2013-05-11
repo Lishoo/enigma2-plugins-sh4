@@ -1,4 +1,5 @@
 from . import _
+import Softcam
 
 from Components.ActionMap import ActionMap
 from Components.config import config, getConfigListEntry
@@ -15,7 +16,6 @@ from Tools.LoadPixmap import LoadPixmap
 from enigma import eTimer
 from os import path
 
-import Softcam
 
 class AltCamManager(Screen):
 	skin = """
@@ -267,6 +267,7 @@ class AltCamManager(Screen):
 
 	def setup(self):
 		self.session.openWithCallback(self.createinfo, ConfigEdit)
+
 
 class ConfigEdit(Screen, ConfigListScreen):
 	skin = """
