@@ -23,234 +23,242 @@ msgid ""
 "A mount entry with this name already exists!\n"
 "Update existing entry and continue?\n"
 msgstr ""
+"Точка монтирования с таким именем уже существует!\n"
+"Обновить точку монтирования и продолжить?\n"
 
 msgid "Active"
-msgstr ""
+msgstr " Статус"
 
 msgid ""
 "Active/\n"
 "Inactive"
 msgstr ""
+"Акт./\n"
+"Не акт."
 
 msgid "Add a new NFS or CIFS mount point to your Dreambox."
-msgstr ""
+msgstr "Добавить новую NFS или CIFS точку монтирования"
 
 msgid "Add new network mount point"
-msgstr ""
+msgstr " Добавить новую сетевую точку монтирования"
 
 msgid ""
 "Are you sure you want to save this network mount?\n"
 "\n"
 msgstr ""
+"Вы действительно хотите сохранить эту сетевую точку монтирования?\n"
+"\n"
 
 msgid "Attempt to mount shares again"
-msgstr ""
+msgstr "Попытка перемонтирования сетевых точек монтирования"
 
 msgid "Attempt to recover lost mounts (in background)"
-msgstr ""
+msgstr "Попытка восстановления поврежденных точек монтирования (в фоновом режиме)"
 
 msgid "Browse network neighbourhood"
-msgstr ""
+msgstr "Обзор сети"
 
 msgid "CIFS share"
-msgstr ""
+msgstr "CIFS"
 
 msgid "Cancel"
-msgstr ""
+msgstr "Отмена"
 
 msgid "Change hostname"
-msgstr ""
+msgstr "Изменить имя ресивера"
 
 msgid "Change the hostname of your Dreambox."
-msgstr ""
+msgstr "Изменить сетевое имя Вашего ресивера"
 
 msgid "Close"
-msgstr ""
+msgstr "Закрыть"
 
 msgid "Delete"
-msgstr ""
+msgstr "Удалить"
 
 msgid "Delete mount"
-msgstr ""
+msgstr "Удалить сетевую точку монтирования"
 
 msgid "Dir:"
-msgstr ""
+msgstr "Dir:"
 
 msgid "Do you want to enter a username and password for this host?\n"
-msgstr ""
+msgstr "Вы хотите ввести имя пользователя и пароль для этого хоста?\n"
 
 msgid "Enter IP to scan..."
-msgstr ""
+msgstr "Введите IP адрес для сканирования"
 
 msgid "Enter new hostname for your Dreambox"
-msgstr ""
+msgstr "Введите новое имя Вашего ресивера"
 
 msgid "Enter options:"
-msgstr ""
+msgstr "Введите настройки:"
 
 msgid "Enter password:"
-msgstr ""
+msgstr "Введите пароль:"
 
 msgid "Enter share directory:"
-msgstr ""
+msgstr "Введите директорию общего ресурса:"
 
 msgid "Enter share name:"
-msgstr ""
+msgstr "Введите название общего ресурса:"
 
 msgid "Enter user and password for host: "
-msgstr ""
+msgstr "Введите логин и пароль на хост:"
 
 msgid "Enter username:"
-msgstr ""
+msgstr "Введите логин:"
 
 msgid "Expert"
-msgstr ""
+msgstr "Эксперт"
 
 msgid "Finished restarting your network"
-msgstr ""
+msgstr "Перезапуск сети"
 
 msgid "IP Address"
-msgstr ""
+msgstr "IP адрес"
 
 msgid "IP:"
-msgstr ""
+msgstr "IP:"
 
 msgid "Local share name"
-msgstr ""
+msgstr "Имя общего ресурса"
 
 msgid "Manage network shares"
-msgstr ""
+msgstr "Управление сетевыми общими ресурсами"
 
 msgid "Manage your network shares..."
-msgstr ""
+msgstr "Управление Вашими сетевыми общими ресурсами..."
 
 msgid "Mount again"
-msgstr ""
+msgstr "Перемонтирование"
 
 msgid "Mount informations"
-msgstr ""
+msgstr "Информация о монтировании"
 
 msgid "Mount options"
-msgstr ""
+msgstr "Настройки монтирования"
 
 msgid "Mount type"
-msgstr ""
+msgstr "Тип монтирования"
 
 msgid "MountManager"
-msgstr ""
+msgstr "Менеджер монтирования"
 
 msgid ""
 "Mounted/\n"
 "Unmounted"
 msgstr ""
+"Смонтир./\n"
+"Размонтир."
 
 msgid "Mountpoints management"
-msgstr ""
+msgstr "Управление точками монтирования"
 
 msgid "Mounts editor"
-msgstr ""
+msgstr "Редактор точек монтирования"
 
 msgid "Mounts management"
-msgstr ""
+msgstr "Управление"
 
 msgid "NFS share"
-msgstr ""
+msgstr "NFS"
 
 msgid "NetworkBrowser"
-msgstr ""
+msgstr "Браузер сети"
 
 msgid "No network devices found!"
-msgstr ""
+msgstr "Не найдено сетевых устройств"
 
 msgid "Password"
-msgstr ""
+msgstr "Пароль"
 
 msgid "Please wait for activation of your network mount..."
-msgstr ""
+msgstr "Ждите, идет активация Ваших сетевых точек монтирования..."
 
 msgid "Please wait while removing your network mount..."
-msgstr ""
+msgstr "Ждите, идет удалени Ваших сетевых точек монтирования..."
 
 msgid "Please wait while updating your network mount..."
-msgstr ""
+msgstr "Ждите, идет обновление Ваших сетевых точек монтирования..."
 
 msgid "Please wait while your network is restarting..."
-msgstr ""
+msgstr "Ждите, идет перезагрузка Вашей сети..."
 
 msgid "Press OK to activate the settings."
-msgstr ""
+msgstr "Нажмите OK для активации настроек."
 
 msgid "Press OK to collapse this host"
-msgstr ""
+msgstr "Нажмите OK для просмотра хоста"
 
 msgid "Press OK to edit selected settings."
-msgstr ""
+msgstr "Нажмите OK для редактирования."
 
 msgid "Press OK to edit the settings."
-msgstr ""
+msgstr "Нажмите OK для редактирования"
 
 msgid "Press OK to expand this host"
-msgstr ""
+msgstr "Нажмите для просмотра этого хоста."
 
 msgid "Press OK to mount this share!"
-msgstr ""
+msgstr "Нажмите OK для монтирования этого сетевого ресурса."
 
 msgid "Press OK to mount!"
-msgstr ""
+msgstr "Нажмите OK для монтирования."
 
 msgid "Press OK to save settings."
-msgstr ""
+msgstr "Нажмите OK для записи настроек."
 
 msgid "Press OK to select."
-msgstr ""
+msgstr "Нажмите OK для выбора."
 
 msgid "Rescan"
-msgstr ""
+msgstr "Сканир."
 
 msgid "Scan NFS share"
-msgstr ""
+msgstr "Сканир. NFS"
 
 msgid "Scan range"
-msgstr ""
+msgstr "Скан. диап."
 
 msgid "Search for network shares"
-msgstr ""
+msgstr "Поиск сетевых ресурсов"
 
 msgid "Search for network shares..."
-msgstr ""
+msgstr "Поиск сетевых общих ресурсов... "
 
 msgid "Searching your network. Please wait..."
-msgstr ""
+msgstr "Поиск вашей сети. Пожалуйста, ждите..."
 
 msgid "Server IP"
-msgstr ""
+msgstr "Сервер IP"
 
 msgid "Server share"
-msgstr ""
+msgstr "Сетев. рес."
 
 msgid "User management"
-msgstr ""
+msgstr "Управление пользователями"
 
 msgid "Usermanager"
-msgstr ""
+msgstr "Управление пользователями"
 
 msgid "Username"
-msgstr ""
+msgstr "Логин"
 
 msgid "View, edit or delete mountpoints on your Dreambox."
-msgstr ""
+msgstr "Посмотреть, редактировать или удалить точки монтирования Вашего ресивера"
 
 msgid "View, edit or delete usernames and passwords for your network."
-msgstr ""
+msgstr "Посмотреть, редактировать или удалить логины и пароли Вашей сети"
 
 msgid "Your network mount has been activated."
-msgstr ""
+msgstr "Ваша сетевая точка монтирования активирована"
 
 msgid "Your network mount has been removed."
-msgstr ""
+msgstr "Ваша сетевая точка монтирования удалена."
 
 msgid "Your network mount has been updated."
-msgstr ""
+msgstr "Ваша сетевая точка монтирования обновлена"
 
 msgid "use as HDD replacement"
-msgstr ""
+msgstr "использовать как подключаемый HDD"
