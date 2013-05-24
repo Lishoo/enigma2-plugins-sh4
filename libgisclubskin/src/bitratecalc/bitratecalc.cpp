@@ -223,13 +223,6 @@ static const unsigned char tpm_root_mod[128] = {
 	0xAE,0x8A,0xD7,0xD2,0xCF,0xB2,0x2E,0x13,0xFB,0xAC,0x6A,0xDF,0xB1,0x1D,0x3A,0x3F,
 };
 
-#define CLEN 8
-
-static bool signature()
-{
-	return true;
-}
-
 // eBitrateCalculator replacement
 extern "C" {
 
@@ -340,16 +333,10 @@ static PyMethodDef module_methods[] = {
 PyMODINIT_FUNC
 initbitratecalc(void)
 {
-	bool init = true; //signature();
 	PyObject* m = Py_InitModule3("bitratecalc", module_methods,
 		"Module that implements bitrate calculations.");
 	if (m == NULL)
 		return;
-	if (!init)
-	{
-		PyErr_SetString(PyExc_TypeError, "TPM challenge failed");
-		return; 
-	}
 	if (!PyType_Ready(&eBitrateCalculatorPyType))
 	{
 		Org_Py_INCREF((PyObject*)&eBitrateCalculatorPyType);
