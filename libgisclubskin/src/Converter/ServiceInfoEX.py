@@ -1,5 +1,5 @@
 #2boom (c) 2013
-# v.0.4 03.04.13
+# v.0.6 11.05.13
 from Poll import Poll
 from Components.Converter.Converter import Converter
 from enigma import iServiceInformation, iPlayableService
@@ -67,12 +67,8 @@ class ServiceInfoEX(Poll, Converter, object):
 		self.poll_interval = 1000
 		self.poll_enabled = True
 		
-	def getServiceInfoString(self, info, what, convert = lambda x: "%d" % x):
+	def getServiceInfoString2(self, info, what, convert = lambda x: "%d" % x):
 		v = info.getInfo(what)
-		if v == -1:
-			return "N/A"
-		if v == -2:
-			return info.getInfoString(what)
 		if v == -3:
 			t_objs = info.getInfoObject(what)
 			if t_objs and (len(t_objs) > 0):
@@ -84,10 +80,20 @@ class ServiceInfoEX(Poll, Converter, object):
 				return ""
 		return convert(v)
 		
+	def getServiceInfoString(self, info, what, convert = lambda x: "%d" % x):
+		v = info.getInfo(what)
+		if v == -1:
+			return "N/A"
+		if v == -2:
+			return info.getInfoString(what)
+		return convert(v)
+
+		
 	@cached
 	def getText(self):
 		self.stream = { 'apid':"N/A", 'vpid':"N/A", 'sid':"N/A", 'onid':"N/A", 'tsid':"N/A", 'prcpid':"N/A", 'caids':"FTA", 'pmtpid':"N/A", 'txtpid':"N/A", 'xres':"", 'yres':"", 'atype':"", 'vtype':"", 'avtype':"", 'fps':"", 'tbps':"",}
 		streaminfo = ""
+		array_caids = []
 		service = self.source.service
 		info = service and service.info()
 		if not info:
@@ -108,7 +114,10 @@ class ServiceInfoEX(Poll, Converter, object):
 			self.stream['pmtpid'] = "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sPMTPID))
 		if self.getServiceInfoString(info, iServiceInformation.sTXTPID) != "N/A":
 			self.stream['txtpid'] = "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sTXTPID))
-		self.stream['caids'] = self.getServiceInfoString(info, iServiceInformation.sCAIDs)
+		caidinfo = self.getServiceInfoString2(info, iServiceInformation.sCAIDs)
+		for caid in caidinfo.split():
+			array_caids.append(caid)
+		self.stream['caids'] = ' '.join(str(x) for x in set(array_caids))
 		if self.getServiceInfoString(info, iServiceInformation.sVideoHeight) != "N/A":
 			self.stream['yres'] = self.getServiceInfoString(info, iServiceInformation.sVideoHeight) + ("i", "p", "")[info.getInfo(iServiceInformation.sProgressive)]
 		if self.getServiceInfoString(info, iServiceInformation.sVideoWidth) != "N/A":
