@@ -12,7 +12,6 @@ bitratecalc_la_LDFLAGS = \
 	-avoid-version -module -shared
 
 bitratecalc_la_LIBADD = \
-	@LIBCRYPTO_LIBS@ \
 	@SIGC_LIBS@
 
 install-data-hook:
