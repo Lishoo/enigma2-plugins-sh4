@@ -23,4 +23,8 @@ netscan_la_SOURCES = \
 	time_compat.h
 
 netscan_la_LDFLAGS = \
-	-avoid-version -module
+	-avoid-version -module -shared
+
+install-data-hook:
+	rm $(DESTDIR)$(libdir)/enigma2/python/Plugins/SystemPlugins/NetworkBrowser/netscan.*a
+	chmod 775 $(DESTDIR)$(libdir)/enigma2/python/Plugins/SystemPlugins/NetworkBrowser/netscan.so
