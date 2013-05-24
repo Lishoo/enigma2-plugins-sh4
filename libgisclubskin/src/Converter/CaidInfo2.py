@@ -335,7 +335,7 @@ class CaidInfo2(Poll, Converter, object):
 							return caid
 						# crypt
 						if self.type == self.CRYPT:
-							return "%s" % self.systemTxtCaids.get(caid[:2].upper())
+							return "%s" % self.systemTxtCaids.get(caid[:2])
 						#pid
 						try:
 							pid = "%0.4X" % int(ecm_info.get("pid", ""),16)

@@ -73,12 +73,6 @@ class EmuName(Poll, Converter, object):
 				cardname = open("/etc/init.d/cardserver", "r")
 			except:
 				cardname = None 
-		elif fileExists("/etc/.emustart"):
-			try:
-				camdname = open("/etc/.emustart", "r")
-			except:
-				camdname = None
-
 		if cardname:
 			for line in cardname:
 				if line.lower().find('oscam') > -1:

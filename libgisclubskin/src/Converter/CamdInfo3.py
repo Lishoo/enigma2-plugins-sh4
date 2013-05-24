@@ -63,8 +63,14 @@ class CamdInfo3(Poll, Converter, object):
 					return line.split()[0].split('/')[-1]
 			except:
 				return None
-		
-		# AAF & ATV & VTI 
+		# AAF
+		elif fileExists("/etc/image-version") and not fileExists("/etc/.emustart"):
+			for line in open("/etc/image-version"):
+				if line.find("=AAF") > -1:
+					for line in open("/etc/enigma2/settings"):
+						if line.find("config.softcam.actCam=") > -1:
+							return line.split("=")[-1].strip('\n')
+		# AAF & ATV
 		elif fileExists("/etc/image-version") and not fileExists("/etc/.emustart"):
 			emu = ""
 			server = ""
@@ -77,11 +83,13 @@ class CamdInfo3(Poll, Converter, object):
 							server = line.split("=")[-1].strip('\n')
 							if server.find("no CAM 2 active") > -1:
 								server = ""
-				elif line.find("=vuplus") > -1:
-					if fileExists("/tmp/.emu.info"):
-						for line in open("/tmp/.emu.info"):
-							emu = line.strip('\n')
 			return "%s %s" % (emu, server)
+		# VTI 	
+		elif fileExists("/tmp/.emu.info"):
+			try:
+				camdlist = open("/tmp/.emu.info", "r")
+			except:
+				return None
 		# BlackHole	
 		elif fileExists("/etc/CurrentBhCamName"):
 			try:
