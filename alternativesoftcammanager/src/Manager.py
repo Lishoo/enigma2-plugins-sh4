@@ -76,6 +76,7 @@ class AltCamManager(Screen):
 		Softcam.checkconfigdir()
 		self.actcam = config.plugins.AltSoftcam.actcam.value
 		self.camstartcmd = ""
+		self.softcamlist = ""
 		self.createinfo()
 		self.Timer = eTimer()
 		self.Timer.callback.append(self.listecminfo)
