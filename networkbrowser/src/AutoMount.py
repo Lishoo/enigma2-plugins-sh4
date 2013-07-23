@@ -138,6 +138,15 @@ class AutoMount():
 						os.makedirs(path)
 					if data['mounttype'] == 'nfs':
 						if not os.path.ismount(path):
+							if os.path.exists("/lib/modules/nfs.ko") is True:
+								os.system('insmod /lib/modules/sunrpc.ko')
+								os.system('insmod /lib/modules/lockd.ko')
+								os.system('insmod /lib/modules/nfs_acl.ko')
+								os.system('insmod /lib/modules/nfs.ko')
+							else:
+								for linuxversion in os.listdir("/lib/modules"):
+									if os.path.exists("/lib/modules/%s/kernel/fs/nfs/nfs.ko" % linuxversion) is True:
+										os.system('modprobe nfs')
 							if data['options']:
 								options = "tcp,noatime," + data['options']
 							else:
