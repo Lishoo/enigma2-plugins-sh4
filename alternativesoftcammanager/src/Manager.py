@@ -77,6 +77,10 @@ class AltCamManager(Screen):
 		self.actcam = config.plugins.AltSoftcam.actcam.value
 		self.camstartcmd = ""
 		self.softcamlist = ""
+		self.actcampng = LoadPixmap(path=resolveFilename(SCOPE_PLUGINS,
+			"Extensions/AlternativeSoftCamManager/images/actcam.png"))
+		self.defcampng = LoadPixmap(path=resolveFilename(SCOPE_PLUGINS,
+			"Extensions/AlternativeSoftCamManager/images/defcam.png"))
 		self.createinfo()
 		self.Timer = eTimer()
 		self.Timer.callback.append(self.listecminfo)
@@ -152,14 +156,10 @@ class AltCamManager(Screen):
 		except:
 			self.actcam = "none"
 		if self.actcam != "none":
-			softpng = LoadPixmap(cached=True, path=resolveFilename(SCOPE_PLUGINS,
-				"Extensions/AlternativeSoftCamManager/images/actcam.png"))
-			self.list.append((self.actcam, softpng, self.checkcam(self.actcam)))
-		softpng = LoadPixmap(cached=True, path=resolveFilename(SCOPE_PLUGINS,
-			"Extensions/AlternativeSoftCamManager/images/defcam.png"))
+			self.list.append((self.actcam, self.actcampng, self.checkcam(self.actcam)))
 		for line in self.softcamlist:
 			if line != self.actcam:
-				self.list.append((line, softpng, self.checkcam(line)))
+				self.list.append((line, self.defcampng, self.checkcam(line)))
 		self["list"].setList(self.list)
 
 	def checkcam (self, cam):
