@@ -1,3 +1,5 @@
+from . import _
+
 from Components.ActionMap import ActionMap
 from Components.ConfigList import ConfigListScreen
 from Components.Console import Console
@@ -8,9 +10,11 @@ from Plugins.Plugin import PluginDescriptor
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 
-from os import mkdir, path
 from string import atoi
 from time import sleep
+
+import os
+
 
 config.plugins.HddMount = ConfigSubsection()
 config.plugins.HddMount.MountOnStart = ConfigYesNo(default = False)
@@ -72,13 +76,13 @@ class MountDevice:
 		dir = ""
 		for line in dirpath[1:].split("/"):
 			dir += "/" + line
-			if not path.exists(dir):
+			if not os.path.exists(dir):
 				try:
-					mkdir(dir)
+					os.mkdir(dir)
 					print "[HddManager] mkdir", dir
 				except:
 					print "[HddManager] Failed to mkdir", dir
-		if path.exists("/bin/ntfs-3g"):
+		if os.path.exists("/bin/ntfs-3g"):
 			self.Console.ePopen("sfdisk -l /dev/sd? | grep NTFS", self.CheckNtfs, [device, dirpath])
 		else:
 			self.StartMount("mount " + device + " " + dirpath)
@@ -273,11 +277,11 @@ def OnStart(reason, **kwargs):
 			SwapFile = config.plugins.HddMount.SwapFile.value
 			if SwapFile.startswith("sd"):
 				Console().ePopen("swapon /dev/%s" % SwapFile[:4])
-			elif path.exists("/media/hdd/swapfile"):
+			elif os.path.exists("/media/hdd/swapfile"):
 				Console().ePopen("swapon /media/hdd/swapfile")
 			else:
 				sleep(3)
-				if path.exists("/media/hdd/swapfile"):
+				if os.path.exists("/media/hdd/swapfile"):
 					Console().ePopen("swapon /media/hdd/swapfile")
 
 def Plugins(**kwargs):
@@ -287,3 +291,4 @@ def Plugins(**kwargs):
 		PluginDescriptor.WHERE_EXTENSIONSMENU], needsRestart = False, fnc=main),
 	PluginDescriptor(where = PluginDescriptor.WHERE_AUTOSTART,
 		needsRestart = False, fnc = OnStart)]
+
