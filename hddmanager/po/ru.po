@@ -35,7 +35,7 @@ msgid "HDD mount configuration"
 msgstr "Настройки монтирования HDD"
 
 msgid "HDD mount manager"
-msgstr "Менеджер монтировки HDD"
+msgstr "Менеджер монтирования HDD"
 
 msgid "Mount all on receiver startup"
 msgstr "Монтировать все при загрузке ресивера"
