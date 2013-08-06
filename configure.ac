@@ -228,6 +228,7 @@ growlee/src/Makefile
 
 hddmanager/Makefile
 hddmanager/meta/Makefile
+hddmanager/po/Makefile
 hddmanager/src/Makefile
 
 httpproxy/Makefile

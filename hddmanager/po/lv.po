@@ -1,0 +1,66 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: 2013-06-08 22:20+0200\n"
+"PO-Revision-Date: 2013-06-08 22:20+0200\n"
+"Last-Translator: Tapat <taapat@gmail.com>\n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.5\n"
+
+msgid "128MB"
+msgstr "128MB"
+
+msgid "256MB"
+msgstr "256MB"
+
+msgid "512MB"
+msgstr "512MB"
+
+msgid "64MB"
+msgstr "64MB"
+
+msgid "Cancel"
+msgstr "Atcelt"
+
+msgid "Enable swap on receiver startup"
+msgstr "Iespējot swap startējot uztvērēju"
+
+msgid "Enable swapfile"
+msgstr "Iespējot swapfailu"
+
+msgid "HDD mount configuration"
+msgstr "HDD montēšanas uzstādījumi"
+
+msgid "HDD mount manager"
+msgstr "HDD montēšanas pārvaldnieks"
+
+msgid "Mount all on receiver startup"
+msgstr "Montēt visu startējot uztvērēju"
+
+msgid "Mount on /media/hdd"
+msgstr "Montēt mapē /media/hdd"
+
+msgid "Mount on /media/hdd/movie"
+msgstr "Montēt mapē /media/hdd/movie"
+
+msgid "no"
+msgstr "nē"
+
+msgid "nothing"
+msgstr "neko"
+
+msgid "Ok"
+msgstr "Ok"
+
+msgid ""
+"Please wait, is currently to created a swap file.\n"
+"It will take some time."
+msgstr ""
+"Lūdzu uzgaidiet, tiek veidots swapfails.\n"
+"Tas aizņems zināmu laiku."
+
+msgid "Plugin to manage mounting and swapfile."
+msgstr "Spraudnis lai pārvaldītu montēšanu un swapfailu."
