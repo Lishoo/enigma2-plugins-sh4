@@ -59,7 +59,7 @@ msgid ""
 "Please wait, is currently to created a swap file.\n"
 "It will take some time."
 msgstr ""
-"Пожалуйста, подождите, создаются файл подкачки.\n"
+"Пожалуйста, подождите, создаётся файл подкачки.\n"
 "Это займет некоторое время."
 
 msgid "Plugin to manage mounting and swapfile."
