@@ -49,6 +49,7 @@ SUBDIRS = \
 	moviecut \
 	movieretitle \
 	moviesearch \
+	movieselectionquickbutton \
 	movietagger \
 	mphelp \
 	multiquickbutton \
