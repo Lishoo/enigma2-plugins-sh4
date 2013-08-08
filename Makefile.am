@@ -66,6 +66,7 @@ SUBDIRS = \
 	pipservicerelation \
 	pipzap \
 	pluginhider \
+	pluginsort \
 	podcast \
 	porncenter \
 	quickbutton \
