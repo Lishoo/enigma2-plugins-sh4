@@ -76,10 +76,12 @@ SUBDIRS = \
 	rsdownloader \
 	sambaserver \
 	seekbar \
+	serienfilm \
 	setpasswd \
 	shoutcast \
 	showclock \
 	simplerss \
+	startupservice \
 	startuptostandby \
 	subsdownloader2 \
 	svdrp \
