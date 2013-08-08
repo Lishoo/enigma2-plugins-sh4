@@ -65,6 +65,7 @@ SUBDIRS = \
 	permanenttimeshift \
 	pipservicerelation \
 	pipzap \
+	pluginhider \
 	podcast \
 	porncenter \
 	quickbutton \
