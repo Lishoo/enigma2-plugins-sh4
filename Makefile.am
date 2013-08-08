@@ -64,6 +64,7 @@ SUBDIRS = \
 	permanentclock \
 	permanenttimeshift \
 	pipservicerelation \
+	pipzap \
 	podcast \
 	porncenter \
 	quickbutton \
