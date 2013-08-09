@@ -76,7 +76,6 @@ class AltCamManager(Screen):
 		Softcam.checkconfigdir()
 		self.actcam = config.plugins.AltSoftcam.actcam.value
 		self.camstartcmd = ""
-		self.softcamlist = ""
 		self.actcampng = LoadPixmap(path=resolveFilename(SCOPE_PLUGINS,
 			"Extensions/AlternativeSoftCamManager/images/actcam.png"))
 		self.defcampng = LoadPixmap(path=resolveFilename(SCOPE_PLUGINS,
@@ -88,7 +87,7 @@ class AltCamManager(Screen):
 
 	def createinfo(self):
 		self.iscam = False
-		self.startcreatecamlist()
+		self.startcreatecamlist(self.iscam, self.actcam)
 		self.listecminfo()
 
 	def listecminfo(self):
@@ -108,53 +107,57 @@ class AltCamManager(Screen):
 		except:
 			self["status"].setText("")
 
-	def startcreatecamlist(self):
+	def startcreatecamlist(self, iscam, actcam):
 		self.Console.ePopen("ls %s" % config.plugins.AltSoftcam.camdir.value,
-			self.camliststart)
+			self.camliststart, [iscam, actcam])
 
 	def camliststart(self, result, retval, extra_args):
+		(iscam, actcam) = extra_args
 		if result.strip() and not result.startswith('ls: '):
-			self.iscam = True
-			self.softcamlist = result.splitlines()
+			iscam = True
+			softcamlist = result.splitlines()
 			self.Console.ePopen("chmod 755 %s/*" %
 				config.plugins.AltSoftcam.camdir.value)
-			if self.actcam != "none" and Softcam.getcamscript(self.actcam):
-				self.createcamlist()
+			if actcam != "none" and Softcam.getcamscript(actcam):
+				self.createcamlist(iscam, actcam, softcamlist)
 			else:
-				self.Console.ePopen("pidof %s" % self.actcam, self.camactive)
+				self.Console.ePopen("pidof %s" % actcam, self.camactive, 
+					[iscam, actcam, softcamlist])
 		else:
-			if path.exists("/usr/bin/cam") and not self.iscam and \
+			if path.exists("/usr/bin/cam") and not iscam and \
 				config.plugins.AltSoftcam.camdir.value != "/usr/bin/cam":
-				self.iscam = True
+				iscam = True
 				config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
-				self.startcreatecamlist()
+				self.startcreatecamlist(iscam, actcam)
 			elif config.plugins.AltSoftcam.camdir.value != "/var/emu":
-				self.iscam = False
+				iscam = False
 				config.plugins.AltSoftcam.camdir.value = "/var/emu"
-				self.startcreatecamlist()
+				self.startcreatecamlist(iscam, actcam)
 			else:
-				self.iscam = False
+				iscam = False
 
 	def camactive(self, result, retval, extra_args):
+		(iscam, actcam, softcamlist) = extra_args
 		if result.strip():
-			self.createcamlist()
+			self.createcamlist(iscam, actcam, softcamlist)
 		else:
-			for line in self.softcamlist:
-				if line != self.actcam:
-					self.Console.ePopen("pidof %s" % line, self.camactivefromlist, line)
-			self.Console.ePopen("echo 1", self.camactivefromlist, "none")
+			for line in softcamlist:
+				if line != actcam:
+					self.Console.ePopen("pidof %s" % line, 
+						self.camactivefromlist, [iscam, line, softcamlist])
+			self.Console.ePopen("echo 1", self.camactivefromlist, 
+				[iscam, "none", softcamlist])
 
 	def camactivefromlist(self, result, retval, extra_args):
 		if result.strip():
-			self.actcam = extra_args
-			self.createcamlist()
+			(iscam, actcam, softcamlist) = extra_args
+			self.createcamlist(iscam, actcam, softcamlist)
 
-	def createcamlist(self):
+	def createcamlist(self, iscam = False, actcam = "none", softcamlist = []):
 		self.list = []
-		try:
-			test = self.actcam
-		except:
-			self.actcam = "none"
+		self.iscam = iscam
+		self.actcam = actcam
+		self.softcamlist = softcamlist
 		if self.actcam != "none":
 			self.list.append((self.actcam, self.actcampng, self.checkcam(self.actcam)))
 		for line in self.softcamlist:
