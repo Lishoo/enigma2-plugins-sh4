@@ -80,14 +80,18 @@ class AltCamManager(Screen):
 			"Extensions/AlternativeSoftCamManager/images/actcam.png"))
 		self.defcampng = LoadPixmap(path=resolveFilename(SCOPE_PLUGINS,
 			"Extensions/AlternativeSoftCamManager/images/defcam.png"))
-		self.createinfo()
+		self.startcreateinfo()
 		self.Timer = eTimer()
 		self.Timer.callback.append(self.listecminfo)
 		self.Timer.start(1000*4, False)
 
+	def startcreateinfo(self):
+		self.camdir = config.plugins.AltSoftcam.camdir.value
+		self.createinfo()
+
 	def createinfo(self):
 		self.iscam = False
-		self.startcreatecamlist(self.iscam, self.actcam)
+		self.startcreatecamlist(self.iscam, self.actcam, self.camdir)
 		self.listecminfo()
 
 	def listecminfo(self):
@@ -107,32 +111,31 @@ class AltCamManager(Screen):
 		except:
 			self["status"].setText("")
 
-	def startcreatecamlist(self, iscam, actcam):
-		self.Console.ePopen("ls %s" % config.plugins.AltSoftcam.camdir.value,
-			self.camliststart, [iscam, actcam])
+	def startcreatecamlist(self, iscam, actcam, camdir):
+		self.Console.ePopen("ls %s" % camdir, self.camliststart, [iscam, actcam, camdir])
 
 	def camliststart(self, result, retval, extra_args):
-		(iscam, actcam) = extra_args
+		(iscam, actcam, camdir) = extra_args
 		if result.strip() and not result.startswith('ls: '):
 			iscam = True
 			softcamlist = result.splitlines()
-			self.Console.ePopen("chmod 755 %s/*" %
-				config.plugins.AltSoftcam.camdir.value)
+			self.Console.ePopen("chmod 755 %s/*" % camdir)
 			if actcam != "none" and Softcam.getcamscript(actcam):
 				self.createcamlist(iscam, actcam, softcamlist)
 			else:
 				self.Console.ePopen("pidof %s" % actcam, self.camactive, 
 					[iscam, actcam, softcamlist])
 		else:
-			if path.exists("/usr/bin/cam") and not iscam and \
-				config.plugins.AltSoftcam.camdir.value != "/usr/bin/cam":
+			if path.exists("/usr/bin/cam") and not iscam and camdir != "/usr/bin/cam":
 				iscam = True
-				config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
-				self.startcreatecamlist(iscam, actcam)
-			elif config.plugins.AltSoftcam.camdir.value != "/var/emu":
+				camdir = "/usr/bin/cam"
+				config.plugins.AltSoftcam.camdir.value = camdir
+				self.startcreatecamlist(iscam, actcam, camdir)
+			elif camdir != "/var/emu":
 				iscam = False
-				config.plugins.AltSoftcam.camdir.value = "/var/emu"
-				self.startcreatecamlist(iscam, actcam)
+				camdir = "/var/emu"
+				config.plugins.AltSoftcam.camdir.value = camdir
+				self.startcreatecamlist(iscam, actcam, camdir)
 			else:
 				iscam = False
 
@@ -270,7 +273,7 @@ class AltCamManager(Screen):
 		self.close()
 
 	def setup(self):
-		self.session.openWithCallback(self.createinfo, ConfigEdit)
+		self.session.openWithCallback(self.startcreateinfo, ConfigEdit)
 
 
 class ConfigEdit(Screen, ConfigListScreen):
@@ -293,9 +296,6 @@ class ConfigEdit(Screen, ConfigListScreen):
 		self.setTitle(_("SoftCam path configuration"))
 		self["key_red"] = Label(_("Exit"))
 		self["key_green"] = Label(_("Ok"))
-		self.list = []
-		ConfigListScreen.__init__(self, self.list, session=session)
-		self.createsetup()
 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions"],
 			{
 				"cancel": self.cancel,
@@ -303,35 +303,34 @@ class ConfigEdit(Screen, ConfigListScreen):
 				"ok": self.ok,
 				"green": self.ok,
 			}, -2)
-
-	def createsetup(self):
 		self.list = []
-		self.list.append(getConfigListEntry(_("SoftCam config directory"),
-			config.plugins.AltSoftcam.camconfig))
-		self.list.append(getConfigListEntry(_("SoftCam directory"),
-			config.plugins.AltSoftcam.camdir))
+		ConfigListScreen.__init__(self, self.list, session=session)
+		self.camconfig = config.plugins.AltSoftcam.camconfig
+		self.camdir = config.plugins.AltSoftcam.camdir
+		self.list.append(getConfigListEntry(_("SoftCam config directory"), self.camconfig))
+		self.list.append(getConfigListEntry(_("SoftCam directory"), self.camdir))
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
 
 	def ok(self):
 		msg = [ ]
-		if not path.exists(config.plugins.AltSoftcam.camconfig.value):
-			msg.append("%s " % config.plugins.AltSoftcam.camconfig.value)
-		if not path.exists(config.plugins.AltSoftcam.camdir.value):
-			msg.append("%s " % config.plugins.AltSoftcam.camdir.value)
+		if not path.exists(self.camconfig.value):
+			msg.append("%s " % self.camconfig.value)
+		if not path.exists(self.camdir.value):
+			msg.append("%s " % self.camdir.value)
 		if msg == [ ]:
-			if config.plugins.AltSoftcam.camconfig.value.endswith("/"):
-				config.plugins.AltSoftcam.camconfig.value = \
-					config.plugins.AltSoftcam.camconfig.value[:-1]
-			if config.plugins.AltSoftcam.camdir.value.endswith("/"):
-				config.plugins.AltSoftcam.camdir.value = \
-					config.plugins.AltSoftcam.camdir.value[:-1]
+			if self.camconfig.value.endswith("/"):
+				self.camconfig.value = self.camconfig.value[:-1]
+			if self.camdir.value.endswith("/"):
+				self.camdir.value = self.camdir.value[:-1]
+			config.plugins.AltSoftcam.camconfig = self.camconfig
+			config.plugins.AltSoftcam.camdir = self.camdir
 			config.plugins.AltSoftcam.save()
 			self.close()
 		else:
 			self.mbox = self.session.open(MessageBox,
 				_("Directory %s does not exist!\nPlease set the correct directory path!")
-				% msg, MessageBox.TYPE_INFO, timeout = 5 )
+				% msg, MessageBox.TYPE_INFO, timeout = 5)
 
 	def cancel(self, answer = None):
 		if answer is None:
@@ -344,3 +343,4 @@ class ConfigEdit(Screen, ConfigListScreen):
 			for x in self["config"].list:
 				x[1].cancel()
 			self.close()
+
