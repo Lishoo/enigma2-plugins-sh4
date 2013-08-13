@@ -14,7 +14,7 @@ from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from Tools.LoadPixmap import LoadPixmap
 
 from enigma import eTimer
-from os import path
+from os import path, listdir
 
 
 class AltCamManager(Screen):
@@ -75,11 +75,17 @@ class AltCamManager(Screen):
 		self["list"] = List([])
 		Softcam.checkconfigdir()
 		self.actcam = config.plugins.AltSoftcam.actcam.value
+		self.softcamlist = []
+		self.finish = True
 		self.camstartcmd = ""
 		self.actcampng = LoadPixmap(path=resolveFilename(SCOPE_PLUGINS,
 			"Extensions/AlternativeSoftCamManager/images/actcam.png"))
 		self.defcampng = LoadPixmap(path=resolveFilename(SCOPE_PLUGINS,
 			"Extensions/AlternativeSoftCamManager/images/defcam.png"))
+		self.stoppingTimer = eTimer()
+		self.stoppingTimer.timeout.get().append(self.stopping)
+		self.closestopTimer = eTimer()
+		self.closestopTimer.timeout.get().append(self.closestop)
 		self.startcreateinfo()
 		self.Timer = eTimer()
 		self.Timer.callback.append(self.listecminfo)
@@ -91,7 +97,8 @@ class AltCamManager(Screen):
 
 	def createinfo(self):
 		self.iscam = False
-		self.startcreatecamlist(self.iscam, self.actcam, self.camdir)
+		self.finish = False
+		self.startcreatecamlist()
 		self.listecminfo()
 
 	def listecminfo(self):
@@ -111,62 +118,63 @@ class AltCamManager(Screen):
 		except:
 			self["status"].setText("")
 
-	def startcreatecamlist(self, iscam, actcam, camdir):
-		self.Console.ePopen("ls %s" % camdir, self.camliststart, [iscam, actcam, camdir])
+	def startcreatecamlist(self):
+		self.camliststart()
 
-	def camliststart(self, result, retval, extra_args):
-		(iscam, actcam, camdir) = extra_args
-		if result.strip() and not result.startswith('ls: '):
-			iscam = True
-			softcamlist = result.splitlines()
-			self.Console.ePopen("chmod 755 %s/*" % camdir)
-			if actcam != "none" and Softcam.getcamscript(actcam):
-				self.createcamlist(iscam, actcam, softcamlist)
-			else:
-				self.Console.ePopen("pidof %s" % actcam, self.camactive, 
-					[iscam, actcam, softcamlist])
+	def camliststart(self):
+		if path.exists(self.camdir):
+			self.softcamlist = listdir(self.camdir)
+			if self.softcamlist:
+				self.iscam = True
+				self.Console.ePopen("chmod 755 %s/*" % self.camdir)
+				if self.actcam != "none" and Softcam.getcamscript(self.actcam):
+					self.createcamlist()
+				else:
+					self.Console.ePopen("pidof %s" % self.actcam, self.camactive)
 		else:
-			if path.exists("/usr/bin/cam") and not iscam and camdir != "/usr/bin/cam":
-				iscam = True
-				camdir = "/usr/bin/cam"
-				config.plugins.AltSoftcam.camdir.value = camdir
-				self.startcreatecamlist(iscam, actcam, camdir)
+			if path.exists("/usr/bin/cam") and not self.iscam and self.camdir != "/usr/bin/cam":
+				self.iscam = True
+				self.camdir = "/usr/bin/cam"
+				config.plugins.AltSoftcam.camdir.value = self.camdir
+				self.startcreatecamlist()
 			elif camdir != "/var/emu":
-				iscam = False
-				camdir = "/var/emu"
-				config.plugins.AltSoftcam.camdir.value = camdir
-				self.startcreatecamlist(iscam, actcam, camdir)
+				self.iscam = False
+				self.camdir = "/var/emu"
+				config.plugins.AltSoftcam.camdir.value = self.camdir
+				self.startcreatecamlist()
 			else:
-				iscam = False
+				self.iscam = False
+				self.finish = True
 
 	def camactive(self, result, retval, extra_args):
-		(iscam, actcam, softcamlist) = extra_args
 		if result.strip():
-			self.createcamlist(iscam, actcam, softcamlist)
+			self.createcamlist()
 		else:
-			for line in softcamlist:
-				if line != actcam:
-					self.Console.ePopen("pidof %s" % line, 
-						self.camactivefromlist, [iscam, line, softcamlist])
-			self.Console.ePopen("echo 1", self.camactivefromlist, 
-				[iscam, "none", softcamlist])
+			self.actcam = "none"
+			for line in self.softcamlist:
+				Console().ePopen("pidof %s" % line, self.camactivefromlist, line)
+			Console().ePopen("echo 1", self.camactivefromlist, "none")
 
 	def camactivefromlist(self, result, retval, extra_args):
 		if result.strip():
-			(iscam, actcam, softcamlist) = extra_args
-			self.createcamlist(iscam, actcam, softcamlist)
+			self.actcam = extra_args
+			self.createcamlist()
+		else:
+			self.finish = True
 
-	def createcamlist(self, iscam = False, actcam = "none", softcamlist = []):
+	def createcamlist(self):
 		self.list = []
-		self.iscam = iscam
-		self.actcam = actcam
-		self.softcamlist = softcamlist
-		if self.actcam != "none":
-			self.list.append((self.actcam, self.actcampng, self.checkcam(self.actcam)))
-		for line in self.softcamlist:
-			if line != self.actcam:
-				self.list.append((line, self.defcampng, self.checkcam(line)))
-		self["list"].setList(self.list)
+		try:
+			if self.actcam != "none":
+				self.list.append((self.actcam, self.actcampng, self.checkcam(self.actcam)))
+			for line in self.softcamlist:
+				if line != self.actcam:
+					self.list.append((line, self.defcampng, self.checkcam(line)))
+			self["list"].setList(self.list)
+		except:
+			self.actcam = "none"
+			self.softcamlist = []
+		self.finish = True
 
 	def checkcam (self, cam):
 		cam = cam.lower()
@@ -206,46 +214,40 @@ class AltCamManager(Screen):
 			return cam[0:6]
 
 	def start(self):
-		if self.iscam:
+		if self.iscam and self.finish:
 			self.camstart = self["list"].getCurrent()[0]
 			if self.camstart != self.actcam:
 				print "[Alternative SoftCam Manager] Start SoftCam"
 				self.camstartcmd = Softcam.getcamcmd(self.camstart)
 				msg = _("Starting %s") % self.camstart
 				self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
-				self.activityTimer = eTimer()
-				self.activityTimer.timeout.get().append(self.stopping)
-				self.activityTimer.start(100, False)
+				self.stoppingTimer.start(100, False)
 
 	def stop(self):
-		if self.iscam and self.actcam != "none":
+		if self.iscam and self.actcam != "none" and self.finish:
 			Softcam.stopcam(self.actcam)
 			msg  = _("Stopping %s") % self.actcam
 			self.actcam = "none"
 			self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
-			self.activityTimer = eTimer()
-			self.activityTimer.timeout.get().append(self.closestop)
-			self.activityTimer.start(1000, False)
+			self.closestopTimer.start(1000, False)
 
 	def closestop(self):
-		self.activityTimer.stop()
+		self.closestopTimer.stop()
 		self.mbox.close()
 		self.createinfo()
 
 	def restart(self):
-		if self.iscam:
+		if self.iscam and self.actcam != "none" and self.finish:
 			print "[Alternative SoftCam Manager] restart SoftCam"
 			self.camstart = self.actcam
 			if self.camstartcmd == "":
 				self.camstartcmd = Softcam.getcamcmd(self.camstart)
 			msg = _("Restarting %s") % self.actcam
 			self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
-			self.activityTimer = eTimer()
-			self.activityTimer.timeout.get().append(self.stopping)
-			self.activityTimer.start(100, False)
+			self.stoppingTimer.start(100, False)
 
 	def stopping(self):
-		self.activityTimer.stop()
+		self.stoppingTimer.stop()
 		Softcam.stopcam(self.actcam)
 		self.actcam = self.camstart
 		service = self.session.nav.getCurrentlyPlayingServiceReference()
@@ -260,20 +262,30 @@ class AltCamManager(Screen):
 		self.createinfo()
 
 	def ok(self):
-		if self.iscam:
+		if self.iscam and self.finish:
 			if self["list"].getCurrent()[0] != self.actcam:
 				self.start()
 			else:
 				self.restart()
 
 	def cancel(self):
-		if config.plugins.AltSoftcam.actcam.value != self.actcam:
-			config.plugins.AltSoftcam.actcam.value = self.actcam
-		config.plugins.AltSoftcam.save()
-		self.close()
+		if self.finish:
+			if config.plugins.AltSoftcam.actcam.value != self.actcam:
+				config.plugins.AltSoftcam.actcam.value = self.actcam
+			config.plugins.AltSoftcam.save()
+			self.close()
+		else: # if list setting not completed as they should
+			self.cancelTimer = eTimer()
+			self.cancelTimer.timeout.get().append(self.setfinish)
+			self.cancelTimer.start(1000*4, False)
+
+	def setfinish(self):			
+		self.cancelTimer.stop()
+		self.finish = True
 
 	def setup(self):
-		self.session.openWithCallback(self.startcreateinfo, ConfigEdit)
+		if self.finish:
+			self.session.openWithCallback(self.startcreateinfo, ConfigEdit)
 
 
 class ConfigEdit(Screen, ConfigListScreen):
