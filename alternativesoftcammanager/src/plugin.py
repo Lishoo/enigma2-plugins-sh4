@@ -22,9 +22,13 @@ def main(session, **kwargs):
 	import Manager
 	session.open(Manager.AltCamManager)
 
+EnigmaStart = False
+
 def startcam(reason, **kwargs):
 	if config.plugins.AltSoftcam.actcam.value != "none":
-		if reason == 0: # Enigma start
+		global EnigmaStart
+		if reason == 0 and EnigmaStart == False: # Enigma start and not use reloadPlugins
+			EnigmaStart = True
 			sleep(2)
 			try:
 				cmd = Softcam.getcamcmd(config.plugins.AltSoftcam.actcam.value)
@@ -32,7 +36,8 @@ def startcam(reason, **kwargs):
 				print "[Alternative SoftCam Manager] ", cmd
 			except:
 				pass
-		elif reason == 1: # Enigma stop
+		elif reason == 1 and EnigmaStart == True: # Enigma stop
+			EnigmaStart = False
 			try:
 				Softcam.stopcam(config.plugins.AltSoftcam.actcam.value)
 			except:
@@ -46,3 +51,4 @@ def Plugins(**kwargs):
 		icon="images/softcam.png", fnc=main),
 	PluginDescriptor(where=PluginDescriptor.WHERE_AUTOSTART,
 		needsRestart=True, fnc=startcam)]
+
