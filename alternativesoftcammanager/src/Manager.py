@@ -125,6 +125,7 @@ class AltCamManager(Screen):
 		if path.exists(self.camdir):
 			self.softcamlist = listdir(self.camdir)
 			if self.softcamlist:
+				self.softcamlist.sort()
 				self.iscam = True
 				self.Console.ePopen("chmod 755 %s/*" % self.camdir)
 				if self.actcam != "none" and Softcam.getcamscript(self.actcam):
