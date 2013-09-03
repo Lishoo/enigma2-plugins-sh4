@@ -1,0 +1,17 @@
+<default>
+	  <prerequisites>
+                    <tag type="System" />
+	  </prerequisites>
+          <info>
+                    <author>Vali</author>
+                    <name>OSDAdjustment</name>
+                    <packagename>enigma2-plugin-systemplugins-osdadjustment</packagename>
+                    <shortdescription>change the OSD screen size</shortdescription>
+                    <description>change the OSD screen size</description>
+                    <screenshot src="http://www.dreamboxupdate.com/preview/plugin_osdadjustment.jpg" />		    
+          </info>
+
+	  <files type="package"> <!-- without version, without .ipk -->
+		<file type="package" name="enigma2-plugin-systemplugins-osdadjustment" />
+	  </files>
+</default>

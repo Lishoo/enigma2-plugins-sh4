@@ -396,6 +396,10 @@ orfteletext/Makefile
 orfteletext/meta/Makefile
 orfteletext/src/Makefile
 
+osdadjustment/Makefile
+osdadjustment/meta/Makefile
+osdadjustment/src/Makefile
+
 partnerbox/Makefile
 partnerbox/meta/Makefile
 partnerbox/po/Makefile
