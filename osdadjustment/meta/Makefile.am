@@ -1,3 +1,3 @@
 installdir = $(datadir)/meta/
 
-dist_install_DATA = plugin_orfteletext.xml
+dist_install_DATA = plugin_osdadjustment.xml
