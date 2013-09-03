@@ -60,6 +60,7 @@ SUBDIRS = \
 	ofdb \
 	orfat \
 	orfteletext \
+	osdadjustment \
 	partnerbox \
 	permanentclock \
 	permanenttimeshift \
