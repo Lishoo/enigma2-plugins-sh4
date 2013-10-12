@@ -114,6 +114,10 @@ autotimer/src/WebScreens/Makefile
 autotimer/src/web/Makefile
 autotimer/src/web-data/Makefile
 
+autovolume/Makefile
+autovolume/meta/Makefile
+autovolume/src/Makefile
+
 babelzapper/Makefile
 babelzapper/etc/Makefile
 babelzapper/meta/Makefile

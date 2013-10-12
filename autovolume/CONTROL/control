@@ -1,0 +1,5 @@
+Package: enigma2-plugin-systemplugins-autovolume
+Version: 20131012
+Description: Simple automatic volume adjustment.
+Maintainer: Taapat <taapat@gmail.com>
+
