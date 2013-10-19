@@ -195,10 +195,6 @@ class AltCamManager(Screen):
 			return "CCcam"
 		elif "gbox" in cam:
 			return "Gbox"
-		elif "ufs910camd" in cam:
-			return "Ufs910"
-		elif "incubuscamd" in cam:
-			return "Incubus"
 		elif "mpcs" in cam:
 			return "Mpcs"
 		elif "mbox" in cam:
@@ -207,12 +203,10 @@ class AltCamManager(Screen):
 			return "Newcs"
 		elif "vizcam" in cam:
 			return "Vizcam"
-		elif "sh4cam" in cam:
-			return "Sh4CAM"
 		elif "rucam" in cam:
 			return "Rucam"
 		else:
-			return cam[0:6]
+			return cam[:6]
 
 	def start(self):
 		if self.iscam and self.finish:
@@ -353,7 +347,6 @@ class ConfigEdit(Screen, ConfigListScreen):
 			else:
 				self.close()
 		elif answer:
-			for x in self["config"].list:
-				x[1].cancel()
+			[x[1].cancel() for x in self["config"].list]
 			self.close()
 

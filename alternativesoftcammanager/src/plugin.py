@@ -27,7 +27,7 @@ EnigmaStart = False
 def startcam(reason, **kwargs):
 	if config.plugins.AltSoftcam.actcam.value != "none":
 		global EnigmaStart
-		if reason == 0 and EnigmaStart == False: # Enigma start and not use reloadPlugins
+		if reason == 0 and not EnigmaStart: # Enigma start and not use reloadPlugins
 			EnigmaStart = True
 			sleep(2)
 			try:
@@ -36,8 +36,7 @@ def startcam(reason, **kwargs):
 				print "[Alternative SoftCam Manager] ", cmd
 			except:
 				pass
-		elif reason == 1 and EnigmaStart == True: # Enigma stop
-			EnigmaStart = False
+		elif reason == 1: # Enigma stop
 			try:
 				Softcam.stopcam(config.plugins.AltSoftcam.actcam.value)
 			except:

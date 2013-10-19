@@ -36,8 +36,8 @@ def getcamcmd(cam):
 
 def getcamscript(cam):
 	cam = cam.lower()
-	if cam.endswith('.sh') or cam.startswith('softcam') or \
-		cam.startswith('cardserver'):
+	if cam[-3:] == ".sh" or cam[:7] == "softcam" or \
+		cam[:10] == "cardserver":
 		return True
 	return False
 
@@ -75,3 +75,4 @@ def checkconfigdir():
 			__createdir("/var/emu")
 			config.plugins.AltSoftcam.camdir.value = "/var/emu"
 		config.plugins.AltSoftcam.camdir.save()
+
