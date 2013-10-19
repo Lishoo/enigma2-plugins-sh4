@@ -28,7 +28,6 @@ class AutoTimerList(MenuList):
 		self.iconRecording = LoadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, "skin_default/icons/timer_rec.png"))
 		self.iconZapped = LoadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, "skin_default/icons/timer_zap.png"))
 
-		self.colorDisabled = 12368828
 
 	def applySkin(self, desktop, parent):
 		return MenuList.applySkin(self, desktop, parent)

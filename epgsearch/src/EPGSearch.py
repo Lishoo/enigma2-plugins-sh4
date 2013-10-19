@@ -239,6 +239,11 @@ class EPGSearch(EPGSelection):
 		if PartnerBoxIconsEnabled:
 			EPGSelection.GetPartnerboxTimerlist(self)
 
+	def onSelectionChanged(self):
+		self["Service"].newService(eServiceReference(str(self["list"].getCurrent()[1])))
+		self["Event"].newEvent(self["list"].getCurrent()[0])
+		EPGSelection.onSelectionChanged(self)
+
 	def closeScreen(self):
 		# Save our history
 		config.plugins.epgsearch.save()

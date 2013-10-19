@@ -149,6 +149,11 @@ dreamirc/src/protocols/Makefile
 dreammediathek/Makefile
 dreammediathek/src/Makefile
 
+dvdbackup/Makefile
+dvdbackup/src/Makefile
+dvdbackup/po/Makefile
+dvdbackup/meta/Makefile
+
 dyndns/Makefile
 dyndns/src/Makefile
 dyndns/meta/Makefile
@@ -272,7 +277,6 @@ libgisclubskin/src/bitratecalc/Makefile
 libgisclubskin/meta/Makefile
 
 logomanager/Makefile
-logomanager/logodir_hdd/Makefile
 logomanager/meta/Makefile
 logomanager/src/Makefile
 
@@ -362,6 +366,7 @@ multiquickbutton/meta/Makefile
 mytube/Makefile
 mytube/meta/Makefile
 mytube/src/Makefile
+mytube/po/Makefile
 
 namezap/Makefile
 namezap/meta/Makefile
@@ -467,6 +472,7 @@ quickepg/src/Makefile
 reconstructapsc/Makefile
 reconstructapsc/meta/Makefile
 reconstructapsc/src_py/Makefile
+reconstructapsc/po/Makefile
 
 remotetimer/Makefile
 remotetimer/meta/Makefile

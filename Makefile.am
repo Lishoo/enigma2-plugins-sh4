@@ -15,6 +15,7 @@ SUBDIRS = \
 	curlytx \
 	dreamirc \
 	dreammediathek \
+	dvdbackup \
 	dyndns \
 	easyinfo \
 	easymedia \
