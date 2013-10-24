@@ -86,20 +86,10 @@ class AltCamManager(Screen):
 		self.stoppingTimer.timeout.get().append(self.stopping)
 		self.closestopTimer = eTimer()
 		self.closestopTimer.timeout.get().append(self.closestop)
-		self.startcreateinfo()
+		self.createinfo()
 		self.Timer = eTimer()
 		self.Timer.callback.append(self.listecminfo)
 		self.Timer.start(1000*4, False)
-
-	def startcreateinfo(self):
-		self.camdir = config.plugins.AltSoftcam.camdir.value
-		self.createinfo()
-
-	def createinfo(self):
-		self.iscam = False
-		self.finish = False
-		self.startcreatecamlist()
-		self.listecminfo()
 
 	def listecminfo(self):
 		listecm = ""
@@ -118,31 +108,36 @@ class AltCamManager(Screen):
 		except:
 			self["status"].setText("")
 
-	def startcreatecamlist(self):
+	def createinfo(self):
+		self.iscam = False
+		self.finish = False
 		self.camliststart()
+		self.listecminfo()
 
 	def camliststart(self):
-		if path.exists(self.camdir):
-			self.softcamlist = listdir(self.camdir)
+		if path.exists(config.plugins.AltSoftcam.camdir.value):
+			self.softcamlist = listdir(config.plugins.AltSoftcam.camdir.value)
 			if self.softcamlist:
 				self.softcamlist.sort()
 				self.iscam = True
-				self.Console.ePopen("chmod 755 %s/*" % self.camdir)
+				self.Console.ePopen("chmod 755 %s/*" % config.plugins.AltSoftcam.camdir.value)
 				if self.actcam != "none" and Softcam.getcamscript(self.actcam):
 					self.createcamlist()
 				else:
 					self.Console.ePopen("pidof %s" % self.actcam, self.camactive)
+			else:
+				self.finish = True
+				self["list"].setList([])
 		else:
-			if path.exists("/usr/bin/cam") and not self.iscam and self.camdir != "/usr/bin/cam":
+			if path.exists("/usr/bin/cam") and not self.iscam and \
+				config.plugins.AltSoftcam.camdir.value != "/usr/bin/cam":
 				self.iscam = True
-				self.camdir = "/usr/bin/cam"
-				config.plugins.AltSoftcam.camdir.value = self.camdir
-				self.startcreatecamlist()
+				config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
+				self.camliststart()
 			elif camdir != "/var/emu":
 				self.iscam = False
-				self.camdir = "/var/emu"
-				config.plugins.AltSoftcam.camdir.value = self.camdir
-				self.startcreatecamlist()
+				config.plugins.AltSoftcam.camdir.value = "/var/emu"
+				self.camliststart()
 			else:
 				self.iscam = False
 				self.finish = True
@@ -280,7 +275,7 @@ class AltCamManager(Screen):
 
 	def setup(self):
 		if self.finish:
-			self.session.openWithCallback(self.startcreateinfo, ConfigEdit)
+			self.session.openWithCallback(self.createinfo, ConfigEdit)
 
 
 class ConfigEdit(Screen, ConfigListScreen):
@@ -312,26 +307,26 @@ class ConfigEdit(Screen, ConfigListScreen):
 			}, -2)
 		self.list = []
 		ConfigListScreen.__init__(self, self.list, session=session)
-		self.camconfig = config.plugins.AltSoftcam.camconfig
-		self.camdir = config.plugins.AltSoftcam.camdir
-		self.list.append(getConfigListEntry(_("SoftCam config directory"), self.camconfig))
-		self.list.append(getConfigListEntry(_("SoftCam directory"), self.camdir))
+		self.list.append(getConfigListEntry(_("SoftCam config directory"),
+			config.plugins.AltSoftcam.camconfig))
+		self.list.append(getConfigListEntry(_("SoftCam directory"),
+			config.plugins.AltSoftcam.camdir))
 		self["config"].list = self.list
 		self["config"].l.setList(self.list)
 
 	def ok(self):
 		msg = [ ]
-		if not path.exists(self.camconfig.value):
-			msg.append("%s " % self.camconfig.value)
-		if not path.exists(self.camdir.value):
-			msg.append("%s " % self.camdir.value)
+		if not path.exists(config.plugins.AltSoftcam.camconfig.value):
+			msg.append("%s " % config.plugins.AltSoftcam.camconfig.value)
+		if not path.exists(config.plugins.AltSoftcam.camdir.value):
+			msg.append("%s " % config.plugins.AltSoftcam.camdir.value)
 		if msg == [ ]:
-			if self.camconfig.value.endswith("/"):
-				self.camconfig.value = self.camconfig.value[:-1]
-			if self.camdir.value.endswith("/"):
-				self.camdir.value = self.camdir.value[:-1]
-			config.plugins.AltSoftcam.camconfig = self.camconfig
-			config.plugins.AltSoftcam.camdir = self.camdir
+			if config.plugins.AltSoftcam.camconfig.value[-1] == "/":
+				config.plugins.AltSoftcam.camconfig.value = \
+					config.plugins.AltSoftcam.camconfig.value[:-1]
+			if config.plugins.AltSoftcam.camdir.value[-1] == "/":
+				config.plugins.AltSoftcam.camdir.value = \
+					config.plugins.AltSoftcam.camdir.value[:-1]
 			config.plugins.AltSoftcam.save()
 			self.close()
 		else:
@@ -347,6 +342,7 @@ class ConfigEdit(Screen, ConfigListScreen):
 			else:
 				self.close()
 		elif answer:
-			[x[1].cancel() for x in self["config"].list]
+			for x in self["config"].list:
+				x[1].cancel()
 			self.close()
 
