@@ -129,18 +129,8 @@ class AltCamManager(Screen):
 				self.finish = True
 				self["list"].setList([])
 		else:
-			if path.exists("/usr/bin/cam") and not self.iscam and \
-				config.plugins.AltSoftcam.camdir.value != "/usr/bin/cam":
-				self.iscam = True
-				config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
-				self.camliststart()
-			elif camdir != "/var/emu":
-				self.iscam = False
-				config.plugins.AltSoftcam.camdir.value = "/var/emu"
-				self.camliststart()
-			else:
-				self.iscam = False
-				self.finish = True
+			Softcam.checkconfigdir()
+			self.camliststart()
 
 	def camactive(self, result, retval, extra_args):
 		if result.strip():
@@ -267,11 +257,12 @@ class AltCamManager(Screen):
 		else: # if list setting not completed as they should
 			self.cancelTimer = eTimer()
 			self.cancelTimer.timeout.get().append(self.setfinish)
-			self.cancelTimer.start(1000*4, False)
+			self.cancelTimer.start(4000, False)
 
 	def setfinish(self):			
 		self.cancelTimer.stop()
 		self.finish = True
+		self.cancel()
 
 	def setup(self):
 		if self.finish:
@@ -342,7 +333,7 @@ class ConfigEdit(Screen, ConfigListScreen):
 			else:
 				self.close()
 		elif answer:
-			for x in self["config"].list:
-				x[1].cancel()
+			config.plugins.AltSoftcam.camconfig.cancel()
+			config.plugins.AltSoftcam.camdir.cancel()
 			self.close()
 

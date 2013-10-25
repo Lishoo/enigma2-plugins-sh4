@@ -36,8 +36,7 @@ def getcamcmd(cam):
 
 def getcamscript(cam):
 	cam = cam.lower()
-	if cam[-3:] == ".sh" or cam[:7] == "softcam" or \
-		cam[:10] == "cardserver":
+	if cam[-3:] == ".sh" or cam[:7] == "softcam" or cam[:10] == "cardserver":
 		return True
 	return False
 

@@ -30,17 +30,11 @@ def startcam(reason, **kwargs):
 		if reason == 0 and not EnigmaStart: # Enigma start and not use reloadPlugins
 			EnigmaStart = True
 			sleep(2)
-			try:
-				cmd = Softcam.getcamcmd(config.plugins.AltSoftcam.actcam.value)
-				Console().ePopen(cmd)
-				print "[Alternative SoftCam Manager] ", cmd
-			except:
-				pass
+			cmd = Softcam.getcamcmd(config.plugins.AltSoftcam.actcam.value)
+			Console().ePopen(cmd)
+			print "[Alternative SoftCam Manager] ", cmd
 		elif reason == 1: # Enigma stop
-			try:
-				Softcam.stopcam(config.plugins.AltSoftcam.actcam.value)
-			except:
-				pass
+			Softcam.stopcam(config.plugins.AltSoftcam.actcam.value)
 
 def Plugins(**kwargs):
 	return [PluginDescriptor(name=_("Alternative SoftCam Manager"),
