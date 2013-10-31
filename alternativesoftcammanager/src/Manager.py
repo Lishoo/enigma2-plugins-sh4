@@ -1,5 +1,7 @@
 from . import _
-import Softcam
+
+from os import path, listdir
+from enigma import eTimer
 
 from Components.ActionMap import ActionMap
 from Components.config import config, getConfigListEntry
@@ -13,8 +15,7 @@ from Screens.Screen import Screen
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
 from Tools.LoadPixmap import LoadPixmap
 
-from enigma import eTimer
-from os import path, listdir
+from Softcam import checkconfigdir, getcamcmd, getcamscript, stopcam
 
 
 class AltCamManager(Screen):
@@ -73,7 +74,7 @@ class AltCamManager(Screen):
 			}, -1)
 		self["status"] = ScrollLabel()
 		self["list"] = List([])
-		Softcam.checkconfigdir()
+		checkconfigdir()
 		self.actcam = config.plugins.AltSoftcam.actcam.value
 		self.softcamlist = []
 		self.finish = True
@@ -121,7 +122,7 @@ class AltCamManager(Screen):
 				self.softcamlist.sort()
 				self.iscam = True
 				self.Console.ePopen("chmod 755 %s/*" % config.plugins.AltSoftcam.camdir.value)
-				if self.actcam != "none" and Softcam.getcamscript(self.actcam):
+				if self.actcam != "none" and getcamscript(self.actcam):
 					self.createcamlist()
 				else:
 					self.Console.ePopen("pidof %s" % self.actcam, self.camactive)
@@ -129,7 +130,7 @@ class AltCamManager(Screen):
 				self.finish = True
 				self["list"].setList([])
 		else:
-			Softcam.checkconfigdir()
+			checkconfigdir()
 			self.camliststart()
 
 	def camactive(self, result, retval, extra_args):
@@ -164,7 +165,7 @@ class AltCamManager(Screen):
 
 	def checkcam (self, cam):
 		cam = cam.lower()
-		if Softcam.getcamscript(cam):
+		if getcamscript(cam):
 			return "Script"
 		elif "oscam" in cam:
 			return "Oscam"
@@ -198,14 +199,14 @@ class AltCamManager(Screen):
 			self.camstart = self["list"].getCurrent()[0]
 			if self.camstart != self.actcam:
 				print "[Alternative SoftCam Manager] Start SoftCam"
-				self.camstartcmd = Softcam.getcamcmd(self.camstart)
+				self.camstartcmd = getcamcmd(self.camstart)
 				msg = _("Starting %s") % self.camstart
 				self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
 				self.stoppingTimer.start(100, False)
 
 	def stop(self):
 		if self.iscam and self.actcam != "none" and self.finish:
-			Softcam.stopcam(self.actcam)
+			stopcam(self.actcam)
 			msg  = _("Stopping %s") % self.actcam
 			self.actcam = "none"
 			self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
@@ -221,14 +222,14 @@ class AltCamManager(Screen):
 			print "[Alternative SoftCam Manager] restart SoftCam"
 			self.camstart = self.actcam
 			if self.camstartcmd == "":
-				self.camstartcmd = Softcam.getcamcmd(self.camstart)
+				self.camstartcmd = getcamcmd(self.camstart)
 			msg = _("Restarting %s") % self.actcam
 			self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
 			self.stoppingTimer.start(100, False)
 
 	def stopping(self):
 		self.stoppingTimer.stop()
-		Softcam.stopcam(self.actcam)
+		stopcam(self.actcam)
 		self.actcam = self.camstart
 		service = self.session.nav.getCurrentlyPlayingServiceReference()
 		if service:

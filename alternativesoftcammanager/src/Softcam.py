@@ -1,7 +1,7 @@
+from os import mkdir, path, remove
+
 from Components.config import config
 from Components.Console import Console
-
-from os import mkdir, path, remove
 
 
 def getcamcmd(cam):
