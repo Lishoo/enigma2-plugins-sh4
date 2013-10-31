@@ -1,9 +1,6 @@
-from Components.config import config
-from Components.Console import Console
-
-from time import sleep
-
 import os
+from time import sleep
+from Components.Console import Console
 
 
 def GetDevices():
@@ -24,7 +21,7 @@ def GetDevices():
 		print "[HddManager] Failed to open /proc/partitions", ex
 	return device
 
-def ReadMounts():
+def __ReadMounts():
 	result = ""
 	try:
 		f = open("/proc/mounts", "r")
@@ -39,7 +36,7 @@ def ReadMounts():
 def CheckMountDir(device):
 	hdd = "nothing"
 	movie = "nothing"
-	for line in ReadMounts():
+	for line in __ReadMounts():
 		if line[1][-3:] == "hdd":
 			hdd = GetDeviceFromList(device, line[0][5:])
 		elif line[1][-5:] == "movie":
@@ -51,33 +48,29 @@ def GetDeviceFromList(list, device):
 		if line[:len(device)] == device:
 			return line
 
-def MountOnStart():
-	if config.plugins.HddMount.MountOnStart.value:
+def MountHddOnStart(MountOnHdd, MountOnMovie):
+	device = GetDevices()
+	if not device:
+		sleep(5)
 		device = GetDevices()
-		if not device:
-			sleep(3)
-			device = GetDevices()
-		mounts = CheckMountDir(device)
-		MountOnHdd = config.plugins.HddMount.MountOnHdd.value
-		if MountOnHdd != "nothing" and MountOnHdd in device \
-			and mounts[0] == "nothing":
-			mountdevice.Mount("/dev/" + MountOnHdd[:4], "/media/hdd")
-		MountOnMovie = config.plugins.HddMount.MountOnMovie.value
-		if MountOnMovie != "nothing" and MountOnMovie in device \
-			and mounts[1] == "nothing":
-			mountdevice.Mount("/dev/" + MountOnMovie[:4], "/media/hdd/movie")
-	if config.plugins.HddMount.SwapOnStart.value \
-		and config.plugins.HddMount.SwapFile.value != "no":
-		SwapFile = config.plugins.HddMount.SwapFile.value
-		if SwapFile != "no":
-			if SwapFile[:2] == "sd":
-				Console().ePopen("swapon /dev/%s" % SwapFile[:4])
-			elif os.path.exists("/media/hdd/swapfile"):
+	mounts = CheckMountDir(device)
+	if MountOnHdd != "nothing" and MountOnHdd in device \
+		and mounts[0] == "nothing":
+		mountdevice.Mount("/dev/" + MountOnHdd[:4], "/media/hdd")
+	if MountOnMovie != "nothing" and MountOnMovie in device \
+		and mounts[1] == "nothing":
+		mountdevice.Mount("/dev/" + MountOnMovie[:4], "/media/hdd/movie")
+
+def MountSwapOnStart(SwapFile):
+	if SwapFile != "no":
+		if SwapFile[:2] == "sd":
+			Console().ePopen("swapon /dev/%s" % SwapFile[:4])
+		elif os.path.exists("/media/hdd/swapfile"):
+			Console().ePopen("swapon /media/hdd/swapfile")
+		else:
+			sleep(5)
+			if os.path.exists("/media/hdd/swapfile"):
 				Console().ePopen("swapon /media/hdd/swapfile")
-			else:
-				sleep(5)
-				if os.path.exists("/media/hdd/swapfile"):
-					Console().ePopen("swapon /media/hdd/swapfile")
 
 class MountDevice:
 	def __init__(self):
@@ -94,24 +87,24 @@ class MountDevice:
 				except:
 					print "[HddManager] Failed to mkdir", dir
 		if os.path.exists("/bin/ntfs-3g"):
-			self.Console.ePopen("sfdisk -l /dev/sd? | grep NTFS", self.CheckNtfs, [device, dirpath])
+			self.Console.ePopen("sfdisk -l /dev/sd? | grep NTFS", self.__CheckNtfs, [device, dirpath])
 		else:
-			self.StartMount("mount " + device + " " + dirpath)
+			self.__StartMount("mount " + device + " " + dirpath)
 
-	def CheckNtfs(self, result, retval, extra_args):
+	def __CheckNtfs(self, result, retval, extra_args):
 		(device, dirpath) = extra_args
 		cmd = "mount "
 		for line in result.splitlines():
 			if line and line[:9] == device:
-				for line in ReadMounts():
+				for line in __ReadMounts():
 					if device in line[0]:
 						self.Console.ePopen("umount -f " + device)
 						break
 				cmd = "ntfs-3g "
 		cmd += device + " " + dirpath
-		self.StartMount(cmd)
+		self.__StartMount(cmd)
 
-	def StartMount(self, cmd):
+	def __StartMount(self, cmd):
 		self.Console.ePopen(cmd)
 		print "[HddManager]", cmd
 

@@ -1,11 +1,9 @@
 from . import _
 
-from Components.config import config, ConfigSubsection, \
-	ConfigText, ConfigYesNo
+from Components.config import config, ConfigSubsection, ConfigText, ConfigYesNo
 from Plugins.Plugin import PluginDescriptor
 
-import HddMount, Manager
-
+from HddMount import MountHddOnStart, MountSwapOnStart
 
 config.plugins.HddMount = ConfigSubsection()
 config.plugins.HddMount.MountOnStart = ConfigYesNo(default = False)
@@ -15,7 +13,8 @@ config.plugins.HddMount.SwapOnStart = ConfigYesNo(default = False)
 config.plugins.HddMount.SwapFile = ConfigText(default = "no")
 
 def main(session, **kwargs):
-	session.open(Manager.MountSetup)
+	from Manager import MountSetup
+	session.open(MountSetup)
 
 EnigmaStart = False
 
@@ -23,7 +22,12 @@ def OnStart(reason, **kwargs):
 	global EnigmaStart
 	if reason == 0 and EnigmaStart == False: # Enigma start and not use reloadPlugins
 		EnigmaStart = True
-		HddMount.MountOnStart()
+		if config.plugins.HddMount.MountOnStart.value:
+			MountHddOnStart(config.plugins.HddMount.MountOnHdd.value,
+				config.plugins.HddMount.MountOnMovie.value)
+	if config.plugins.HddMount.SwapOnStart.value \
+		and config.plugins.HddMount.SwapFile.value != "no":
+		MountSwapOnStart(config.plugins.HddMount.SwapFile.value)
 
 def Plugins(**kwargs):
 	return [PluginDescriptor(name =_("HDD mount manager"),
