@@ -25,16 +25,16 @@ class AltCamManager(Screen):
 			<widget source="list" render="Listbox" position="10,15" size="340,300" \
 				scrollbarMode="showOnDemand">
 				<convert type="TemplatedMultiContent">
-					{
-						"template": [MultiContentEntryPixmapAlphaTest(pos=(5, 5), \
-								size=(51, 40), png=1), 
-							MultiContentEntryText(pos=(65, 10), size=(275, 40), font=0, \
-								flags=RT_HALIGN_LEFT, text=0), 
-							MultiContentEntryText(pos=(5, 25), size=(51, 16), font=1, \
-								flags=RT_HALIGN_CENTER, text=2),],
-						"fonts": [gFont("Regular", 26), gFont("Regular", 12)],
-						"itemHeight": 50
-					}
+				{
+					"template": [MultiContentEntryText(pos=(65, 10), size=(275, 40), \
+							font=0, flags=RT_HALIGN_LEFT, text=0), 
+						MultiContentEntryPixmapAlphaTest(pos=(5, 5), \
+							size=(51, 40), png=1), 
+						MultiContentEntryText(pos=(5, 25), size=(51, 16), font=1, \
+							flags=RT_HALIGN_CENTER, text=2),],
+					"fonts": [gFont("Regular", 26), gFont("Regular", 12)],
+					"itemHeight": 50
+				}
 				</convert>
 			</widget>
 			<eLabel halign="center" position="390,10" size="210,35" font="Regular;20" \
@@ -79,9 +79,9 @@ class AltCamManager(Screen):
 		self.softcamlist = []
 		self.finish = True
 		self.camstartcmd = ""
-		self.actcampng = LoadPixmap(path=resolveFilename(SCOPE_PLUGINS,
+		self.actcampng = LoadPixmap(resolveFilename(SCOPE_PLUGINS,
 			"Extensions/AlternativeSoftCamManager/images/actcam.png"))
-		self.defcampng = LoadPixmap(path=resolveFilename(SCOPE_PLUGINS,
+		self.defcampng = LoadPixmap(resolveFilename(SCOPE_PLUGINS,
 			"Extensions/AlternativeSoftCamManager/images/defcam.png"))
 		self.stoppingTimer = eTimer()
 		self.stoppingTimer.timeout.get().append(self.stopping)
@@ -95,17 +95,17 @@ class AltCamManager(Screen):
 	def listecminfo(self):
 		listecm = ""
 		try:
-			ecmfiles = open("/tmp/ecm.info", "r")
-			for line in ecmfiles:
-				while len(line) > 32:
-					linebreak = line.rfind(' ', 0, 32)
-					if linebreak == -1:
-						linebreak = 32
-					listecm += line[:linebreak] + "\n"
-					line = line[linebreak+1:]
-				listecm += line
+			with open("/tmp/ecm.info", "r") as ecmfile:
+				for line in ecmfile:
+					while len(line) > 32:
+						linebreak = line.rfind(' ', 1, 32)
+						if linebreak == -1:
+							linebreak = 32
+						listecm += line[:linebreak] + "\n"
+						line = line[linebreak+1:]
+					listecm += line
 			self["status"].setText(listecm)
-			ecmfiles.close()
+			ecmfile.close()
 		except:
 			self["status"].setText("")
 
