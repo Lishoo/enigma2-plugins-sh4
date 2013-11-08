@@ -78,7 +78,6 @@ SUBDIRS = \
 	rsdownloader \
 	sambaserver \
 	seekbar \
-	serienfilm \
 	setpasswd \
 	shoutcast \
 	showclock \
