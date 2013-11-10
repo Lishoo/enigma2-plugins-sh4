@@ -33,6 +33,6 @@ def Plugins(**kwargs):
 		description =_("Plugin to manage mounting and swapfile."),
 		where = [PluginDescriptor.WHERE_PLUGINMENU,
 		PluginDescriptor.WHERE_EXTENSIONSMENU], needsRestart = False, fnc = main),
-	PluginDescriptor(where = PluginDescriptor.WHERE_AUTOSTART,
+		PluginDescriptor(where = PluginDescriptor.WHERE_AUTOSTART,
 		needsRestart = False, fnc = OnStart)]
 
