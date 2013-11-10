@@ -76,8 +76,6 @@ class AltCamManager(Screen):
 		self["list"] = List([])
 		checkconfigdir()
 		self.actcam = config.plugins.AltSoftcam.actcam.value
-		self.softcamlist = []
-		self.finish = True
 		self.camstartcmd = ""
 		self.actcampng = LoadPixmap(resolveFilename(SCOPE_PLUGINS,
 			"Extensions/AlternativeSoftCamManager/images/actcam.png"))
@@ -138,9 +136,10 @@ class AltCamManager(Screen):
 			self.createcamlist()
 		else:
 			self.actcam = "none"
+			self.checkConsole = Console()
 			for line in self.softcamlist:
-				Console().ePopen("pidof %s" % line, self.camactivefromlist, line)
-			Console().ePopen("echo 1", self.camactivefromlist, "none")
+				self.checkConsole.ePopen("pidof %s" % line, self.camactivefromlist, line)
+			self.checkConsole.ePopen("echo 1", self.camactivefromlist, "none")
 
 	def camactivefromlist(self, result, retval, extra_args):
 		if result.strip():
@@ -151,16 +150,12 @@ class AltCamManager(Screen):
 
 	def createcamlist(self):
 		self.list = []
-		try:
-			if self.actcam != "none":
-				self.list.append((self.actcam, self.actcampng, self.checkcam(self.actcam)))
-			for line in self.softcamlist:
-				if line != self.actcam:
-					self.list.append((line, self.defcampng, self.checkcam(line)))
-			self["list"].setList(self.list)
-		except:
-			self.actcam = "none"
-			self.softcamlist = []
+		if self.actcam != "none":
+			self.list.append((self.actcam, self.actcampng, self.checkcam(self.actcam)))
+		for line in self.softcamlist:
+			if line != self.actcam:
+				self.list.append((line, self.defcampng, self.checkcam(line)))
+		self["list"].setList(self.list)
 		self.finish = True
 
 	def checkcam (self, cam):
