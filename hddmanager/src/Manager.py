@@ -52,14 +52,14 @@ class MountSetup(Screen, ConfigListScreen):
 			choices = [("nothing", _("nothing"))] + self.device)
 		self.swap = "no"
 		try:
-			f = open("/proc/swaps", "r")
-			for line in f.readlines():
-				if line[:19] == "/media/hdd/swapfile":
-					self.swap = str(os.path.getsize("/media/hdd/swapfile") / 1024)
-				else:
-					for device in self.swapdevice:
-						if device[:4] == line[5:9]:
-							self.swap = device
+			with open("/proc/swaps", "r") as f:
+				for line in f.readlines():
+					if line[:19] == "/media/hdd/swapfile":
+						self.swap = str(os.path.getsize("/media/hdd/swapfile") / 1024)
+					else:
+						for device in self.swapdevice:
+							if device[:4] == line[5:9]:
+								self.swap = device
 			f.close()
 		except IOError, ex:
 			print "[HddManager] Failed to open /proc/swaps", ex

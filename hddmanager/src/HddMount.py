@@ -6,31 +6,31 @@ from Components.Console import Console
 def GetDevices():
 	device = []
 	try:
-		f = open("/proc/partitions", "r")
-		for line in f.readlines():
-			parts = line.strip().split()
-			if parts and parts[3][-4:-2] == "sd":
-				size = int(parts[2])
-				if (size / 1024 / 1024) > 1:
-					des = str(size / 1024 / 1024) + "GB"
-				else:
-					des = str(size / 1024) + "MB"
-				device.append(parts[3] + "  " + des)
+		with open("/proc/partitions", "r") as f:
+			for line in f.readlines():
+				parts = line.strip().split()
+				if parts and parts[3][-4:-2] == "sd":
+					size = int(parts[2])
+					if (size / 1024 / 1024) > 1:
+						des = str(size / 1024 / 1024) + "GB"
+					else:
+						des = str(size / 1024) + "MB"
+					device.append(parts[3] + "  " + des)
 		f.close()
 	except IOError, ex:
 		print "[HddManager] Failed to open /proc/partitions", ex
 	return device
 
 def __ReadMounts():
-	result = ""
 	try:
-		f = open("/proc/mounts", "r")
-		result = [line.strip().split(' ') for line in f]
+		with open("/proc/mounts", "r") as f:
+			result = [line.strip().split(' ') for line in f]
+			for item in result:
+				item[1] = item[1].replace('\\040', ' ')
 		f.close()
 	except IOError, ex:
 		print "[HddManager] Failed to open /proc/mounts", ex
-	for item in result:
-		item[1] = item[1].replace('\\040', ' ')
+		result = ""
 	return result
 
 def CheckMountDir(device):
@@ -54,11 +54,11 @@ def MountHddOnStart(MountOnHdd, MountOnMovie):
 		sleep(5)
 		device = GetDevices()
 	mounts = CheckMountDir(device)
-	if MountOnHdd != "nothing" and MountOnHdd in device \
-		and mounts[0] == "nothing":
+	if MountOnHdd != "nothing" and MountOnHdd in device and \
+		mounts[0] == "nothing":
 		mountdevice.Mount("/dev/" + MountOnHdd[:4], "/media/hdd")
-	if MountOnMovie != "nothing" and MountOnMovie in device \
-		and mounts[1] == "nothing":
+	if MountOnMovie != "nothing" and MountOnMovie in device and \
+		mounts[1] == "nothing":
 		mountdevice.Mount("/dev/" + MountOnMovie[:4], "/media/hdd/movie")
 
 def MountSwapOnStart(SwapFile):

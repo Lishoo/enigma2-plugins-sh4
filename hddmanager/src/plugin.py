@@ -25,9 +25,8 @@ def OnStart(reason, **kwargs):
 		if config.plugins.HddMount.MountOnStart.value:
 			MountHddOnStart(config.plugins.HddMount.MountOnHdd.value,
 				config.plugins.HddMount.MountOnMovie.value)
-	if config.plugins.HddMount.SwapOnStart.value \
-		and config.plugins.HddMount.SwapFile.value != "no":
-		MountSwapOnStart(config.plugins.HddMount.SwapFile.value)
+		if config.plugins.HddMount.SwapOnStart.value:
+			MountSwapOnStart(config.plugins.HddMount.SwapFile.value)
 
 def Plugins(**kwargs):
 	return [PluginDescriptor(name =_("HDD mount manager"),
