@@ -4,7 +4,7 @@ from __init__ import _
 import os
 from enigma import eTimer
 from Components.Console import Console
-from Components.Harddisk import harddiskmanager #global harddiskmanager
+from Components.Harddisk import getProcMounts, harddiskmanager #global harddiskmanager
 from xml.etree.cElementTree import parse as cet_parse
 
 XML_FSTAB = "/etc/enigma2/automounts.xml"
@@ -18,7 +18,7 @@ def rm_rf(d): # only for removing the ipkg stuff from /media/hdd subdirs
 				os.unlink(path)
 		os.rmdir(d)
 	except Exception, ex:
-	        print "AutoMount failed to remove", d, "Error:", ex
+		print "AutoMount failed to remove", d, "Error:", ex
 
 class AutoMount():
 	"""Manages Mounts declared in a XML-Document."""
@@ -133,11 +133,13 @@ class AutoMount():
 				command = "umount -fl '%s'" % path
 
 			elif data['active'] == 'True' or data['active'] is True:
-			        try:
-					if not os.path.exists(path):
-						os.makedirs(path)
-					if data['mounttype'] == 'nfs':
-						if not os.path.ismount(path):
+				try: #use os.path.exists with path get error loop
+					os.makedirs(path)
+				except:
+					pass
+				try:
+					if not [True for m in getProcMounts() if m[1] == path]:
+						if data['mounttype'] == 'nfs':
 							if os.path.exists("/lib/modules/nfs.ko") is True:
 								os.system('insmod /lib/modules/sunrpc.ko')
 								os.system('insmod /lib/modules/lockd.ko')
@@ -154,8 +156,7 @@ class AutoMount():
 							tmpcmd = "mount -t nfs -o %s '%s' '%s'" % (options, data['ip'] + ':/' + data['sharedir'], path)
 							command = tmpcmd.encode("UTF-8")
 
-					elif data['mounttype'] == 'cifs':
-						if not os.path.ismount(path):
+						elif data['mounttype'] == 'cifs':
 							if os.path.exists("/lib/modules/cifs.ko") is True:
 								self.MountConsole.ePopen("insmod /lib/modules/cifs.ko")
 							else:
@@ -179,24 +180,23 @@ class AutoMount():
 		print "[AutoMount.py] CheckMountPointFinished",result,retval
 		(data, callback ) = extra_args
 		path = os.path.join('/media/net', data['sharename'])
-		if os.path.exists(path):
-			if os.path.ismount(path):
-				if self.automounts.has_key(data['sharename']):
-					self.automounts[data['sharename']]['isMounted'] = True
-					desc = data['sharename']
-					if self.automounts[data['sharename']]['hdd_replacement'] == 'True': #hdd replacement hack
-						self.makeHDDlink(path)
-					harddiskmanager.addMountedPartition(path, desc)
-			else:
-				if self.automounts.has_key(data['sharename']):
-					self.automounts[data['sharename']]['isMounted'] = False
-				if os.path.exists(path):
-					if not os.path.ismount(path):
-					        try:
-							os.rmdir(path)
-							harddiskmanager.removeMountedPartition(path)
-						except Exception, ex:
-						        print "Failed to remove", path, "Error:", ex
+		if [True for m in getProcMounts() if m[1] == path]:
+			if self.automounts.has_key(data['sharename']):
+				self.automounts[data['sharename']]['isMounted'] = True
+				desc = data['sharename']
+				if self.automounts[data['sharename']]['hdd_replacement'] == 'True': #hdd replacement hack
+					self.makeHDDlink(path)
+				harddiskmanager.addMountedPartition(path, desc)
+		else:
+			if self.automounts.has_key(data['sharename']):
+				self.automounts[data['sharename']]['isMounted'] = False
+			if os.path.exists(path):
+				try:
+					os.rmdir(path)
+					harddiskmanager.removeMountedPartition(path)
+				except Exception, ex:
+					print "Failed to remove", path, "Error:", ex
+
 		if self.checkList:
 			# Go to next item in list...
 			self.CheckMountPoint(self.checkList.pop(), callback)
@@ -222,7 +222,7 @@ class AutoMount():
 			print "[AutoMount.py] add symlink fails!", ex
 		movie = os.path.join(hdd_dir, 'movie')
 		if not os.path.exists(movie):
-		        try:
+			try:
 				os.mkdir(movie)
 			except Exception, ex:
 				print "[AutoMount.py] Failed to create ", movie, "Error:", ex
@@ -304,11 +304,11 @@ class AutoMount():
 		(path, callback ) = extra_args
 		if os.path.exists(path):
 			if not os.path.ismount(path):
-			        try:
+				try:
 					os.rmdir(path)
 					harddiskmanager.removeMountedPartition(path)
 				except Exception, ex:
-				        print "Failed to remove", path, "Error:", ex
+					print "Failed to remove", path, "Error:", ex
 		if self.removeConsole:
 			if len(self.removeConsole.appContainers) == 0:
 				if callback is not None:
