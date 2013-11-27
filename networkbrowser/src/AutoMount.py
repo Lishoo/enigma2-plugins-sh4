@@ -141,14 +141,14 @@ class AutoMount():
 					if not [True for m in getProcMounts() if m[1] == path]:
 						if data['mounttype'] == 'nfs':
 							if os.path.exists("/lib/modules/nfs.ko") is True:
-								os.system('insmod /lib/modules/sunrpc.ko')
-								os.system('insmod /lib/modules/lockd.ko')
-								os.system('insmod /lib/modules/nfs_acl.ko')
-								os.system('insmod /lib/modules/nfs.ko')
+								self.MountConsole.ePopen('insmod /lib/modules/sunrpc.ko')
+								self.MountConsole.ePopen('insmod /lib/modules/lockd.ko')
+								self.MountConsole.ePopen('insmod /lib/modules/nfs_acl.ko')
+								self.MountConsole.ePopen('insmod /lib/modules/nfs.ko')
 							else:
 								for linuxversion in os.listdir("/lib/modules"):
 									if os.path.exists("/lib/modules/%s/kernel/fs/nfs/nfs.ko" % linuxversion) is True:
-										os.system('modprobe nfs')
+										self.MountConsole.ePopen('modprobe nfs')
 							if data['options']:
 								options = "tcp,noatime," + data['options']
 							else:
