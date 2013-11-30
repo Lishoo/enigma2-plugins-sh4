@@ -25,6 +25,8 @@ class CamdInfo3(Poll, Converter, object):
 	def getText(self):
 		service = self.source.service
 		info = service and service.info()
+		if not service:
+			return None
 		camd = ""
 		serlist = None
 		camdlist = None
@@ -32,8 +34,14 @@ class CamdInfo3(Poll, Converter, object):
 		nameser = []
 		if not info:
 			return ""
+		# Alternative SoftCam Manager 
+		if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/AlternativeSoftCamManager/plugin.py"): 
+			if config.plugins.AltSoftcam.actcam.value != "none": 
+				return config.plugins.AltSoftcam.actcam.value 
+			else: 
+				return None
 		# TS-Panel
-		if fileExists("/etc/startcam.sh"):
+		elif fileExists("/etc/startcam.sh"):
 			try:
 				for line in open("/etc/startcam.sh"):
 					if line.find("script") > -1:
@@ -42,19 +50,12 @@ class CamdInfo3(Poll, Converter, object):
 				camdlist = None
 		# domica 8120
 		elif fileExists("/etc/init.d/cam"):
-			for line in open("/etc/enigma2/settings"):
-				if line.find("config.plugins.emuman.cam") > -1:
-					return line.split("=")[-1].strip('\n')
+			if config.plugins.emuman.cam.value: 
+				return config.plugins.emuman.cam.value
 		#PKT
 		elif fileExists("//usr/lib/enigma2/python/Plugins/Extensions/PKT/plugin.pyo"):
-			for line in open("/etc/enigma2/settings"):
-				if line.find("config.plugins.emuman.cam=") > -1:
-					return line.split("=")[-1].strip('\n')
-		#AlternativeSoftCamManage
-		elif fileExists("/usr/lib/enigma2/python/Plugins/Extensions/AlternativeSoftCamManager/plugin.py"):
-			for line in open("/etc/enigma2/settings"):
-				if line.find("config.plugins.AltSoftcam.actcam=") > -1:
-					return line.split("=")[-1].strip('\n')
+			if config.plugins.emuman.cam.value: 
+				return config.plugins.emuman.cam.value
 		#HDMU
 		elif fileExists("/etc/.emustart") and fileExists("/etc/image-version"):
 			try:
@@ -62,20 +63,19 @@ class CamdInfo3(Poll, Converter, object):
 					return line.split()[0].split('/')[-1]
 			except:
 				return None
-		
+	
 		# AAF & ATV & VTI 
 		elif fileExists("/etc/image-version") and not fileExists("/etc/.emustart"):
 			emu = ""
 			server = ""
 			for line in open("/etc/image-version"):
 				if line.find("=AAF") > -1 or line.find("=openATV") > -1:
-					for line in open("/etc/enigma2/settings"):
-						if line.find("config.softcam.actCam=") > -1:
-							emu = line.split("=")[-1].strip('\n')
-						if line.find("config.softcam.actCam2=") > -1:
-							server = line.split("=")[-1].strip('\n')
-							if server.find("no CAM 2 active") > -1:
-								server = ""
+					if config.softcam.actCam.value: 
+						emu = config.softcam.actCam.value
+					if config.softcam.actCam2.value: 
+						server = config.softcam.actCam2.value
+						if config.softcam.actCam2.value == "no CAM 2 active":
+							server = ""
 				elif line.find("=vuplus") > -1:
 					if fileExists("/tmp/.emu.info"):
 						for line in open("/tmp/.emu.info"):
@@ -95,8 +95,7 @@ class CamdInfo3(Poll, Converter, object):
 				return None
 		# Egami	
 		elif fileExists("/tmp/egami.inf","r"):
-			lines = open("/tmp/egami.inf", "r").readlines()
-			for line in lines:
+			for line in open("/tmp/egami.inf"):
 				item = line.split(":",1)
 				if item[0] == "Current emulator":
 					return item[1].strip()

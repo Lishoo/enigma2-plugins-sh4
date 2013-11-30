@@ -1,9 +1,7 @@
-from Tools.LoadPixmap import LoadPixmap 
-from Components.Pixmap import Pixmap 
+#mod 2boom (c) 2012-2013
 from Renderer import Renderer 
-from enigma import ePixmap, eTimer 
-from Tools.Directories import fileExists, SCOPE_SKIN_IMAGE, SCOPE_CURRENT_SKIN, resolveFilename 
-from Components.config import config
+from enigma import ePixmap
+from Tools.Directories import fileExists, SCOPE_SKIN_IMAGE, SCOPE_CURRENT_SKIN, resolveFilename
 
 class PiconSatTV(Renderer):
 	__module__ = __name__
@@ -150,6 +148,7 @@ class PiconSatTV(Renderer):
 								 90: "90E",
 								 70: "70E",
 								 50: "50E",
+								 49: "49E",
 								 48: "48E",
 								 30: "30E"}[frontendData.get("orbital_position", "None")]
 							except Exception, e:
@@ -172,13 +171,11 @@ class PiconSatTV(Renderer):
 					else:
 						pngname = resolveFilename(SCOPE_SKIN_IMAGE, 'skin_default/picon_default.png')
 					self.nameCache['default'] = pngname
-					
-			if (self.pngname != pngname):
-				self.pngname = pngname
-				
-				self.runAnim()
-				
-				self.instance.setPixmapFromFile(self.pngname)
+			if self.pngname != pngname:
+				if pngname:
+					self.instance.setScale(1)
+					self.instance.setPixmapFromFile(pngname)
+					self.instance.show()
 					
 	def findPicon(self, serviceName):
 		for path in self.searchPaths:
@@ -187,24 +184,3 @@ class PiconSatTV(Renderer):
 				return pngname
 				
 		return ''
-		
-	def runAnim(self):
-		if len(self.pics) == 0:
-			for x in self.pixmaps:
-				self.pics.append(LoadPixmap(resolveFilename(SCOPE_SKIN_IMAGE, x)))
-			
-		self.slide = len(self.pics)
-		self.timer = eTimer()
-		self.timer.callback.append(self.timerEvent)
-		self.timer.start(self.pixdelay, True)
-		
-	def timerEvent(self):
-		if self.slide > 0:
-			self.timer.stop()
-			self.instance.setPixmap(self.pics[len(self.pics) - self.slide])
-			self.slide = self.slide - 1
-			self.timer.start(self.pixdelay, True)
-		else:
-			self.timer.stop()
-			self.instance.setPixmapFromFile(self.pngname)
-

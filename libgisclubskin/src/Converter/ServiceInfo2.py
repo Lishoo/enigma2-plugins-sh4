@@ -106,15 +106,30 @@ class ServiceInfo2(Poll, Converter, object):
 			except:
 				return ""
 		elif self.type == self.xVPID:
-			return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sVideoPID))
+			try:
+				return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sVideoPID))
+			except:
+				return "N/A"
 		elif self.type == self.xSID:
-			return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sSID))
+			try:
+				return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sSID))
+			except:
+				return "N/A"
 		elif self.type == self.xTSID:
-			return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sTSID))
+			try:
+				return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sTSID))
+			except:
+				return "N/A"
 		elif self.type == self.xONID:
-			return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sONID))
+			try:
+				return "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sONID))
+			except:
+				return "N/A"
 		elif self.type == self.sCAIDs:
-			return self.getServiceInfoString(info, iServiceInformation.sCAIDs)
+			try:
+				return self.getServiceInfoString(info, iServiceInformation.sCAIDs)
+			except:
+				return "N/A"
 		elif self.type == self.yAll:
 			try:
 				return "SID: %0.4X  VPID: %0.4X  APID: %0.4X  TSID: %0.4X  ONID: %0.4X" % (int(self.getServiceInfoString(info, iServiceInformation.sSID)), int(self.getServiceInfoString(info, iServiceInformation.sVideoPID)), int(self.getServiceInfoString(info, iServiceInformation.sAudioPID)), int(self.getServiceInfoString(info, iServiceInformation.sTSID)), int(self.getServiceInfoString(info, iServiceInformation.sONID)))
@@ -151,7 +166,10 @@ class ServiceInfo2(Poll, Converter, object):
 	text = property(getText)
 
 	def changed(self, what):
-		if what[0] != self.CHANGED_SPECIFIC or what[1] in self.interesting_events:
+		if what[0] == self.CHANGED_SPECIFIC:
+			if what[1] == iPlayableService.evStart or what[1] == iPlayableService.evVideoSizeChanged or what[1] == iPlayableService.evUpdatedInfo:
+				Converter.changed(self, what)
+		elif what[0] != self.CHANGED_SPECIFIC or what[1] in self.interesting_events:
 			Converter.changed(self, what)
 		elif what[0] == self.CHANGED_POLL:
 			self.downstream_elements.changed(what)

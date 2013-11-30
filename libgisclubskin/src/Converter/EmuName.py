@@ -1,4 +1,18 @@
-# 2boom & Taapat (c) 2012-13 0.6
+# EmuName
+# Copyright (c) 2boom & Taapat 2013
+# v.0.8
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
 from enigma import iServiceInformation
 from Components.Converter.Converter import Converter
 from Components.config import config
@@ -21,12 +35,8 @@ class EmuName(Poll, Converter, object):
 		camdname = None
 		cardname = None
 		camdlist = None
-		# Alternative SoftCam Manager
-		if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/AlternativeSoftCamManager/plugin.py"):
-			if config.plugins.AltSoftcam.actcam.value != "none":
-				camdlist = config.plugins.AltSoftcam.actcam.value.split()
 		# VTI 	
-		elif fileExists("/tmp/.emu.info"):
+		if fileExists("/tmp/.emu.info"):
 			try:
 				camdname = open("/tmp/.emu.info", "r")
 			except:
@@ -35,7 +45,7 @@ class EmuName(Poll, Converter, object):
 		elif fileExists("/etc/startcam.sh"):
 			try:
 				for line in open("/etc/startcam.sh"):
-					if line.find("script") > -1:
+					if "script" in line:
 						camdname = "%s" % line.split("/")[-1].split()[0][:-3]
 			except:
 				camdname = None
@@ -73,15 +83,21 @@ class EmuName(Poll, Converter, object):
 				cardname = open("/etc/init.d/cardserver", "r")
 			except:
 				cardname = None 
+		elif fileExists("/etc/.emustart"):
+			try:
+				camdname = open("/etc/.emustart", "r")
+			except:
+				camdname = None
+
 		if cardname:
 			for line in cardname:
-				if line.lower().find('oscam') > -1:
+				if 'oscam' in line.lower():
 					info2 = 'oscam'
-				elif line.lower().find('newcs') > -1:
+				elif 'newcs' in line.lower():
 					info2 = 'newcs'
-				elif line.lower().find('wicard') > -1:
+				elif 'wicard' in line.lower():
 					info2 = 'wicardd'
-				elif line.lower().find('cccam') > -1:
+				elif 'cccam' in line.lower():
 					info2 = 'cccam'
 				else:
 					info2 = ""
@@ -90,33 +106,33 @@ class EmuName(Poll, Converter, object):
 			camdlist = camdname
 		if camdlist:
 			for line in camdlist:
-				if line.lower().find('mgcamd') > -1 and line.lower().find('oscam') > -1:
+				if 'mgcamd' in line.lower() and 'oscam' in line.lower():
 					info = 'oscammgcamd'
 					break
-				if line.lower().find('cccam') > -1 and line.lower().find('oscam') > -1:
+				if 'cccam' in line.lower() and 'oscam' in line.lower():
 					info = 'oscamcccam'
 					break
-				elif line.lower().find('mgcamd') > -1:
+				elif 'mgcamd' in line.lower():
 					info = 'mgcamd'
-				elif line.lower().find('oscam') > -1:
+				elif 'oscam' in line.lower():
 					info = 'oscam'
-				elif line.lower().find('wicard') > -1:
+				elif 'wicard' in line.lower():
 					info = 'wicardd'
-				elif line.lower().find('cccam') > -1:
+				elif 'cccam' in line.lower():
 					info = 'cccam'
-				elif line.lower().find('camd3') > -1:
+				elif 'camd3' in line.lower():
 					info = 'camd3'
-				elif line.lower().find('evocamd') > -1:
+				elif 'evocamd' in line.lower():
 					info = 'evocamd'
-				elif line.lower().find('newcs') > -1:
+				elif 'newcs' in line.lower():
 					info = 'newcs'
-				elif line.lower().find('rqcamd') > -1:
+				elif 'rqcamd' in line.lower():
 					info = 'rqcamd'
-				elif line.lower().find('gbox') > -1:
+				elif 'gbox' in line.lower():
 					info = 'gbox'
-				elif line.lower().find('mpcs') > -1:
+				elif 'mpcs' in line.lower():
 					info = 'mpcs'
-				elif line.lower().find('sbox') > -1:
+				elif 'sbox' in line.lower():
 					info = 'sbox'
 				else:
 					info = 'unknow'

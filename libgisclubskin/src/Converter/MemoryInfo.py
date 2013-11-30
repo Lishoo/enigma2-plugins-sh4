@@ -1,4 +1,19 @@
-# MemoryInfo by 2boom 2012 v. 0.3
+# MemoryInfo
+# Copyright (c) 2boom 2013
+# 0.3
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 # <widget source="session.CurrentService" render="Label" position="189,397" zPosition="4" size="350,20" noWrap="1" valign="center" halign="center" font="Regular;14" foregroundColor="clText" transparent="1"  backgroundColor="#20002450">
 #	<convert type="MemoryInfo">MemTotal</convert>
 # </widget>			
@@ -30,22 +45,22 @@ class MemoryInfo(Converter, object):
 		meminfo = open("cat /proc/meminfo", "r")
 		if meminfo is not None:
 			for line in meminfo:
-				if self.type == self.MemTotal and line.find("MemTotal") > -1:
+				if self.type == self.MemTotal and "MemTotal" in line:
 					try:
 						info = "%s Kb" % line.split()[1]
 					except:
 						return None
-				elif self.type == self.MemFree and line.find("MemFree") > -1:
+				elif self.type == self.MemFree and "MemFree" in line:
 					try:
 						info = "%s Kb" % line.split()[1]
 					except:
 						return None
-				elif self.type == self.SwapTotal and line.find("SwapTotal") > -1:
+				elif self.type == self.SwapTotal and "SwapTotal" in line:
 					try:
 						info = "%s Kb" % line.split()[1]
 					except:
 						return None
-				elif self.type == self.SwapFree and line.find("SwapFree") > -1:
+				elif self.type == self.SwapFree and "SwapFree" in line:
 					try:
 						info = "%s Kb" % line.split()[1]
 					except:

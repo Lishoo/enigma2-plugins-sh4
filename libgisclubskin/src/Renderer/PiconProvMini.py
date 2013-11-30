@@ -1,11 +1,8 @@
-
+#piconProv mod (c) 2boom
 
 from Renderer import Renderer 
-from enigma import ePixmap, eTimer 
-from Tools.Directories import fileExists, SCOPE_SKIN_IMAGE, SCOPE_CURRENT_SKIN, resolveFilename 
-from Tools.LoadPixmap import LoadPixmap 
-from Components.Pixmap import Pixmap 
-from Components.config import * 
+from enigma import ePixmap
+from Tools.Directories import fileExists, SCOPE_SKIN_IMAGE, SCOPE_CURRENT_SKIN, resolveFilename
 
 class PiconProvMini(Renderer):
     __module__ = __name__
@@ -56,12 +53,11 @@ class PiconProvMini(Renderer):
                         else:
                             pngname = resolveFilename(SCOPE_SKIN_IMAGE, 'skin_default/picon_default.png')
                     self.nameCache['default'] = pngname
-            if (self.pngname != pngname):
-                self.pngname = pngname
-               
-                self.runanim()
-                    
-                self.instance.setPixmapFromFile(self.pngname)
+            if self.pngname != pngname:
+                if pngname:
+                    self.instance.setScale(1)
+                    self.instance.setPixmapFromFile(pngname)
+                    self.instance.show()
 
 
 
@@ -72,38 +68,3 @@ class PiconProvMini(Renderer):
                 return pngname
 
         return ''
-
-
-
-    def runanim(self):
-        self.slide = 8
-        animok = True
-       
-           
-        if (animok == True):
-            pathanim = '/usr/share/enigma2/hd_glass11/anim/a'
-            self.pics = []
-            for x in range(self.slide):
-                self.pics.append(LoadPixmap(((pathanim + str(x)) + '.png')))
-
-            self.timer = eTimer()
-            self.timer.callback.append(self.timerEvent)
-            self.timer.start(1, True)
-        else:
-            self.instance.setPixmapFromFile(self.pngname)
-
-
-
-    def timerEvent(self):
-        if (self.slide != 0):
-            self.timer.stop()
-            self.instance.setPixmap(self.pics[(self.slide - 1)])
-            self.slide = (self.slide - 1)
-            self.timer.start(1, True)
-        else:
-            self.timer.stop()
-            self.instance.setPixmapFromFile(self.pngname)
-
-
-
-

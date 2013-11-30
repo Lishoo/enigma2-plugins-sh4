@@ -1,11 +1,26 @@
-#(c) 2boom mod 2012 
+# PiconUni
+# Copyright (c) 2boom 2013
+# 
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+#
 # 26.09.2012 added search mountpoints
+# 25.06.2013 added resize picon
+# 26.11.2013 code optimization
+
 from Renderer import Renderer 
-from enigma import ePixmap, eTimer 
+from enigma import ePixmap
 from Tools.Directories import fileExists, SCOPE_SKIN_IMAGE, SCOPE_CURRENT_SKIN, resolveFilename 
-from Tools.LoadPixmap import LoadPixmap 
-from Components.Pixmap import Pixmap 
-from Components.config import * 
 
 class PiconUni(Renderer):
 	__module__ = __name__
@@ -49,41 +64,25 @@ class PiconUni(Renderer):
 						else:
 							pngname = resolveFilename(SCOPE_SKIN_IMAGE, 'skin_default/picon_default.png')
 					self.nameCache['default'] = pngname
-			if (self.pngname != pngname):
-				self.pngname = pngname
-				self.rTimer()
-				self.instance.setPixmapFromFile(self.pngname)
+			if self.pngname != pngname:
+				if pngname:
+					self.instance.setScale(1)
+					self.instance.setPixmapFromFile(pngname)
+					self.instance.show()
 
 	def findPicon(self, serviceName):
 		searchPaths = []
 		if fileExists("/proc/mounts"):
 			for line in open("/proc/mounts"):
-				if line.find("/dev/sd") > -1:
+				if "/dev/sd" in line:
 					searchPaths.append(line.split()[1].replace('\\040', ' ') + "/%s/")
-		searchPaths.append("/usr/share/enigma2/%s/")
+		searchPaths.append(resolveFilename(SCOPE_CURRENT_SKIN, '%s/'))
 		for path in searchPaths:
 			pngname = (((path % self.path) + serviceName) + '.png')
 			if fileExists(pngname):
 				return pngname
 		return ''
 
-	def rTimer(self):
-		self.slide = 1
-		self.pics = []
-		self.pics.append(LoadPixmap(self.path + 'picon_default.png'))
-		self.timer = eTimer()
-		self.timer.callback.append(self.timerEvent)
-		self.timer.start(1, True)
-
-	def timerEvent(self):
-		if (self.slide != 0):
-			self.timer.stop()
-			self.instance.setPixmap(self.pics[(self.slide - 1)])
-			self.slide = (self.slide - 1)
-			self.timer.start(1, True)
-		else:
-			self.timer.stop()
-			self.instance.setPixmapFromFile(self.pngname)
 
 
 

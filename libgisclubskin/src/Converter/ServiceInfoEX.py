@@ -1,9 +1,25 @@
-#2boom (c) 2013
-# v.0.6 11.05.13
+# ServiceInfoEX
+# Copyright (c) 2boom 2013
+# v.0.8 21.09.13
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 from Poll import Poll
 from Components.Converter.Converter import Converter
 from enigma import iServiceInformation, iPlayableService
 from Components.Element import cached
+
+WIDESCREEN = [3, 4, 7, 8, 0xB, 0xC, 0xF, 0x10]
 
 class ServiceInfoEX(Poll, Converter, object):
 	apid = 0
@@ -23,6 +39,17 @@ class ServiceInfoEX(Poll, Converter, object):
 	fps = 14
 	tbps = 15
 	format = 16
+	XRES = 17
+	YRES = 18
+	IS_WIDESCREEN = 19
+	HAS_TELETEXT = 20
+	IS_MULTICHANNEL = 21
+	IS_CRYPTED = 22
+	SUBSERVICES_AVAILABLE = 23
+	AUDIOTRACKS_AVAILABLE = 24
+	SUBTITLES_AVAILABLE = 25
+	EDITMODE = 26
+	FRAMERATE = 27
 	
 	def __init__(self, type):
 		Converter.__init__(self, type)
@@ -61,6 +88,28 @@ class ServiceInfoEX(Poll, Converter, object):
 			self.type = self.fps
 		elif  type == "tbps":
 			self.type = self.tbps
+		elif  type == "VideoWidth":
+			self.type = self.XRES
+		elif  type == "VideoHeight":
+			self.type = self.YRES
+		elif  type == "IsWidescreen":
+			self.type = self.IS_WIDESCREEN
+		elif  type == "HasTelext":
+			self.type = self.HAS_TELETEXT
+		elif  type == "IsMultichannel":
+			self.type = self.IS_MULTICHANNEL
+		elif  type == "IsCrypted":
+			self.type = self.IS_CRYPTED
+		elif  type == "SubservicesAvailable":
+			self.type = self.SUBSERVICES_AVAILABLE
+		elif  type == "AudioTracksAvailable":
+			self.type = self.AUDIOTRACKS_AVAILABLE
+		elif  type == "SubtitlesAvailable":
+			self.type = self.SUBTITLES_AVAILABLE
+		elif  type == "Editmode":
+			self.type = self.EDITMODE
+		elif  type == "Framerate":
+			self.type = self.FRAMERATE
 		else: 
 			self.type = self.format
 			self.sfmt = type[:]
@@ -111,9 +160,9 @@ class ServiceInfoEX(Poll, Converter, object):
 		if self.getServiceInfoString(info, iServiceInformation.sPCRPID) != "N/A":
 			self.stream['prcpid'] = "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sPCRPID))
 		if self.getServiceInfoString(info, iServiceInformation.sPMTPID) != "N/A":
-			self.stream['pmtpid'] = "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sPMTPID))
+			self.stream['pmtpid'] = self.getServiceInfoString(info, iServiceInformation.sPMTPID)
 		if self.getServiceInfoString(info, iServiceInformation.sTXTPID) != "N/A":
-			self.stream['txtpid'] = "%0.4X" % int(self.getServiceInfoString(info, iServiceInformation.sTXTPID))
+			self.stream['txtpid'] = self.getServiceInfoString(info, iServiceInformation.sTXTPID)
 		caidinfo = self.getServiceInfoString2(info, iServiceInformation.sCAIDs)
 		for caid in caidinfo.split():
 			array_caids.append(caid)
@@ -178,6 +227,68 @@ class ServiceInfoEX(Poll, Converter, object):
 		return streaminfo
 		
 	text = property(getText)
+	
+	@cached
+	def getValue(self):
+		service = self.source.service
+		info = service and service.info()
+		if not info:
+			return -1
+
+		if self.type == self.XRES:
+			return info.getInfo(iServiceInformation.sVideoWidth)
+		if self.type == self.YRES:
+			return info.getInfo(iServiceInformation.sVideoHeight)
+		if self.type == self.FRAMERATE:
+			return info.getInfo(iServiceInformation.sFrameRate)
+		return -1
+
+	value = property(getValue)
+	
+	@cached
+	def getBoolean(self):
+		service = self.source.service
+		info = service and service.info()
+		if not info:
+			return False
+		if self.type == self.HAS_TELETEXT:
+			tpid = info.getInfo(iServiceInformation.sTXTPID)
+			return tpid != -1
+		elif self.type == self.IS_MULTICHANNEL:
+			# FIXME. but currently iAudioTrackInfo doesn't provide more information.
+			audio = service.audioTracks()
+			if audio:
+				n = audio.getNumberOfTracks()
+				idx = 0
+				while idx < n:
+					i = audio.getTrackInfo(idx)
+					description = i.getDescription();
+					if "AC3" in description or "AC-3" in description or "DTS" in description:
+						return True
+					idx += 1
+			return False
+		elif self.type == self.IS_CRYPTED:
+			return info.getInfo(iServiceInformation.sIsCrypted) == 1
+		elif self.type == self.IS_WIDESCREEN:
+			return info.getInfo(iServiceInformation.sAspect) in WIDESCREEN
+		elif self.type == self.SUBSERVICES_AVAILABLE:
+			subservices = service.subServices()
+			return subservices and subservices.getNumberOfSubservices() > 0
+		elif self.type == self.HAS_HBBTV:
+			return info.getInfoString(iServiceInformation.sHBBTVUrl) != ""
+		elif self.type == self.AUDIOTRACKS_AVAILABLE:
+			audio = service.audioTracks()
+			return audio and audio.getNumberOfTracks() > 1
+		elif self.type == self.SUBTITLES_AVAILABLE:
+			subtitle = service and service.subtitle()
+			subtitlelist = subtitle and subtitle.getSubtitleList()
+			if subtitlelist:
+				return len(subtitlelist) > 0
+			return False
+		elif self.type == self.EDITMODE:
+			return hasattr(self.source, "editmode") and not not self.source.editmode
+		return False
+	boolean = property(getBoolean)
 
 	def changed(self, what):
 		if what[0] == self.CHANGED_SPECIFIC:

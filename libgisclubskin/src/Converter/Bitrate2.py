@@ -22,7 +22,7 @@ from Components.Element import cached
 try:
 	from bitratecalc import eBitrateCalculator
 except:
-	self.close()
+	pass
 
 
 class Bitrate2(Converter, object):
@@ -123,5 +123,4 @@ class Bitrate2(Converter, object):
 				self.initTimer.start(100, True)
 			elif what[1] == iPlayableService.evEnd:
 				self.clearData()
-				#Converter.changed(self, (self.CHANGED_POLL,))
 				Converter.changed(self, what)

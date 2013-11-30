@@ -3,6 +3,7 @@ from Components.Converter.Converter import Converter
 from enigma import iServiceInformation, iPlayableService, iPlayableServicePtr
 from Components.Element import cached
 
+
 class ServiceOrbitalPosition2(Converter, object):
 
 	def __init__(self, type):
@@ -23,6 +24,12 @@ class ServiceOrbitalPosition2(Converter, object):
 			transponder_info = info.getInfoObject(ref, iServiceInformation.sTransponderData)
 		else:
 			transponder_info = info.getInfoObject(iServiceInformation.sTransponderData)
+		if ref:
+			refString = ref.toString().lower()
+			if "%3a//" in refString:
+				return _("Stream")
+			if refString.startswith("1:134:"):
+				return _("Altern")
 		if transponder_info and "orbital_position" in transponder_info.keys():
 			pos = int(transponder_info["orbital_position"])
 			direction = 'E'
@@ -30,8 +37,7 @@ class ServiceOrbitalPosition2(Converter, object):
 				pos = 3600 - pos
 				direction = 'W'
 			return "%d%d%s" % (pos/10, pos%10, direction)
-		else:
-			return 'picon_default'
+		return "picon_default"
 
 	text = property(getText)
 
