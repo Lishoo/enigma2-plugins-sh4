@@ -226,8 +226,8 @@ class AutoMount():
 				os.mkdir(movie)
 			except Exception, ex:
 				print "[AutoMount.py] Failed to create ", movie, "Error:", ex
-				remove("/hdd")
-				symlink("/media/hdd /hdd")
+				os.remove("/hdd")
+				os.symlink("/media/hdd /hdd")
 
 	def mountTimeout(self):
 		self.timer.stop()
