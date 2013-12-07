@@ -48,30 +48,6 @@ def GetDeviceFromList(list, device):
 		if line[:len(device)] == device:
 			return line
 
-def MountHddOnStart(MountOnHdd, MountOnMovie):
-	device = GetDevices()
-	if not device:
-		sleep(5)
-		device = GetDevices()
-	mounts = CheckMountDir(device)
-	if MountOnHdd != "nothing" and MountOnHdd in device and \
-		mounts[0] == "nothing":
-		mountdevice.Mount("/dev/" + MountOnHdd[:4], "/media/hdd")
-	if MountOnMovie != "nothing" and MountOnMovie in device and \
-		mounts[1] == "nothing":
-		mountdevice.Mount("/dev/" + MountOnMovie[:4], "/media/hdd/movie")
-
-def MountSwapOnStart(SwapFile):
-	if SwapFile != "no":
-		if SwapFile[:2] == "sd":
-			Console().ePopen("swapon /dev/%s" % SwapFile[:4])
-		elif os.path.exists("/media/hdd/swapfile"):
-			Console().ePopen("swapon /media/hdd/swapfile")
-		else:
-			sleep(5)
-			if os.path.exists("/media/hdd/swapfile"):
-				Console().ePopen("swapon /media/hdd/swapfile")
-
 class MountDevice:
 	def __init__(self):
 		self.Console = Console()
