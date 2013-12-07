@@ -3,6 +3,8 @@ from . import _
 from Components.config import config, ConfigSubsection, ConfigText, ConfigYesNo
 from Plugins.Plugin import PluginDescriptor
 
+from time import sleep
+
 config.plugins.HddMount = ConfigSubsection()
 config.plugins.HddMount.MountOnStart = ConfigYesNo(default = False)
 config.plugins.HddMount.MountOnHdd = ConfigText(default = "nothing")

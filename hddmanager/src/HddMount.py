@@ -1,5 +1,4 @@
 import os
-from time import sleep
 from Components.Console import Console
 
 
