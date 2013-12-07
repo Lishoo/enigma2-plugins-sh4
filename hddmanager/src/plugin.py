@@ -3,8 +3,6 @@ from . import _
 from Components.config import config, ConfigSubsection, ConfigText, ConfigYesNo
 from Plugins.Plugin import PluginDescriptor
 
-from HddMount import CheckMountDir, GetDevices, mountdevice
-
 config.plugins.HddMount = ConfigSubsection()
 config.plugins.HddMount.MountOnStart = ConfigYesNo(default = False)
 config.plugins.HddMount.MountOnHdd = ConfigText(default = "nothing")
@@ -23,6 +21,7 @@ def OnStart(reason, **kwargs):
 	if reason == 0 and EnigmaStart == False: # Enigma start and not use reloadPlugins
 		EnigmaStart = True
 		if config.plugins.HddMount.MountOnStart.value:
+			from HddMount import CheckMountDir, GetDevices, mountdevice
 			device = GetDevices()
 			if not device:
 				sleep(5)
@@ -39,6 +38,8 @@ def OnStart(reason, **kwargs):
 		if config.plugins.HddMount.SwapOnStart.value:
 			SwapFile = config.plugins.HddMount.SwapFile.value
 			if SwapFile != "no":
+				from Components.Console import Console
+				import os
 				if SwapFile[:2] == "sd":
 					Console().ePopen("swapon /dev/%s" % SwapFile[:4])
 				elif os.path.exists("/media/hdd/swapfile"):
