@@ -3,8 +3,6 @@ from . import _
 from Components.config import config, ConfigSubsection, ConfigText, ConfigYesNo
 from Plugins.Plugin import PluginDescriptor
 
-from time import sleep
-
 config.plugins.HddMount = ConfigSubsection()
 config.plugins.HddMount.MountOnStart = ConfigYesNo(default = False)
 config.plugins.HddMount.MountOnHdd = ConfigText(default = "nothing")
@@ -22,34 +20,23 @@ def OnStart(reason, **kwargs):
 	global EnigmaStart
 	if reason == 0 and EnigmaStart == False: # Enigma start and not use reloadPlugins
 		EnigmaStart = True
-		if config.plugins.HddMount.MountOnStart.value:
-			from HddMount import CheckMountDir, GetDevices, mountdevice
-			device = GetDevices()
-			if not device:
-				sleep(5)
-				device = GetDevices()
-			mounts = CheckMountDir(device)
-			MountOnHdd = config.plugins.HddMount.MountOnHdd.value
-			if MountOnHdd != "nothing" and MountOnHdd in device and \
-				mounts[0] == "nothing":
-				mountdevice.Mount("/dev/" + MountOnHdd[:4], "/media/hdd")
-			MountOnMovie = config.plugins.HddMount.MountOnMovie.value
-			if MountOnMovie != "nothing" and MountOnMovie in device and \
-				mounts[1] == "nothing":
-				mountdevice.Mount("/dev/" + MountOnMovie[:4], "/media/hdd/movie")
+		enableswap = False
 		if config.plugins.HddMount.SwapOnStart.value:
+			from Components.Console import Console
 			SwapFile = config.plugins.HddMount.SwapFile.value
 			if SwapFile != "no":
-				from Components.Console import Console
-				import os
 				if SwapFile[:2] == "sd":
 					Console().ePopen("swapon /dev/%s" % SwapFile[:4])
-				elif os.path.exists("/media/hdd/swapfile"):
-					Console().ePopen("swapon /media/hdd/swapfile")
 				else:
-					sleep(5)
-					if os.path.exists("/media/hdd/swapfile"):
-						Console().ePopen("swapon /media/hdd/swapfile")
+					enableswap = True
+		if config.plugins.HddMount.MountOnStart.value:
+			from HddMount import MountHddOnStart
+			MountHddOnStart(config.plugins.HddMount.MountOnHdd.value,
+				config.plugins.HddMount.MountOnMovie.value, enableswap)
+		elif enableswap:
+			import os
+			if os.path.exists("/media/hdd/swapfile"):
+				Console().ePopen("swapon /media/hdd/swapfile")
 
 def Plugins(**kwargs):
 	return [PluginDescriptor(name =_("HDD mount manager"),
