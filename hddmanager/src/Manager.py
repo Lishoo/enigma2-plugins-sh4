@@ -110,7 +110,7 @@ class MountSetup(Screen, ConfigListScreen):
 				if self.MountOnMovie.value != "nothing":
 					mountdevice.Mount("/dev/" + self.MountOnMovie.value[:4], \
 						"/media/hdd/movie")
-			config.plugins.HddMount.SwapFile = self.SwapFile
+			config.plugins.HddMount.SwapFile.value = self.SwapFile.value
 			if self.SwapFile.value != self.swap:
 				if self.swap[:2] == "sd":
 					self.Console.ePopen("swapoff /dev/%s" % self.swap[:4])

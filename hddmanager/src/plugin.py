@@ -22,10 +22,10 @@ def OnStart(reason, **kwargs):
 		EnigmaStart = True
 		enableswap = False
 		if config.plugins.HddMount.SwapOnStart.value:
-			from Components.Console import Console
 			SwapFile = config.plugins.HddMount.SwapFile.value
 			if SwapFile != "no":
 				if SwapFile[:2] == "sd":
+					from Components.Console import Console
 					Console().ePopen("swapon /dev/%s" % SwapFile[:4])
 				else:
 					enableswap = True
@@ -33,10 +33,6 @@ def OnStart(reason, **kwargs):
 			from HddMount import MountHddOnStart
 			MountHddOnStart(config.plugins.HddMount.MountOnHdd.value,
 				config.plugins.HddMount.MountOnMovie.value, enableswap)
-		elif enableswap:
-			import os
-			if os.path.exists("/media/hdd/swapfile"):
-				Console().ePopen("swapon /media/hdd/swapfile")
 
 def Plugins(**kwargs):
 	return [PluginDescriptor(name =_("HDD mount manager"),
