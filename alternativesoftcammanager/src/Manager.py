@@ -71,7 +71,7 @@ class AltCamManager(Screen):
 				"red": self.stop,
 				"yellow": self.restart,
 				"blue": self.setup
-			}, -1)
+			})
 		self["status"] = ScrollLabel()
 		self["list"] = List([])
 		checkconfigdir()
@@ -149,13 +149,13 @@ class AltCamManager(Screen):
 			self.finish = True
 
 	def createcamlist(self):
-		self.list = []
+		camlist = []
 		if self.actcam != "none":
-			self.list.append((self.actcam, self.actcampng, self.checkcam(self.actcam)))
+			camlist.append((self.actcam, self.actcampng, self.checkcam(self.actcam)))
 		for line in self.softcamlist:
 			if line != self.actcam:
-				self.list.append((line, self.defcampng, self.checkcam(line)))
-		self["list"].setList(self.list)
+				camlist.append((line, self.defcampng, self.checkcam(line)))
+		self["list"].setList(camlist)
 		self.finish = True
 
 	def checkcam (self, cam):
@@ -285,21 +285,20 @@ class ConfigEdit(Screen, ConfigListScreen):
 		self.setTitle(_("SoftCam path configuration"))
 		self["key_red"] = Label(_("Exit"))
 		self["key_green"] = Label(_("Ok"))
-		self["actions"] = ActionMap(["OkCancelActions", "ColorActions"],
+		self["actions"] = ActionMap(["SetupActions", "ColorActions"],
 			{
 				"cancel": self.cancel,
 				"red": self.cancel,
 				"ok": self.ok,
 				"green": self.ok,
 			}, -2)
-		self.list = []
-		ConfigListScreen.__init__(self, self.list, session=session)
-		self.list.append(getConfigListEntry(_("SoftCam config directory"),
+		configlist = []
+		ConfigListScreen.__init__(self, configlist, session=session)
+		configlist.append(getConfigListEntry(_("SoftCam config directory"),
 			config.plugins.AltSoftcam.camconfig))
-		self.list.append(getConfigListEntry(_("SoftCam directory"),
+		configlist.append(getConfigListEntry(_("SoftCam directory"),
 			config.plugins.AltSoftcam.camdir))
-		self["config"].list = self.list
-		self["config"].l.setList(self.list)
+		self["config"].setList(configlist)
 
 	def ok(self):
 		msg = [ ]

@@ -1,4 +1,4 @@
-from os import mkdir, path, remove
+from os import listdir, mkdir, path, remove
 
 from Components.config import config
 from Components.Console import Console
@@ -31,6 +31,13 @@ def getcamcmd(cam):
 		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -b -c " + \
 			config.plugins.AltSoftcam.camconfig.value + "/"
 	elif "rucam" in camname:
+		if not path.exists("/proc/sparkid"):
+			if path.exists("/lib/modules/encrypt.ko"):
+				Console().ePopen("insmod /lib/modules/encrypt.ko")
+			else:
+				for version in listdir("/lib/modules"):
+					if path.exists("/lib/modules/%s/extra/encrypt/encrypt.ko" % version):
+						Console().ePopen("modprobe encrypt")
 		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -b"
 	return config.plugins.AltSoftcam.camdir.value + "/" + cam
 

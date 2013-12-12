@@ -1,10 +1,6 @@
 from . import _
 
-from os import mkdir, path, remove
-from time import sleep
-
 from Components.config import config, ConfigSubsection, ConfigText
-from Components.Console import Console
 from Plugins.Plugin import PluginDescriptor
 
 from Softcam import checkconfigdir, getcamcmd, stopcam
@@ -30,6 +26,8 @@ def startcam(reason, **kwargs):
 		global EnigmaStart
 		if reason == 0 and not EnigmaStart: # Enigma start and not use reloadPlugins
 			EnigmaStart = True
+			from time import sleep
+			from Components.Console import Console
 			sleep(2)
 			cmd = getcamcmd(config.plugins.AltSoftcam.actcam.value)
 			Console().ePopen(cmd)
