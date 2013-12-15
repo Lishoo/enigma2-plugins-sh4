@@ -7,9 +7,9 @@ from Components.ActionMap import ActionMap
 from Components.config import config, getConfigListEntry
 from Components.Console import Console
 from Components.ConfigList import ConfigListScreen
-from Components.Label import Label
-from Components.Sources.List import List
 from Components.ScrollLabel import ScrollLabel
+from Components.Sources.List import List
+from Components.Sources.StaticText import StaticText
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Tools.Directories import resolveFilename, SCOPE_PLUGINS
@@ -45,13 +45,13 @@ class AltCamManager(Screen):
 			<eLabel position="165,358" size="148,2" backgroundColor="#00389416" />
 			<eLabel position="318,358" size="148,2" backgroundColor="#00baa329" />
 			<eLabel position="471,358" size="148,2" backgroundColor="#006565ff" />
-			<widget name="key_red" position="12,328" zPosition="2" size="148,30" \
+			<widget source="key_red" render="Label" position="12,328" zPosition="2" size="148,30" \
 				valign="center" halign="center" font="Regular;22" transparent="1" />
-			<widget name="key_green" position="165,328" zPosition="2" size="148,30" \
+			<widget source="key_green" render="Label" position="165,328" zPosition="2" size="148,30" \
 				valign="center" halign="center" font="Regular;22" transparent="1" />
-			<widget name="key_yellow" position="318,328" zPosition="2" size="148,30" \
+			<widget source="key_yellow" render="Label" position="318,328" zPosition="2" size="148,30" \
 				valign="center" halign="center" font="Regular;22" transparent="1" />
-			<widget name="key_blue" position="471,328" zPosition="2" size="148,30" \
+			<widget source="key_blue" render="Label" position="471,328" zPosition="2" size="148,30" \
 				valign="center" halign="center" font="Regular;22" transparent="1" />
 		</screen>"""
 
@@ -59,10 +59,10 @@ class AltCamManager(Screen):
 		Screen.__init__(self, session)
 		self.setTitle(_("SoftCam manager"))
 		self.Console = Console()
-		self["key_red"] = Label(_("Stop"))
-		self["key_green"] = Label(_("Start"))
-		self["key_yellow"] = Label(_("Restart"))
-		self["key_blue"] = Label(_("Setup"))
+		self["key_red"] = StaticText(_("Stop"))
+		self["key_green"] = StaticText(_("Start"))
+		self["key_yellow"] = StaticText(_("Restart"))
+		self["key_blue"] = StaticText(_("Setup"))
 		self["actions"] = ActionMap(["OkCancelActions", "ColorActions"],
 			{
 				"cancel": self.cancel,
@@ -274,17 +274,17 @@ class ConfigEdit(Screen, ConfigListScreen):
 				scrollbarMode="showOnDemand" />
 			<eLabel position="85,180" size="166,2" backgroundColor="#00ff2525" />
 			<eLabel position="255,180" size="166,2" backgroundColor="#00389416" />
-			<widget name="key_red" position="85,150" zPosition="2" size="170,30" \
+			<widget source="key_red" render="Label" position="85,150" zPosition="2" size="170,30" \
 				valign="center" halign="center" font="Regular;22" transparent="1" />
-			<widget name="key_green" position="255,150" zPosition="2" size="170,30" \
+			<widget source="key_green" render="Label" position="255,150" zPosition="2" size="170,30" \
 				valign="center" halign="center" font="Regular;22" transparent="1" />
 		</screen>"""
 
 	def __init__(self, session):
 		Screen.__init__(self, session)
 		self.setTitle(_("SoftCam path configuration"))
-		self["key_red"] = Label(_("Exit"))
-		self["key_green"] = Label(_("Ok"))
+		self["key_red"] = StaticText(_("Exit"))
+		self["key_green"] = StaticText(_("Ok"))
 		self["actions"] = ActionMap(["SetupActions", "ColorActions"],
 			{
 				"cancel": self.cancel,
