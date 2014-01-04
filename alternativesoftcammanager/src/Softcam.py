@@ -75,10 +75,10 @@ def checkconfigdir():
 		config.plugins.AltSoftcam.camconfig.value = "/var/keys"
 		config.plugins.AltSoftcam.camconfig.save()
 	if not path.exists(config.plugins.AltSoftcam.camdir.value):
-		if path.exists("/usr/bin/cam"):
-			config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
-		else:
-			__createdir("/var/emu")
+		if path.exists("/var/emu") and listdir("/var/emu"):
 			config.plugins.AltSoftcam.camdir.value = "/var/emu"
+		else:
+			__createdir("/usr/bin/cam")
+			config.plugins.AltSoftcam.camdir.value = "/usr/bin/cam"
 		config.plugins.AltSoftcam.camdir.save()
 
