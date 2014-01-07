@@ -57,10 +57,13 @@ def MountHddOnStart(MountOnHdd, MountOnMovie, enableswap):
 	mounts = CheckMountDir(device)
 	if MountOnHdd != "nothing" and MountOnHdd in device and \
 		mounts[0] == "nothing":
+		enableswap == False
 		mountdevice.Mount("/dev/" + MountOnHdd[:4], "/media/hdd", enableswap)
 	if MountOnMovie != "nothing" and MountOnMovie in device and \
 		mounts[1] == "nothing":
-		mountdevice.Mount("/dev/" + MountOnMovie[:4], "/media/hdd/movie", enableswap)
+		mountdevice.Mount("/dev/" + MountOnMovie[:4], "/media/hdd/movie")
+	if enableswap:
+		mountdevice.EnableSwap()
 
 class MountDevice:
 	def __init__(self):
@@ -68,6 +71,7 @@ class MountDevice:
 
 	def Mount(self, device, dirpath, enableswap = False):
 		dir = ""
+		self.enableswap = enableswap
 		for line in dirpath[1:].split("/"):
 			dir += "/" + line
 			if not os.path.exists(dir):
@@ -78,12 +82,12 @@ class MountDevice:
 					print "[HddManager] Failed to mkdir", dir
 		if os.path.exists("/bin/ntfs-3g"):
 			self.Console.ePopen("sfdisk -l /dev/sd? | grep NTFS",
-				self.__CheckNtfs, [device, dirpath, enableswap])
+				self.__CheckNtfs, [device, dirpath])
 		else:
-			self.__StartMount("mount " + device + " " + dirpath, enableswap)
+			self.__StartMount("mount " + device + " " + dirpath)
 
 	def __CheckNtfs(self, result, retval, extra_args):
-		(device, dirpath, enableswap) = extra_args
+		(device, dirpath) = extra_args
 		cmd = "mount "
 		for line in result.splitlines():
 			if line and line[:9] == device:
@@ -93,20 +97,26 @@ class MountDevice:
 						break
 				cmd = "ntfs-3g "
 		cmd += device + " " + dirpath
-		self.__StartMount(cmd, enableswap)
+		self.__StartMount(cmd)
 
-	def __StartMount(self, cmd, enableswap):
-		self.Console.ePopen(cmd)
-		if enableswap:
+	def __StartMount(self, cmd):
+		if self.enableswap:
+			self.enableswap = False
+			self.Console.ePopen(cmd, self.EnableSwap)
+		else:
+			self.Console.ePopen(cmd)
+
+	def EnableSwap(self):
+		if os.path.exists("/media/hdd/swapfile"):
+			Console().ePopen("swapon /media/hdd/swapfile")
+		else:
+			print "[HddManager] not found /media/hdd/swapfile"
+			sleep(5)
 			if os.path.exists("/media/hdd/swapfile"):
 				Console().ePopen("swapon /media/hdd/swapfile")
 			else:
 				print "[HddManager] not found /media/hdd/swapfile"
-				sleep(5)
-				if os.path.exists("/media/hdd/swapfile"):
-					Console().ePopen("swapon /media/hdd/swapfile")
-				else:
-					print "[HddManager] not found /media/hdd/swapfile"
+				self.enableswap = True
 
 mountdevice = MountDevice()
 

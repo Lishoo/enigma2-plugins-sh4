@@ -3,6 +3,8 @@ from . import _
 from Components.config import config, ConfigSubsection, ConfigText, ConfigYesNo
 from Plugins.Plugin import PluginDescriptor
 
+from HddMount import MountHddOnStart
+
 config.plugins.HddMount = ConfigSubsection()
 config.plugins.HddMount.MountOnStart = ConfigYesNo(default = False)
 config.plugins.HddMount.MountOnHdd = ConfigText(default = "nothing")
@@ -30,9 +32,11 @@ def OnStart(reason, **kwargs):
 				else:
 					enableswap = True
 		if config.plugins.HddMount.MountOnStart.value:
-			from HddMount import MountHddOnStart
+			print "[HddManager] MountOnStart"
 			MountHddOnStart(config.plugins.HddMount.MountOnHdd.value,
 				config.plugins.HddMount.MountOnMovie.value, enableswap)
+		elif enableswap:
+			MountHddOnStart("nothing", "nothing", enableswap)
 
 def Plugins(**kwargs):
 	return [PluginDescriptor(name =_("HDD mount manager"),
