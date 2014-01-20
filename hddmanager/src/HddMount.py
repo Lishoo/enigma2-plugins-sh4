@@ -106,7 +106,7 @@ class MountDevice:
 		else:
 			self.Console.ePopen(cmd)
 
-	def EnableSwap(self):
+	def EnableSwap(self, result=None, retval=None, extra_args=None):
 		if os.path.exists("/media/hdd/swapfile"):
 			Console().ePopen("swapon /media/hdd/swapfile")
 		else:
