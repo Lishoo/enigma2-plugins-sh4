@@ -556,6 +556,11 @@ trafficinfo/src/Makefile
 toolkit/Makefile
 toolkit/src/Makefile
 
+tv3play/Makefile
+tv3play/meta/Makefile
+tv3play/po/Makefile
+tv3play/src/Makefile
+
 tvcharts/Makefile
 tvcharts/meta/Makefile
 tvcharts/src/Makefile

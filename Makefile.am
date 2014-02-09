@@ -88,6 +88,7 @@ SUBDIRS = \
 	svdrp \
 	tageditor \
 	trafficinfo \
+	tv3play \
 	tvcharts \
 	toolkit \
 	unwetterinfo \
