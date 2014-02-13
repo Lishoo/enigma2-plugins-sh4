@@ -7,7 +7,7 @@ from Components.ActionMap import ActionMap
 from Components.config import config, getConfigListEntry
 from Components.Console import Console
 from Components.ConfigList import ConfigListScreen
-from Components.ScrollLabel import ScrollLabel
+from Components.Label import Label
 from Components.Sources.List import List
 from Components.Sources.StaticText import StaticText
 from Screens.MessageBox import MessageBox
@@ -40,7 +40,7 @@ class AltCamManager(Screen):
 			<eLabel halign="center" position="390,10" size="210,35" font="Regular;20" \
 				text="Ecm info" transparent="1" />
 			<widget name="status" position="360,50" size="320,300" font="Regular;16" \
-				halign="left" noWrap="1" />
+				halign="left" />
 			<eLabel position="12,358" size="148,2" backgroundColor="#00ff2525" />
 			<eLabel position="165,358" size="148,2" backgroundColor="#00389416" />
 			<eLabel position="318,358" size="148,2" backgroundColor="#00baa329" />
@@ -72,7 +72,7 @@ class AltCamManager(Screen):
 				"yellow": self.restart,
 				"blue": self.setup
 			})
-		self["status"] = ScrollLabel()
+		self["status"] = Label()
 		self["list"] = List([])
 		checkconfigdir()
 		self.actcam = config.plugins.AltSoftcam.actcam.value
@@ -88,21 +88,12 @@ class AltCamManager(Screen):
 		self.createinfo()
 		self.Timer = eTimer()
 		self.Timer.callback.append(self.listecminfo)
-		self.Timer.start(1000*4, False)
+		self.Timer.start(2000, False)
 
 	def listecminfo(self):
-		listecm = ""
 		try:
 			with open("/tmp/ecm.info", "r") as ecmfile:
-				for line in ecmfile:
-					while len(line) > 32:
-						linebreak = line.rfind(' ', 1, 32)
-						if linebreak == -1:
-							linebreak = 32
-						listecm += line[:linebreak] + "\n"
-						line = line[linebreak+1:]
-					listecm += line
-			self["status"].setText(listecm)
+				self["status"].setText(ecmfile.read())
 			ecmfile.close()
 		except:
 			self["status"].setText("")
