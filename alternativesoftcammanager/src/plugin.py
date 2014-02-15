@@ -24,7 +24,7 @@ def startcam(reason, **kwargs):
 	if config.plugins.AltSoftcam.actcam.value != "none":
 		global EnigmaStart
 		if reason == 0 and not EnigmaStart: # Enigma start and not use reloadPlugins
-			from Softcam import startcamonstart
+			from Startup import startcamonstart
 			EnigmaStart = True
 			startcamonstart.start()
 		elif reason == 1: # Enigma stop
