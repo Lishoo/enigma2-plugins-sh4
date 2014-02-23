@@ -21,7 +21,8 @@ class StartCamOnStart:
 
 	def checkprocess(self, result, retval, extra_args):
 		processes = result.lower()
-		camlist = ["oscam", "mgcamd", "wicard", "camd3", "mcas", "cccam", "gbox", "mpcs", "mbox", "newcs", "vizcam", "rucam"]
+		camlist = ["oscam", "mgcamd", "wicard", "camd3", "mcas", "cccam",
+			"gbox", "mpcs", "mbox", "newcs", "vizcam", "rucam"]
 		camlist.insert(0, config.plugins.AltSoftcam.actcam.value)
 		camnot = True
 		for cam in camlist:

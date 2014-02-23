@@ -41,11 +41,13 @@ def getcamcmd(cam):
 		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -b"
 	return config.plugins.AltSoftcam.camdir.value + "/" + cam
 
+
 def getcamscript(cam):
 	cam = cam.lower()
 	if cam[-3:] == ".sh" or cam[:7] == "softcam" or cam[:10] == "cardserver":
 		return True
 	return False
+
 
 def stopcam(cam):
 	if getcamscript(cam):
@@ -59,6 +61,7 @@ def stopcam(cam):
 	except:
 		pass
 
+
 def __createdir(list):
 	dir = ""
 	for line in list[1:].split("/"):
@@ -68,6 +71,7 @@ def __createdir(list):
 				mkdir(dir)
 			except:
 				print "[Alternative SoftCam Manager] Failed to mkdir", dir
+
 
 def checkconfigdir():
 	if not path.exists(config.plugins.AltSoftcam.camconfig.value):

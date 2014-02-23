@@ -27,9 +27,9 @@ class AltCamManager(Screen):
 				<convert type="TemplatedMultiContent">
 				{
 					"template": [MultiContentEntryText(pos=(65, 10), size=(275, 40), \
-							font=0, flags=RT_HALIGN_LEFT, text=0), 
+							font=0, flags=RT_HALIGN_LEFT, text=0),
 						MultiContentEntryPixmapAlphaTest(pos=(5, 5), \
-							size=(51, 40), png=1), 
+							size=(51, 40), png=1),
 						MultiContentEntryText(pos=(5, 25), size=(51, 16), font=1, \
 							flags=RT_HALIGN_CENTER, text=2),],
 					"fonts": [gFont("Regular", 26), gFont("Regular", 12)],
@@ -149,7 +149,7 @@ class AltCamManager(Screen):
 		self["list"].setList(camlist)
 		self.finish = True
 
-	def checkcam (self, cam):
+	def checkcam(self, cam):
 		cam = cam.lower()
 		if getcamscript(cam):
 			return "Script"
@@ -241,12 +241,12 @@ class AltCamManager(Screen):
 				config.plugins.AltSoftcam.actcam.value = self.actcam
 			config.plugins.AltSoftcam.save()
 			self.close()
-		else: # if list setting not completed as they should
+		else:  # if list setting not completed as they should
 			self.cancelTimer = eTimer()
 			self.cancelTimer.timeout.get().append(self.setfinish)
 			self.cancelTimer.start(4000, False)
 
-	def setfinish(self):			
+	def setfinish(self):
 		self.cancelTimer.stop()
 		self.finish = True
 		self.cancel()

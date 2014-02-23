@@ -10,6 +10,7 @@ def localeInit():
 	bindtextdomain("AlternativeSoftCamManager", resolveFilename(SCOPE_PLUGINS, \
 		"Extensions/AlternativeSoftCamManager/locale"))
 
+
 def _(txt):
 	t = dgettext("AlternativeSoftCamManager", txt)
 	if t == txt:
