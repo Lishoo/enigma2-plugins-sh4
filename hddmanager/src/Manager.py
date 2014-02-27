@@ -118,6 +118,7 @@ class MountSetup(Screen, ConfigListScreen):
 					self.Console.ePopen("swapoff /media/hdd/swapfile")
 					self.Console.ePopen("rm -f /media/hdd/swapfile")
 				if self.SwapFile.value != "no":
+					self.mbox = None
 					if not self.SwapFile.value[:2] == "sd":
 						msg = _("Please wait, is currently to created a swap file.\nIt will take some time.")
 						self.mbox = self.session.open(MessageBox, msg, MessageBox.TYPE_INFO)
