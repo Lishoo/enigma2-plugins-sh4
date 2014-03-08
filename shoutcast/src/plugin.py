@@ -24,22 +24,18 @@ from Plugins.Plugin import PluginDescriptor
 from Screens.Screen import Screen
 from Components.ActionMap import ActionMap
 from Components.Label import Label
-from enigma import eServiceReference
-from enigma import eListboxPythonMultiContent, eListbox, gFont, \
-	RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_VALIGN_CENTER
+from enigma import gFont, addFont, eTimer, eConsoleAppContainer, ePicLoad, loadPNG, getDesktop, eServiceReference, \
+iPlayableService, eListboxPythonMultiContent, RT_HALIGN_LEFT, RT_HALIGN_RIGHT, RT_HALIGN_CENTER, RT_VALIGN_CENTER, eListbox, gPixmapPtr, getPrevAsciiCode
 from Tools.LoadPixmap import LoadPixmap
 import xml.etree.cElementTree
-from enigma import iPlayableService, iServiceInformation
 
 from twisted.internet import reactor, defer
 from twisted.web import client
 from twisted.web.client import HTTPClientFactory
 from Components.Pixmap import Pixmap
-from enigma import ePicLoad
 from Components.ScrollLabel import ScrollLabel
 import string
 import os
-from enigma import getDesktop
 from Components.config import config, ConfigSubsection, ConfigSelection, ConfigDirectory, ConfigYesNo, Config, ConfigInteger, ConfigSubList, ConfigText, getConfigListEntry, configfile
 from Components.ConfigList import ConfigListScreen
 from Screens.MessageBox import MessageBox
@@ -49,12 +45,9 @@ from urllib import quote
 from twisted.web.client import downloadPage
 from Screens.ChoiceBox import ChoiceBox
 from Screens.VirtualKeyBoard import VirtualKeyBoard
-from enigma import eTimer
-from enigma import eConsoleAppContainer
 from Components.Input import Input
 from Screens.InputBox import InputBox
 from Components.FileList import FileList
-from timer import TimerEntry
 # for localized messages
 from . import _
 
@@ -117,7 +110,15 @@ class myHTTPClientFactory(HTTPClientFactory):
 		connector.connect()
 
 def sendUrlCommand(url, contextFactory=None, timeout=60, *args, **kwargs):
+     if hasattr(client, '_parse'):
 	scheme, host, port, path = client._parse(url)
+     else:
+	from twisted.web.client import _URI
+	uri = _URI.fromBytes(url)
+	scheme = uri.scheme
+	host = uri.host
+	port = uri.port
+	path = uri.path
 	factory = myHTTPClientFactory(url, *args, **kwargs)
 	# print "scheme=%s host=%s port=%s path=%s\n" % (scheme, host, port, path)
 	reactor.connectTCP(host, port, factory, timeout=timeout)
@@ -148,71 +149,44 @@ class SHOUTcastWidget(Screen):
 	FAVORITE_FILE_OLD = '/usr/lib/enigma2/python/Plugins/Extensions/SHOUTcast/favorites.user'
 	FAVORITE_FILE = '/etc/enigma2/SHOUTcast.favorites'
 
-	sz_w = getDesktop(0).size().width()
+	sz_w = getDesktop(0).size().width() - 90
 	sz_h = getDesktop(0).size().height() - 95
 	print "[SHOUTcast] desktop size %dx%d\n" % (sz_w+90, sz_h+100)
 	if sz_h < 500:
 		sz_h += 4
-		skin = """
+	skin = """
 		<screen name="SHOUTcastWidget" position="center,65" title="SHOUTcast" size="%d,%d">
-				<ePixmap position="50,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
-				<ePixmap position="200,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
-				<ePixmap position="350,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" />
-				<ePixmap position="500,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/blue.png" transparent="1" alphatest="on" />
-				<widget render="Label" source="key_red" position="50,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget render="Label" source="key_green" position="200,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget render="Label" source="key_yellow" position="350,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget render="Label" source="key_blue" position="500,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget name="headertext" position="50,77" zPosition="1" size="1180,23" font="Regular;20" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="statustext" position="20,270" zPosition="1" size="1240,90" font="Regular;20" halign="center" valign="center" transparent="0"  backgroundColor="#00000000"/>
-				<widget name="list" position="50,110" zPosition="2" size="1180,445" scrollbarMode="showOnDemand" transparent="0"  backgroundColor="#00000000"/>
-				<widget name="titel" position="160,580" zPosition="1" size="900,20" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="station" position="160,600" zPosition="1" size="900,40" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="console" position="160,650" zPosition="1" size="900,50" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="cover" zPosition="2" position="50,580" size="102,110" alphatest="blend" />
-				<ePixmap position="1100,35" zPosition="4" size="120,35" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/SHOUTcast/shoutcast-logo1-fs8.png" transparent="1" alphatest="on" />
-			</screen>"""
-
-		skin = """
-			<screen name="SHOUTcastWidget" position="0,0" size="1024,576" flags="wfNoBorder" backgroundColor="#00000000" title="SHOUTcast">
-				<ePixmap position="50,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
-				<ePixmap position="200,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
-				<ePixmap position="350,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" />
-				<ePixmap position="500,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/blue.png" transparent="1" alphatest="on" />
-				<widget render="Label" source="key_red" position="50,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget render="Label" source="key_green" position="200,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget render="Label" source="key_yellow" position="350,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget render="Label" source="key_blue" position="500,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget name="headertext" position="50,77" zPosition="1" size="900,23" font="Regular;20" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="statustext" position="20,270" zPosition="1" size="1004,90" font="Regular;20" halign="center" valign="center" transparent="0"  backgroundColor="#00000000"/>
-				<widget name="list" position="50,110" zPosition="2" size="940,313" scrollbarMode="showOnDemand" transparent="0"  backgroundColor="#00000000"/>
-				<widget name="titel" position="160,450" zPosition="1" size="800,20" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="station" position="160,470" zPosition="1" size="800,40" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="console" position="160,520" zPosition="1" size="800,50" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="cover" zPosition="2" position="50,450" size="102,110" alphatest="blend" />
-				<ePixmap position="870,35" zPosition="4" size="120,35" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/SHOUTcast/shoutcast-logo1-fs8.png" transparent="1" alphatest="on" />
-			</screen>"""
-	else:
-
-		skin = """
-			<screen name="SHOUTcastWidget" position="0,0" size="720,576" flags="wfNoBorder" backgroundColor="#00000000" title="SHOUTcast">
-				<ePixmap position="50,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
-				<ePixmap position="210,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
-				<ePixmap position="370,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" />
-				<ePixmap position="530,30" zPosition="4" size="140,40" pixmap="skin_default/buttons/blue.png" transparent="1" alphatest="on" />
-				<widget render="Label" source="key_red" position="50,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget render="Label" source="key_green" position="210,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget render="Label" source="key_yellow" position="370,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget render="Label" source="key_blue" position="530,30" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-				<widget name="headertext" position="50,77" zPosition="1" size="620,23" font="Regular;20" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="statustext" position="50,270" zPosition="1" size="620,90" font="Regular;20" halign="center" valign="center" transparent="0"  backgroundColor="#00000000"/>
-				<widget name="list" position="50,120" zPosition="2" size="620,249" scrollbarMode="showOnDemand" transparent="0"  backgroundColor="#00000000"/>
-				<widget name="titel" position="155,400" zPosition="1" size="525,40" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="station" position="155,445" zPosition="1" size="525,40" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="console" position="155,490" zPosition="1" size="525,50" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
-				<widget name="cover" zPosition="2" position="50,400" size="102,110" alphatest="blend" />
-				<ePixmap position="550,77" zPosition="4" size="120,35" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/SHOUTcast/shoutcast-logo1-fs8.png" transparent="1" alphatest="on" />
-			</screen>"""
+			<ePixmap position="5,0" zPosition="4" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
+			<ePixmap position="150,0" zPosition="4" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
+			<ePixmap position="295,0" zPosition="4" size="140,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" />
+			<ePixmap position="440,0" zPosition="4" size="140,40" pixmap="skin_default/buttons/blue.png" transparent="1" alphatest="on" />
+			<ePixmap pixmap="skin_default/buttons/key_menu.png" position="585,10" zPosition="0" size="35,25" alphatest="on" />
+			<widget render="Label" source="key_red" position="5,0" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget render="Label" source="key_green" position="150,0" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget render="Label" source="key_yellow" position="295,0" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget render="Label" source="key_blue" position="440,0" size="140,40" zPosition="5" valign="center" halign="center" backgroundColor="red" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget name="headertext" position="5,47" zPosition="1" size="%d,23" font="Regular;20" transparent="1"  backgroundColor="#00000000"/>
+			<widget name="statustext" position="5,240" zPosition="1" size="%d,90" font="Regular;20" halign="center" valign="center" transparent="0"  backgroundColor="#00000000"/>
+			<widget name="list" position="5,80" zPosition="2" size="%d,%d" scrollbarMode="showOnDemand" transparent="0"  backgroundColor="#00000000"/>
+			<widget name="titel" position="115,%d" zPosition="1" size="%d,40" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
+			<widget name="station" position="115,%d" zPosition="1" size="%d,40" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
+			<widget name="console" position="115,%d" zPosition="1" size="%d,40" font="Regular;18" transparent="1"  backgroundColor="#00000000"/>
+			<widget name="cover" zPosition="2" position="5,%d" size="102,110" alphatest="blend" />
+			<ePixmap position="%d,41" zPosition="4" size="120,35" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/SHOUTcast/shoutcast-logo1-fs8.png" transparent="1" alphatest="on" />
+		</screen>""" %(
+			sz_w, sz_h, # size
+			sz_w - 135, # size headertext
+			sz_w - 100, # size statustext
+			sz_w - 10, sz_h - 205, # size list
+			sz_h - 105, # position titel
+			sz_w - 125, # size titel
+			sz_h - 70, # position station
+			sz_w - 125, # size station
+			sz_h - 25, # position console
+			sz_w - 125, # size console
+			sz_h - 105, # position cover
+			sz_w - 125, # position logo
+			)
 	
 	def __init__(self, session):
 		self.session = session
@@ -295,12 +269,6 @@ class SHOUTcastWidget(Screen):
 			# just to hear to recording music when starting the plugin...
 			self.currentStreamingStation = _("Recording stream station")
 			self.playServiceStream("http://localhost:9191")
-			
-		self.session.nav.SleepTimer.on_state_change.append(self.sleepTimerEntryOnStateChange)
-	
-	def sleepTimerEntryOnStateChange(self, timer):
-		if timer.state == TimerEntry.StateEnded:
-			self.close()
 
 	def streamripperClosed(self, retval):
 		if retval == 0:
@@ -833,7 +801,7 @@ class SHOUTcastWidget(Screen):
 		self.session.nav.stopService()
 		if config.plugins.shoutcast.showcover.value:
 			self["cover"].doHide()
-		sref = eServiceReference("4097:0:0:0:0:0:0:0:0:0:%s" % url.replace(':', '%3a'))
+		sref = eServiceReference(4097, 0, url)
 		try:
 			self.session.nav.playService(sref)
 		except:
