@@ -575,6 +575,10 @@ valixdcontrol/src/Makefile
 valixdcontrol/src/comp/Makefile
 valixdcontrol/src/data/Makefile
 
+vfd-icons-minimalwithclock/Makefile
+vfd-icons-minimalwithclock/meta/Makefile
+vfd-icons-minimalwithclock/src/Makefile
+
 virtualzap/Makefile
 virtualzap/meta/Makefile
 virtualzap/po/Makefile

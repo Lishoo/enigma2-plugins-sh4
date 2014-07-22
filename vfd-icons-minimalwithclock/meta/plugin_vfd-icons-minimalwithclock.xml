@@ -1,0 +1,17 @@
+<default>
+	  <prerequisites>
+                    <tag type="Software" />
+	  </prerequisites>
+          <info>
+                    <author>Taapat</author>
+                    <name>VFD-Icons minimal with clock</name>
+                    <packagename>enigma2-plugin-systemplugins-vfd-icons-minimalwithclock</packagename>
+                    <shortdescription>VFD Icons minimal with clock</shortdescription>
+                    <description>Show on display chanel number and clock</description>
+                    <screenshot/>
+          </info>
+
+	  <files type="package">
+		<file type="package" name="enigma2-plugin-systemplugins-vfd-icons-minimalwithclock" />
+	  </files>
+</default>

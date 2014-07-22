@@ -93,6 +93,7 @@ SUBDIRS = \
 	toolkit \
 	unwetterinfo \
 	valixdcontrol \
+	vfd-icons-minimalwithclock \
 	virtualzap \
 	vlcplayer \
 	vps \
