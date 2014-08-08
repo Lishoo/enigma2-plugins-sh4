@@ -21,7 +21,7 @@ def GetDevices():
 		print "[HddManager] Failed to open /proc/partitions", ex
 	return device
 
-def __ReadMounts():
+def ReadMounts():
 	try:
 		with open("/proc/mounts", "r") as f:
 			result = [line.strip().split(' ') for line in f]
@@ -36,7 +36,7 @@ def __ReadMounts():
 def CheckMountDir(device):
 	hdd = "nothing"
 	movie = "nothing"
-	for line in __ReadMounts():
+	for line in ReadMounts():
 		if line[1][-3:] == "hdd":
 			hdd = GetDeviceFromList(device, line[0][5:])
 		elif line[1][-5:] == "movie":
@@ -91,7 +91,7 @@ class MountDevice:
 		cmd = "mount "
 		for line in result.splitlines():
 			if line and line[:9] == device:
-				for line in __ReadMounts():
+				for line in ReadMounts():
 					if device in line[0]:
 						self.Console.ePopen("umount -f " + device)
 						break
