@@ -92,9 +92,7 @@ class AltCamManager(Screen):
 
 	def listecminfo(self):
 		try:
-			with open("/tmp/ecm.info", "r") as ecmfile:
-				self["status"].setText(ecmfile.read())
-			ecmfile.close()
+			self["status"].setText(open("/tmp/ecm.info", "r").read())
 		except:
 			self["status"].setText("")
 
