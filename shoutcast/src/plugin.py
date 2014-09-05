@@ -760,7 +760,7 @@ class SHOUTcastWidget(Screen):
 			print "[SHOUTcast] EVENT ==>", ev
 		if ev == 1 or ev == 4:
 			print "[SHOUTcast] Tuned in, playing now!"
-		if ev == 3 or ev == 7:
+		if ev == 3 or:
 			self["statustext"].setText(_("Stream stopped playing, playback of stream stopped!"))
 			print "[SHOUTcast] Stream stopped playing, playback of stream stopped!"
 			self.session.nav.stopService()
