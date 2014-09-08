@@ -174,14 +174,22 @@ class AutoMount():
 				print "[AutoMount.py] U/MOUNTCMD--->",command
 				self.MountConsole.ePopen(command, self.CheckMountPointFinished, [data, callback])
 			else:
-				self.CheckMountPointFinished(None,None, [data, callback])
+				command = "ping -c1 -W2 %s" % data['ip']
+				self.MountConsole.ePopen(command, self.CheckIsMountPointLive, [data, callback])
+
+	def CheckIsMountPointLive(self, result, retval, extra_args):
+		(data, callback ) = extra_args
+		if "ttl=" not in result and self.automounts.has_key(data['sharename']):
+			print "[AutoMount.py] Network share not aswer, don't add it to mounted partitions"
+			self.automounts[data['sharename']]['active'] = False
+		self.CheckMountPointFinished(None, None, [data, callback])
 
 	def CheckMountPointFinished(self, result, retval, extra_args):
 		print "[AutoMount.py] CheckMountPointFinished",result,retval
 		(data, callback ) = extra_args
 		path = os.path.join('/media/net', data['sharename'])
 		if [True for m in getProcMounts() if m[1] == path]:
-			if self.automounts.has_key(data['sharename']):
+			if self.automounts.has_key(data['sharename']) and self.automounts[data['sharename']]['active'] is not False:
 				self.automounts[data['sharename']]['isMounted'] = True
 				desc = data['sharename']
 				if self.automounts[data['sharename']]['hdd_replacement'] == 'True': #hdd replacement hack
