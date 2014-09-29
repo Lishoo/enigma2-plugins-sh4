@@ -30,6 +30,7 @@ class AutoMount():
 		self.activeMountsCounter = 0
 		# Initialize Timer
 		self.callback = None
+		self.pingcmd = None
 		self.timer = eTimer()
 		self.timer.callback.append(self.mountTimeout)
 
@@ -175,7 +176,11 @@ class AutoMount():
 				self.MountConsole.ePopen(command, self.CheckMountPointFinished, [data, callback])
 			else:
 				command = "ping -c1 -W2 %s" % data['ip']
-				self.MountConsole.ePopen(command, self.CheckIsMountPointLive, [data, callback])
+				if command != self.pingcmd:
+					self.pingcmd = command
+					self.MountConsole.ePopen(command, self.CheckIsMountPointLive, [data, callback])
+				else:
+					self.CheckMountPointFinished(None, None, [data, callback])
 
 	def CheckIsMountPointLive(self, result, retval, extra_args):
 		(data, callback ) = extra_args
