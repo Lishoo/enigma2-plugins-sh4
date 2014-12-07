@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-movietagger
-Version: 20110707
+Version: 20110707-r10
 Description: Add tags to recorded movies, to sort a large list of movies
 Maintainer: 3c5x9 <3c5x9@gmx.net>
 Depends: enigma2

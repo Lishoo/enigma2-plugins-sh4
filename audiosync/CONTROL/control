@@ -1,7 +1,7 @@
 Package: enigma2-plugin-extensions-audiosync
 Replaces: enigma2-plugin-extensions-ac3lipsync
 Conflicts: enigma2-plugin-extensions-ac3lipsync
-Version: 20100225
+Version: 20100225-r10
 Description: Set Audio delay
 Maintainer: Tode <sagichnet@gmx.net>
 Depends: enigma2

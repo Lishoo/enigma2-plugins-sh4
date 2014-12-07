@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-growlee
-Version: 20091001
+Version: 20091001-r10
 Description: redirect notifications to growl
 Maintainer: Moritz Venn <moritz.venn@freaque.net>
 Homepage: http://www.ritzmo.de

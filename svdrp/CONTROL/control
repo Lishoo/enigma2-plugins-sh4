@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-svdrp
-Version: 20110227
+Version: 20110227-r10
 Description: basic remote control server using svdrp
 Architecture: sh4
 Section: extra
