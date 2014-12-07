@@ -3,4 +3,4 @@ Version: 2.2-20080529
 Description: Networkbrowser and Network-Mountmanager
 Maintainer: Mladen Horvat <acid-burn@opendreambox.org>
 Homepage: http://www.dream-multimedia-tv.de/
-Depends:
+Depends: enigma2 (>= 2.6git20090926)

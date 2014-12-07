@@ -3,4 +3,4 @@ Version: 1.01
 Description: Create a backup of your Video-DVD
 Maintainer: Nabil Hanna <nabil1978@web.de>
 Homepage: http://www.lt-forums.org/ali
-Depends: libdvdread, dvdbackup
+Depends: enigma2, libdvdread, dvdbackup

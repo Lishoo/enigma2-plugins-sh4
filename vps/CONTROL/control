@@ -7,4 +7,4 @@ Maintainer: Martin Gauk <mart-g@web.de>
 Architecture: sh4
 Replaces: enigma2-plugin-extensions-vps
 Conflicts: enigma2-plugin-extensions-vps
-Depends: 
+Depends: enigma2 (>= 2.6git20091203)
