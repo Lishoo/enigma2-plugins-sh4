@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: nl\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-07 13:11+0200\n"
+"POT-Creation-Date: 2014-02-01 12:42+0100\n"
 "PO-Revision-Date: 2009-06-04 20:19+0200\n"
 "Last-Translator: \n"
 "Language-Team:  <en@li.org>\n"
@@ -23,6 +23,10 @@ msgstr ""
 #. TRANSLATORS: keep it short, this is a help text
 msgid "About FritzCall"
 msgstr "Over FritzCall"
+
+#. TRANSLATORS: keep it short, this is a button
+msgid "Activate WLAN guest access"
+msgstr ""
 
 #. TRANSLATORS: keep it short, this is a help text
 #. TRANSLATORS: this is a window title.
@@ -78,10 +82,9 @@ msgstr "Annuleren"
 msgid "Cannot get calls from FRITZ!Box"
 msgstr ""
 
-msgid "Cannot get infos from FRITZ!Box yet; try later"
-msgstr ""
-
-msgid "Compact Flash"
+msgid ""
+"Cannot get infos from FRITZ!Box yet\n"
+"Still initialising or wrong firmware version"
 msgstr ""
 
 msgid "Connected since"
@@ -130,6 +133,10 @@ msgstr ""
 
 msgid "DECT phones registered"
 msgstr "geregistreerde DECT telefoons"
+
+#. TRANSLATORS: keep it short, this is a button
+msgid "Deactivate WLAN guest access"
+msgstr ""
 
 msgid "Debug"
 msgstr "Debug"
@@ -249,6 +256,10 @@ msgid "FRITZ!Box - Error resetting: %s"
 msgstr ""
 
 #, python-format
+msgid "FRITZ!Box - Failed changing GuestAccess: %s"
+msgstr ""
+
+#, python-format
 msgid "FRITZ!Box - Failed changing Mailbox: %s"
 msgstr ""
 
@@ -282,9 +293,6 @@ msgstr ""
 msgid "Filter also list of calls"
 msgstr ""
 
-msgid "Flash"
-msgstr "Flash"
-
 #, python-format
 msgid ""
 "Found picture\n"
@@ -309,6 +317,15 @@ msgstr "Ontvangt gesprekken van de FRITZ!Box..."
 
 msgid "Getting status from FRITZ!Box Fon..."
 msgstr "Ophalen van status van de FRITZ!Box..."
+
+msgid "Guest access"
+msgstr ""
+
+msgid "Guest access not active"
+msgstr ""
+
+msgid "Guest access on "
+msgstr ""
 
 msgid "IP Address:"
 msgstr "IP Adres:"
@@ -349,9 +366,6 @@ msgstr "Laat MSN zien (door een komma gescheiden)"
 msgid "Mailbox"
 msgstr "Mailbox"
 
-msgid "Media directory"
-msgstr ""
-
 #. TRANSLATORS: keep it short, this is a button
 msgid "Missed"
 msgstr "Gemist"
@@ -365,7 +379,7 @@ msgstr "Muten bij oproep"
 msgid "Name"
 msgstr "Naam"
 
-msgid "Network mount"
+msgid "Name of WLAN guest network"
 msgstr ""
 
 #. TRANSLATORS: keep it short, this is a button
@@ -440,20 +454,23 @@ msgstr "Uitgaande gesprekken"
 msgid "Password Accessing FRITZ!Box"
 msgstr "Wachtwoord voor toegang FRITZ!Box"
 
+msgid "Password of WLAN guest network"
+msgstr ""
+
 #. TRANSLATORS: this is a window title.
 #. TRANSLATORS: keep it short, this is a button
 msgid "Phone calls"
 msgstr "Telefoongesprekken"
 
-msgid "PhoneBook Location"
-msgstr "Telefoonboek locatie"
+msgid "PhoneBook and Faces Location"
+msgstr ""
 
 #. TRANSLATORS: this is a window title.
 #. TRANSLATORS: keep it short, this is a button
 msgid "Phonebook"
 msgstr "Telefoonboek"
 
-msgid "Plugin not active"
+msgid "Plugin not enabled"
 msgstr ""
 
 #. TRANSLATORS: keep it short, this is a help text
@@ -506,6 +523,12 @@ msgstr "Zoekt in LDIF..."
 msgid "Searching in Outlook export..."
 msgstr "Zoekt in Outlook export..."
 
+msgid "Secure WLAN guest network"
+msgstr ""
+
+msgid "Setting..."
+msgstr ""
+
 msgid "Shortcut"
 msgstr "Snelkoppeling"
 
@@ -544,6 +567,11 @@ msgstr "Nederland"
 msgid "Timeout for Call Notifications (seconds)"
 msgstr "Timeout voor gespreksnotificatie (seconden)"
 
+msgid ""
+"To enjoy more functionalities of your FRITZ!Box, configure the firmware "
+"version!"
+msgstr ""
+
 #. TRANSLATORS: keep it short, this is a help text
 msgid "Toggle 1. mailbox"
 msgstr "1. Mailbox Aan/Uit"
@@ -575,15 +603,15 @@ msgid "Toggle WLAN"
 msgstr "WLAN Aan/Uit"
 
 #. TRANSLATORS: keep it short, this is a help text
+msgid "Toggle WLAN guest access"
+msgstr ""
+
+#. TRANSLATORS: keep it short, this is a help text
 msgid "Toggle all mailboxes"
 msgstr "Mailbox Aan/Uit"
 
 msgid "UNKNOWN"
 msgstr "ONBEKEND"
-
-#, fuzzy
-msgid "USB Device"
-msgstr "USB Stick"
 
 msgid "Use internal PhoneBook"
 msgstr "Gebruik het interne telefoonboek"
@@ -726,6 +754,9 @@ msgstr ""
 #~ msgid "FRITZ!Box Login failed: "
 #~ msgstr "FRITZ!Box Login mislukt! - Error: %s"
 
+#~ msgid "Flash"
+#~ msgstr "Flash"
+
 #~ msgid "Full screen display"
 #~ msgstr "Volledig scherm"
 
@@ -762,9 +793,16 @@ msgstr ""
 #~ "---------------------------------------------\n"
 #~ "van: %(phone)s"
 
+#~ msgid "PhoneBook Location"
+#~ msgstr "Telefoonboek locatie"
+
 #~ msgid "Show Calls for specific MSN"
 #~ msgstr "Laat gesprekken van een specifieke MSN zien"
 
 #, fuzzy
 #~ msgid "Toggle "
 #~ msgstr "WLAN Aan/Uit"
+
+#, fuzzy
+#~ msgid "USB Device"
+#~ msgstr "USB Stick"

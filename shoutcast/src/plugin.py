@@ -21,6 +21,7 @@
 #
 
 from Plugins.Plugin import PluginDescriptor
+from urlparse import urlparse
 from Screens.Screen import Screen
 from Components.ActionMap import ActionMap
 from Components.Label import Label
@@ -110,15 +111,12 @@ class myHTTPClientFactory(HTTPClientFactory):
 		connector.connect()
 
 def sendUrlCommand(url, contextFactory=None, timeout=60, *args, **kwargs):
-     if hasattr(client, '_parse'):
-	scheme, host, port, path = client._parse(url)
-     else:
-	from twisted.web.client import _URI
-	uri = _URI.fromBytes(url)
-	scheme = uri.scheme
-	host = uri.host
-	port = uri.port
-	path = uri.path
+	parsed = urlparse(url)
+	scheme = parsed.scheme
+	host = parsed.hostname
+	port = parsed.port or (443 if scheme == 'https' else 80)
+	path = parsed.path or '/'
+
 	factory = myHTTPClientFactory(url, *args, **kwargs)
 	# print "scheme=%s host=%s port=%s path=%s\n" % (scheme, host, port, path)
 	reactor.connectTCP(host, port, factory, timeout=timeout)
@@ -718,15 +716,14 @@ class SHOUTcastWidget(Screen):
 			sendUrlCommand(self.currentGoogle, None, 10).addCallback(self.GoogleImageCallback).addErrback(self.Error)
 			return
 		self.currentGoogle = None
-		foundPos = result.find("imgres?imgurl=")
-		foundPos2 = result.find("&amp;imgrefurl=")
+		foundPos = result.find("unescapedUrl\":\"")
+		foundPos2 = result.find("\",\"url\":\"")
 		if foundPos != -1 and foundPos2 != -1:
-			url=result[foundPos+14:foundPos2]
+			url=result[foundPos+15:foundPos2]
 			if len(url)>15:
 				url= url.replace(" ", "%20")
 				print "download url: %s " % url
-				upperl = url.upper()
-				validurl = (".JPG" in upperl) or (".PNG" in upperl) or (".GIF" in upperl) or (".JPEG" in upperl)
+				validurl = True
 			else:
 				validurl = False
 				print "[SHOUTcast] invalid cover url or pictureformat!"
@@ -772,11 +769,11 @@ class SHOUTcastWidget(Screen):
 				self.oldtitle=sTitle
 				sTitle = sTitle.replace("Title:", "")[:55]
 				if config.plugins.shoutcast.showcover.value:
-					searchpara="album cover art "
+					searchpara="covers "
 					if sTitle:
-						url = "http://images.google.com/search?tbm=isch&q=%s%s&biw=%s&bih=%s&ift=jpg&ift=gif&ift=png" % (quote(searchpara), quote(sTitle), config.plugins.shoutcast.coverwidth.value, config.plugins.shoutcast.coverheight.value)
+						url = "http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=%s%s&biw=%s&bih=%s&ift=jpg&ift=gif&ift=png" % (quote(searchpara), quote(sTitle), config.plugins.shoutcast.coverwidth.value, config.plugins.shoutcast.coverheight.value)
 					else:
-						url = "http://images.google.com/search?tbm=isch&q=notavailable&biw=%s&bih=%s&ift=jpg&ift=gif&ift=png" % (config.plugins.shoutcast.coverwidth.value, config.plugins.shoutcast.coverheight.value)
+						url = "http://ajax.googleapis.com/ajax/services/search/images?v=1.0&q=no+cover+pic&biw=%s&bih=%s&ift=jpg&ift=gif&ift=png" % (config.plugins.shoutcast.coverwidth.value, config.plugins.shoutcast.coverheight.value)
 					print "[SHOUTcast] coverurl = %s " % url
 					if self.currentGoogle:
 						self.nextGoogle = url

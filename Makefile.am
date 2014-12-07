@@ -19,7 +19,6 @@ SUBDIRS = \
 	dyndns \
 	easyinfo \
 	easymedia \
-	ecasa \
 	eibox \
 	elektro \
 	emailclient \
@@ -38,7 +37,6 @@ SUBDIRS = \
 	imdb \
 	infobartunerstate \
 	kiddytimer \
-	lastfm \
 	letterbox \
 	libgisclubskin \
 	logomanager \
@@ -69,7 +67,6 @@ SUBDIRS = \
 	pipzap \
 	pluginhider \
 	pluginsort \
-	podcast \
 	porncenter \
 	quickbutton \
 	quickepg \
@@ -99,7 +96,6 @@ SUBDIRS = \
 	vps \
 	weatherplugin \
 	webcamviewer \
-	webbouqueteditor \
 	werbezapper \
 	youtubeplayer \
 	zaphistorybrowser \
@@ -107,6 +103,7 @@ SUBDIRS = \
 	zdfmediathek \
 	mytube \
 	yttrailer \
+	webbouqueteditor \
 	webinterface
 
 metadir = $(datadir)/meta

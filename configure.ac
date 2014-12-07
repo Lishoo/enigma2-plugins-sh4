@@ -167,10 +167,6 @@ easymedia/meta/Makefile
 easymedia/po/Makefile
 easymedia/src/Makefile
 
-ecasa/Makefile
-ecasa/meta/Makefile
-ecasa/src/Makefile
-
 eibox/Makefile
 eibox/meta/Makefile
 eibox/po/Makefile
@@ -259,11 +255,6 @@ kiddytimer/img/Makefile
 kiddytimer/meta/Makefile
 kiddytimer/po/Makefile
 kiddytimer/src/Makefile
-
-lastfm/Makefile
-lastfm/meta/Makefile
-lastfm/po/Makefile
-lastfm/src/Makefile
 
 letterbox/Makefile
 letterbox/src/Makefile
@@ -446,12 +437,6 @@ pluginsort/Makefile
 pluginsort/meta/Makefile
 pluginsort/po/Makefile
 pluginsort/src/Makefile
-
-podcast/Makefile
-podcast/etc/Makefile
-podcast/meta/Makefile
-podcast/po/Makefile
-podcast/src/Makefile
 
 porncenter/Makefile
 porncenter/meta/Makefile

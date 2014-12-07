@@ -41,6 +41,7 @@ from Components.GUIComponent import GUIComponent
 from enigma import ePicLoad
 from xml.etree.cElementTree import fromstring as cet_fromstring
 from urllib import quote
+from urlparse import urlparse
 from Components.ScrollLabel import ScrollLabel
 from Components.AVSwitch import AVSwitch
 from Tools.Directories import fileExists, resolveFilename, SCOPE_CURRENT_SKIN
@@ -64,6 +65,7 @@ from mutagen.oggvorbis import OggVorbis
 from datetime import timedelta as datetime_timedelta
 from time import time
 from random import shuffle, randrange
+import re
 from Components.config import config, ConfigSubsection, ConfigDirectory, ConfigYesNo, ConfigInteger, getConfigListEntry, configfile
 from Components.ConfigList import ConfigListScreen
 from Tools.HardwareInfo import HardwareInfo
@@ -288,7 +290,10 @@ class myHTTPClientFactory(HTTPClientFactory):
 		headers=headers, agent=agent, timeout=timeout, cookies=cookies,followRedirect=followRedirect)
 
 def sendUrlCommand(url, contextFactory=None, timeout=60, *args, **kwargs):
-	scheme, host, port, path = client._parse(url)
+	parsed = urlparse(url)
+	scheme = parsed.scheme
+	host = parsed.hostname
+	port = parsed.port or (443 if scheme == 'https' else 80)
 	factory = myHTTPClientFactory(url, *args, **kwargs)
 	reactor.connectTCP(host, port, factory, timeout=timeout)
 	return factory.deferred
@@ -1100,7 +1105,7 @@ class MerlinMusicPlayerScreen(Screen, InfoBarBase, InfoBarSeek, InfoBarNotificat
 				self.screenSaverScreen.updateDisplayText("%s - %s" % (self.songList[self.currentIndex][0].title,self.songList[self.currentIndex][0].album))
 			else:
 				self.screenSaverScreen.updateDisplayText(self.songList[self.currentIndex][0].title)
-		self.updateCover(self.songList[self.currentIndex][0].artist, self.songList[self.currentIndex][0].album)
+		self.updateCover(self.songList[self.currentIndex][0].artist, self.songList[self.currentIndex][0].album, self.songList[self.currentIndex][0].title)
 		self.currentTitle = self.songList[self.currentIndex][0].title
 		self["nextTitle"].setText(self.getNextTitle())
 
@@ -1146,9 +1151,9 @@ class MerlinMusicPlayerScreen(Screen, InfoBarBase, InfoBarSeek, InfoBarNotificat
 				self.screenSaverScreen.updateDisplayText("%s - %s" % (title,album))
 			else:
 				self.screenSaverScreen.updateDisplayText(title)
-		self.updateCover(artist, album)
+		self.updateCover(artist, album, title)
 
-	def updateCover(self, artist, album):
+	def updateCover(self, artist, album, title):
 		hasCover = False
 		audio = None
 		audiotype = 0
@@ -1197,7 +1202,7 @@ class MerlinMusicPlayerScreen(Screen, InfoBarBase, InfoBarSeek, InfoBarNotificat
 		if not hasCover:
 			if not self["coverArt"].updateCoverArt(self.currentFilename):
 				if config.plugins.merlinmusicplayer.usegoogleimage.value:
-					self.getGoogleCover(artist, album)
+					self.getGoogleCover(artist, album, title)
 				else:
 					self["coverArt"].showDefaultCover()
 					if self.screenSaverScreen:
@@ -1214,34 +1219,52 @@ class MerlinMusicPlayerScreen(Screen, InfoBarBase, InfoBarSeek, InfoBarNotificat
 			if self[name].getText() != info:
 				self[name].setText(info)
 
-	def getGoogleCover(self, artist,album):
-		if artist != "" and album != "":
-			url = "http://images.google.de/images?q=%s+%s&btnG=Bilder-Suche" % (quote(album),quote(artist))
-			sendUrlCommand(url, None,10).addCallback(self.googleImageCallback).addErrback(self.coverDownloadFailed)
-		else:
+	def getGoogleCover(self, artist, album, title, imagesize = "&imgsz=medium"):
+		if (artist == "" or artist == "n/a"):
 			self["coverArt"].showDefaultCover()
+		elif (album == "" or album.startswith("n/a")):
+			if (title == "" or title == "n/a"):
+				self["coverArt"].showDefaultCover()
+			else:
+				url = "http://ajax.googleapis.com/ajax/services/search/images?v=1.0" + imagesize + "&q=%s+%s" % (quote(title),quote(artist))
+				sendUrlCommand(url, None,10).addCallback(boundFunction(self.googleImageCallback, artist, album, title, imagesize)).addErrback(boundFunction(self.coverDownloadFailed, [], album, title))
+		else:
+			url = "http://ajax.googleapis.com/ajax/services/search/images?v=1.0" + imagesize + "&q=%s+%s" % (quote(album),quote(artist))
+			sendUrlCommand(url, None,10).addCallback(boundFunction(self.googleImageCallback, artist, album, title, imagesize)).addErrback(boundFunction(self.coverDownloadFailed, [], album, title))
 
-	def googleImageCallback(self, result):
-		foundPos = result.find("imgres?imgurl=")
-		foundPos2 = result.find("&amp;imgrefurl=")
-		if foundPos != -1 and foundPos2 != -1:
-			url = result[foundPos+14:foundPos2]
-			parts = url.split("/")
-			filename = parts[-1]
-			if filename != self.currentGoogleCoverFile:
-				self.currentGoogleCoverFile = filename
-				filename = self.googleDownloadDir + parts[-1]
-				if os_path.exists(filename):
-					print "[MerlinMusicPlayer] using cover from %s " % filename
-					self["coverArt"].showCoverFromFile(filename)
-					if self.screenSaverScreen:
-						self.screenSaverScreen.updateCover(filename = filename, modus = 4)
-				else:
-					print "[MerlinMusicPlayer] downloading cover from %s " % url
-					downloadPage(url , self.googleDownloadDir + parts[-1]).addCallback(boundFunction(self.coverDownloadFinished, filename)).addErrback(self.coverDownloadFailed)
+	def googleImageCallback(self, artist, album, title, imgsize, result):
+		urls = re.findall("unescapedUrl\":\"(.*?)\",\"url\":\"", result)
+		if (len(urls) == 0):
+			print "[MerlinMusicPlayer] No medium images found. Search for all images"
+			getGoogleCover(artist, album, title, "")
+			return
+		self.coverDownload(urls, album, title)
 
-	def coverDownloadFailed(self,result):
-        	print "[MerlinMusicPlayer] cover download failed: %s " % result
+	def coverDownload(self, urls, album, title):
+		url = urls[0]
+		parts = urls[0].split("/")
+		if (title != "" and title != "n/a"):
+			filename = re.sub(r'[^A-Za-z0-9_-]', r'', title) + "_" + parts[-1]
+		else:
+			filename = re.sub(r'[^A-Za-z0-9_-]', r'', album) + "_" + parts[-1]
+		if filename != self.currentGoogleCoverFile:
+			self.currentGoogleCoverFile = filename
+			filename = self.googleDownloadDir + filename
+			if os_path.exists(filename):
+				print "[MerlinMusicPlayer] using cover from %s " % filename
+				self["coverArt"].showCoverFromFile(filename)
+				if self.screenSaverScreen:
+					self.screenSaverScreen.updateCover(filename = filename, modus = 4)
+			else:
+				urls.pop(0)
+				print "[MerlinMusicPlayer] downloading cover from %s " % url
+				downloadPage(url , filename).addCallback(boundFunction(self.coverDownloadFinished, filename)).addErrback(boundFunction(self.coverDownloadFailed, urls, album, title))
+
+	def coverDownloadFailed(self, urls, album, title, result):
+		print "[MerlinMusicPlayer] cover download failed: %s " % result
+		if (len(urls) > 0):
+			self.coverDownload(urls, album, title)
+			return
 		self["coverArt"].showDefaultCover()
 		if self.screenSaverScreen:
 			self.screenSaverScreen.updateCover(modus = 1)
