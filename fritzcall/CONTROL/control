@@ -3,4 +3,4 @@ Version: rev773_20130421_A
 Description: Enigma2 Plugin FritzCall bij Michael
 Section: extra
 Priority: optional
-Depends: enigma2 (>> 2.5git20081203), python-twisted-web, python-html, python-textutils
+Depends: enigma2, python-twisted-web, python-html, python-textutils
