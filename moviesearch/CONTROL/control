@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-moviesearch
-Version: 20110424-r10
+Version: 20110424
 Description: Add search functionality to movie list
 Maintainer: Moritz Venn <moritz.venn@freaque.net>
 Depends: enigma2

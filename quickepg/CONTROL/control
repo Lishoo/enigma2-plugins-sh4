@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-quickepg
-Version: 2.0.1-r10
+Version: 2.0.1
 Description: Download and import EPG for exUSSR channels
 Section: base
 Priority: optional

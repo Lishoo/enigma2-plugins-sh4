@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-alternativesoftcammanager
-Version: 20140213-r10
+Version: 20140213
 Description: Start, stop, restart SoftCams, change setting path.
 Maintainer: Taapat <taapat@gmail.com>
 

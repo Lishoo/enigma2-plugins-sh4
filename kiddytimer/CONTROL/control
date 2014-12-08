@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-kiddytimer
-Version: 20111004-r10
+Version: 20111004
 Description: Allows to control the Kids' daily TV usage
 Maintainer: Tode <sagichnet@gmx.net>
 Depends: enigma2

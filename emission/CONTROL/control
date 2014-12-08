@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-emission
-Version: 20110929-r10
+Version: 20110929
 Description: basic frontend to the transmission bittorrent client
 Architecture: sh4
 Section: extra
