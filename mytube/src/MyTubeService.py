@@ -8,6 +8,8 @@ import gdata.youtube
 import gdata.youtube.service
 from gdata.service import BadAuthentication
 
+from youtube_dl import YoutubeDL
+
 from apiclient.discovery import build
 from apiclient.errors import HttpError
 import datetime
@@ -469,66 +471,32 @@ class MyTubeFeedEntry():
 	# link resolving from xbmc youtube plugin
 	def getVideoUrl(self):
 		VIDEO_FMT_PRIORITY_MAP = {
-			'38' : 1, #MP4 Original (HD)
-			'37' : 2, #MP4 1080p (HD)
-			'22' : 3, #MP4 720p (HD)
-			'18' : 4, #MP4 360p
-			'35' : 5, #FLV 480p
-			'34' : 6, #FLV 360p
-		}
+			1 : '38', #MP4 Original (HD)
+			2 : '37', #MP4 1080p (HD)
+			3 : '22', #MP4 720p (HD)
+			4 : '18', #MP4 360p
+			5 : '35', #FLV 480p
+			6 : '34', #FLV 360p
+ 		}
+		KEY_FORMAT_ID = u"format_id"
+		KEY_URL = u"url"
+		KEY_ENTRIES = u"entries"
+		KEY_FORMATS = u"formats"
+
 		video_url = None
 		video_id = str(self.getTubeId())
 
-		links = {}
-		watch_url = 'http://www.youtube.com/watch?v=%s&safeSearch=none'%video_id
-		watchrequest = Request(watch_url, None, std_headers)
+		watch_url = 'http://www.youtube.com/watch?v=%s' % video_id
+		format_prio = "/".join(VIDEO_FMT_PRIORITY_MAP.itervalues())
+		ytdl = YoutubeDL(params={"youtube_include_dash_manifest": False, "format" : format_prio})
+		result = ytdl.extract_info(watch_url, download=False)
+		if KEY_ENTRIES in result: # Can be a playlist or a list of videos
+			entry = result[KEY_ENTRIES][0] #TODO handle properly
+		else:# Just a video
+			entry = result
 
-		try:
-			print "[MyTube] trying to find out if a HD Stream is available",watch_url
-			result = urlopen2(watchrequest).read()
-		except (URLError, HTTPException, socket.error), err:
-			print "[MyTube] Error: Unable to retrieve watchpage - Error code: ", str(err)
-			return video_url
-
-		flashvars = self.extractFlashVars(result, 0)
-		if not flashvars.has_key(u"url_encoded_fmt_stream_map"):
-			return video_url
-
-		for url_desc in flashvars[u"url_encoded_fmt_stream_map"].split(u","):
-			url_desc_map = parse_qs(url_desc)
-			if not (url_desc_map.has_key(u"url") or url_desc_map.has_key(u"stream")):
-				continue
-
-			key = int(url_desc_map[u"itag"][0])
-			url = u""
-
-			if url_desc_map.has_key(u"url"):
-				url = urllib.unquote(url_desc_map[u"url"][0])
-			elif url_desc_map.has_key(u"conn") and url_desc_map.has_key(u"stream"):
-				url = urllib.unquote(url_desc_map[u"conn"][0])
-				if url.rfind("/") < len(url) -1:
-					url = url + "/"
-				url = url + urllib.unquote(url_desc_map[u"stream"][0])
-			elif url_desc_map.has_key(u"stream") and not url_desc_map.has_key(u"conn"):
-				url = urllib.unquote(url_desc_map[u"stream"][0])
-
-			if url_desc_map.has_key(u"sig"):
-				url = url + u"&signature=" + url_desc_map[u"sig"][0]
-			elif url_desc_map.has_key(u"s"):
-				sig = url_desc_map[u"s"][0]
-				flashvars = self.extractFlashVars(result, 1)
-				js = flashvars[u"js"]
-				url = url + u"&signature=" + decryptor.decryptSignature(sig, js)
-
-			try:
-				links[VIDEO_FMT_PRIORITY_MAP[str(key)]] = url
-			except KeyError:
-				print 'skipping',key,'fmt not in priority videos'
-				continue
-		try:
-			return links[sorted(links.iterkeys())[0]].encode('utf-8')
-		except (KeyError,IndexError):
-			return None
+		video_url = entry.get(KEY_URL)
+		return str(video_url)
 
 	def getResponseVideos(self):
 		print "[MyTubeFeedEntry] getResponseVideos()"
