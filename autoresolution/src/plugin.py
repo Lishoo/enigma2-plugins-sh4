@@ -32,21 +32,21 @@ config.plugins.autoresolution = ConfigSubsection()
 config.plugins.autoresolution.enable = ConfigYesNo(default = False)
 config.plugins.autoresolution.showinfo = ConfigYesNo(default = True)
 config.plugins.autoresolution.testmode = ConfigYesNo(default = False)
-config.plugins.autoresolution.deinterlacer = ConfigSelection(default = "auto", choices =
-		[("off", _("off")), ("auto", _("auto")), ("on", _("on")), ("bob", _("bob"))])
-config.plugins.autoresolution.deinterlacer_progressive = ConfigSelection(default = "auto", choices =
-		[("off", _("off")), ("auto", _("auto")), ("on", _("on")), ("bob", _("bob"))])
+#config.plugins.autoresolution.deinterlacer = ConfigSelection(default = "auto", choices =
+		#[("off", _("off")), ("auto", _("auto")), ("on", _("on")), ("bob", _("bob"))])
+#config.plugins.autoresolution.deinterlacer_progressive = ConfigSelection(default = "auto", choices =
+		#[("off", _("off")), ("auto", _("auto")), ("on", _("on")), ("bob", _("bob"))])
 config.plugins.autoresolution.delay_switch_mode = ConfigSelection(default = "1000", choices = [
 		("0", "0 " + _("seconds")),
 		("1000", "1 " + _("second")), ("2000", "2 " + _("seconds")), ("3000", "3 " + _("seconds")),
 		("4000", "4 " + _("seconds")), ("5000", "5 " + _("seconds")), ("6000", "6 " + _("seconds")), ("7000", "7 " + _("seconds")),
 		("8000", "8 " + _("seconds")), ("9000", "9 " + _("seconds")), ("10000", "10 " + _("seconds"))])
 
-def setDeinterlacer(mode):
-	print "[AutoRes] switch deinterlacer mode to %s" % mode
-	f = open('/proc/stb/vmpeg/deinterlace' , "w")
-	f.write("%s\n" % mode)
-	f.close()
+#def setDeinterlacer(mode):
+	#print "[AutoRes] switch deinterlacer mode to %s" % mode
+	#f = open('/proc/stb/vmpeg/deinterlace' , "w")
+	#f.write("%s\n" % mode)
+	#f.close()
 
 frqdic = { 23976: '24', \
 		24000: '24', \
@@ -75,8 +75,8 @@ class AutoRes(Screen):
 			self.lastmode = config.av.videomode[config.av.videoport.value].value
 		config.av.videoport.addNotifier(self.defaultModeChanged)
 		config.plugins.autoresolution.enable.addNotifier(self.enableChanged, initial_call = False)
-		config.plugins.autoresolution.deinterlacer.addNotifier(self.enableChanged, initial_call = False)
-		config.plugins.autoresolution.deinterlacer_progressive.addNotifier(self.enableChanged, initial_call = False)
+		#config.plugins.autoresolution.deinterlacer.addNotifier(self.enableChanged, initial_call = False)
+		#config.plugins.autoresolution.deinterlacer_progressive.addNotifier(self.enableChanged, initial_call = False)
 		if default:
 			self.setMode(default[0], False)
 		self.after_switch_delay = False
@@ -195,10 +195,10 @@ class AutoRes(Screen):
 				else:
 					new_mode = 'hd_%s' % prog
 
-				if progressive == 1:
-					setDeinterlacer(config.plugins.autoresolution.deinterlacer_progressive.value)
-				else:
-					setDeinterlacer(config.plugins.autoresolution.deinterlacer.value)
+				#if progressive == 1:
+					#setDeinterlacer(config.plugins.autoresolution.deinterlacer_progressive.value)
+				#else:
+					#setDeinterlacer(config.plugins.autoresolution.deinterlacer.value)
 
 				print "[AutoRes] new content is %sx%s%s%s" %(width, height, prog, frate)
 
@@ -237,7 +237,7 @@ class AutoRes(Screen):
 					default = False
 				)
 		else:
-			setDeinterlacer("auto")
+			#setDeinterlacer("auto")
 			if self.lastmode != default[0]:
 				self.setMode(default[0])
 
@@ -313,8 +313,8 @@ class AutoResSetupMenu(Screen, ConfigListScreen):
 					getConfigListEntry(_("Show info screen"), config.plugins.autoresolution.showinfo),
 					getConfigListEntry(_("Delay x seconds after service started"), config.plugins.autoresolution.delay_switch_mode),
 					getConfigListEntry(_("Running in testmode"), config.plugins.autoresolution.testmode),
-					getConfigListEntry(_("Deinterlacer mode for interlaced content"), config.plugins.autoresolution.deinterlacer),
-					getConfigListEntry(_("Deinterlacer mode for progressive content"), config.plugins.autoresolution.deinterlacer_progressive)
+					#getConfigListEntry(_("Deinterlacer mode for interlaced content"), config.plugins.autoresolution.deinterlacer),
+					#getConfigListEntry(_("Deinterlacer mode for progressive content"), config.plugins.autoresolution.deinterlacer_progressive)
 				))
 			else:
 				self.list.append(getConfigListEntry(_("Autoresolution is not working in Scart/DVI-PC Mode"), ConfigNothing()))
@@ -352,8 +352,8 @@ class AutoResSetupMenu(Screen, ConfigListScreen):
 		return SetupSummary
 
 def autostart(reason, **kwargs):
+	global resolutionlabel
 	if "session" in kwargs and resolutionlabel is None:
-		global resolutionlabel
 		session = kwargs["session"]
 		resolutionlabel = session.instantiateDialog(ResolutionLabel)
 		AutoRes(session)
