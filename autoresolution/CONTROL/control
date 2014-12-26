@@ -1,5 +1,5 @@
 Package: enigma2-plugin-systemplugins-autoresolution
-Version: 20141221
+Version: 20141226
 Description: Automatically change resolution 
 Maintainer: domino <dom.nehls@web.de>
 Depends: enigma2, enigma2-plugin-systemplugins-videomode
