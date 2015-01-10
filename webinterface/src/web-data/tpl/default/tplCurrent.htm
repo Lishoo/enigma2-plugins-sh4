@@ -1,26 +1,24 @@
-
 <!-- tplCurrent -->
-			{if current.title != ""}
+			{if current.title != ""}		
 				<table id="currentTable">
 					<tr>
-						<td style="width: 60px;">
-							<div class="sListSProgress" title="${current.progress}%"><div class="sListSProgressBar" style="width: ${current.progress}%"></div></div>
-						</td>
 						<td id="currentName">
-							<a href="#" class="currentExtShowHide" title="${strings.show_hide_extended_desc}"><img class="currentBulletToggle" src="/web-data/img/toggle_expand.png" alt="+">${current.servicename} - ${current.title}</a>
+							<a href="#" onclick="showhide('trExtCurrent')" title="Click to show/hide extended Description">
+							${current.servicename} - ${current.title}
+							</a>
 						</td>
-						<td id="currentDuration">
-							<a href="#" class="currentEpg" data-servicereference="${current.servicereference}">
-								<img src="/web-data/img/epg.png" border="0" title="${strings.show_epg_for.format(current.servicename)}"/>
+						<td id="currentDuration">																	
+							<a href="#" onclick="if ( parentPin( '${current.servicereference}' ) ) { loadEPGByServiceReference( '${current.servicereference}' ); }">
+								<img src="/web-data/img/epg.png" border="0" title="Show EPG for ${current.servicename}"/>
 							</a>
 							<a target="_blank" onclick="return parentPin( '${current.servicereference}' );" href="/web/stream.m3u?ref=${current.servicereference}">
-								<img src="/web-data/img/screen.png" title="${strings.stream_channel.format(current.servicename)}" border="0">
-							</a>
-							+${strings.remaining_minutes.format(current.remaining, current.duration)}
+								<img src="/web-data/img/screen.png" title="Stream ${current.servicename}" border="0">
+							</a>	
+							+${current.remaining} of ${current.duration} min
 						</td>
 					</tr>
-					<tr id="trExtCurrent" style="display: none">
-						<td colspan=3>
+					<tr id="trExtCurrent">
+						<td colspan=2>
 							<table>
 								<tr>
 									<td class="epgLong">${current.extdescription}</td>
@@ -29,42 +27,42 @@
 									<td class="techInfo">
 										<table style="width: 350px; border: 1px solid #AAA">
 											<tr>
-												<th colspan="4" style="text-align: center">${strings.technical_information}</th>
+												<th colspan="4" style="text-align: center">Technical Information</th>
 											</tr>
 											<tr>
-												<td>${strings.videosize}:</td>
+												<td>Videosize:</td>
 												<td>${service.videosize}</td>
-												<td>${strings.widescreen}:</td>
+												<td>Widescreen:</td> 
 												<td>${service.widescreen}</td>
 											</tr>
 											<tr>
-												<td>${strings.apid}:</td>
-												<td>${service.apid}</td>
-												<td>${strings.vpid}:</td>
+												<td>APID:</td>
+												<td>${service.apid}</td> 
+												<td>VPID:</td>
 												<td>${service.vpid}</td>
 											</tr>
-											<tr>
-												<td>${strings.pcrpid}:</td>
+											<tr>									
+												<td>PCRPID:</td> 
 												<td>${service.pcrpid}</td>
-												<td>${strings.pmtpid}:</td>
+												<td>PMTPID:</td> 
 												<td>${service.pmtpid}</td>
 											</tr>
-											<tr>
-												<td>${strings.txtpid}:</td>
-												<td>${service.txtpid}</td>
-												<td>${strings.tsid}:</td>
+											<tr>										
+												<td>TXTPID:</td> 
+												<td>${service.txtpid}</td>									
+												<td>TSID:</td> 
 												<td>${service.tsid}</td>
 											</tr>
-											<tr>
-												<td>${strings.onid}:</td>
-												<td>${service.onid}</td>
-												<td>${strings.sid}:</td>
+											<tr>										
+												<td>ONID:</td> 
+												<td>${service.onid}</td>						
+												<td>SID:</td> 
 												<td>${service.sid}</td>
 											</tr>
 										</table>
 									</td>
 								</tr>
-
+							
 							</table>
 						</td>
 					</tr>
@@ -72,8 +70,8 @@
 			{elseif}
 				<table id="currentTable">
 					<tr>
-						<td id="currentName">${strings.nothing_running}</td>
-					</tr>
+						<td id="currentName">Nothing running</td>					
+					</tr>	
 				</table>
 			{/if}
 <!-- /tplCurrent -->

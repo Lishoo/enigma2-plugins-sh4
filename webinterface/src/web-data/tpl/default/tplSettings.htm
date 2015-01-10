@@ -2,43 +2,38 @@
 <!-- tplSettings -->
 						<table id="contentTable">
 							<tr>
-								<td>
-									<table class="settings" style="width: 100%;">
+								<td>									
+									<table style="width: 100%;">
 										<tr>
-											<td colspan="2">${strings.settings_cookies_required}</td>
+											<td colspan="2">WARNING: This functionality requires Cookies to store it's settings!</td>
 										</tr>
-										<tr><td colspan=2">&nbsp;</td></tr>
 										<tr>
-											<td>Style</td>
 											<td>
-												<form>
-													<select id="interfaceStyle">
-														<option value="dark" {if style=='dark'}selected{/if}>Dark</option>
-														<option value="light" {if style=='light'}selected{/if}>Light</option>
-													</select>
-												</form>
+												Enable Debug												
 											</td>
-										</tr>
-										<tr>
-											<td>${strings.enable_debug}</td>
 											<td>
 												<form><input type="checkbox" id="enableDebug" ${debug}/></form>
-											</td>
+											</td>										
 										</tr>
 										<tr>
-											<td>${strings.update_interval_current_service}</td>
 											<td>
-												<form><input type="text" id="updateCurrentInterval" value="${updateCurrentInterval}">${strings.seconds_short}</form>
+												Update-Interval for current service (min. 10 sec)
 											</td>
+											<td>
+												<form><input type="text" id="updateCurrentInterval" value="${updateCurrentInterval}">sec</form>
+											</td>										
 										</tr>
 										<tr>
-											<td>${strings.update_interval_current_bouquet_epg}</td>
 											<td>
-												<form><input type="text" id="updateBouquetInterval" value="${updateBouquetInterval}" />${strings.seconds_short}</form>
+												Update-Interval for current bouquets EPG (min. 60 sec)
 											</td>
-										</tr>
-										<tr><td colspan="2"><button class="saveSettings">${strings.save}</button></td></tr>										
+											<td colspan="2">
+												<form><input type="text" id="updateBouquetInterval" value="${updateBouquetInterval}" />sec</form>
+											</td>										
+										</tr>																				
+										<tr><td><button onClick="saveSettings()">Save</button></td></tr>
 									</table>
+									
 								</td>
 							</tr>
 						</table>

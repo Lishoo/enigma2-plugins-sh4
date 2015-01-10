@@ -3,7 +3,7 @@ from twisted.python import util
 
 from Components.config import config
 
-from Plugins.Extensions.WebInterface import __file__
+from Plugins.Extensions.WebInterface import __file__ 
 from Screenpage import ScreenPage
 from FileStreamer import FileStreamer
 from Screengrab import GrabResource
@@ -12,18 +12,9 @@ from PlayService import ServiceplayerResource
 from Uploader import UploadResource
 from ServiceListSave import ServiceList
 from RedirecToCurrentStream import RedirecToCurrentStreamResource
-from Tools.Directories import resolveFilename, SCOPE_MEDIA
 
 from External.__init__ import importExternalModules
 externalChildren = []
-
-"""
-	.htc Files for IE Fixes need a certain Content-Type
-"""
-import mimetypes
-mimetypes.add_type('text/x-component', '.htc')
-mimetypes.add_type('text/cache-manifest', '.appcache')
-static.File.contentTypes = static.loadMimeTypes()
 
 if hasattr(static.File, 'render_GET'):
 	class File(static.File):
@@ -37,7 +28,7 @@ def addExternalChild(child):
 
 def getToplevel(session):
 	root = File(util.sibpath(__file__, "web-data/tpl/default"))
-
+	
 	root.putChild("web", ScreenPage(session, util.sibpath(__file__, "web"), True) ) # "/web/*"
 	root.putChild("web-data", File(util.sibpath(__file__, "web-data")))
 	root.putChild("file", FileStreamer())
@@ -48,24 +39,23 @@ def getToplevel(session):
 	root.putChild("play", ServiceplayerResource(session))
 	root.putChild("wap", RedirectorResource("/mobile/"))
 	root.putChild("mobile", ScreenPage(session, util.sibpath(__file__, "mobile"), True) )
-	root.putChild("m",ScreenPage(session, util.sibpath(__file__, "m"), True))
 	root.putChild("upload", UploadResource())
 	root.putChild("servicelist", ServiceList(session))
 	root.putChild("streamcurrent", RedirecToCurrentStreamResource(session))
-
+		
 	if config.plugins.Webinterface.includemedia.value is True:
-		root.putChild("media", File(resolveFilename(SCOPE_MEDIA)))
-		root.putChild("hdd", File(resolveFilename(SCOPE_MEDIA, "hdd")))
-
-
+		root.putChild("media", File("/media"))
+		root.putChild("hdd", File("/media/hdd"))
+		
+	
 	importExternalModules()
 
 	for child in externalChildren:
 		if len(child) > 1:
 			root.putChild(child[0], child[1])
-
+	
 	return root
-
+		
 class RedirectorResource(resource.Resource):
 	"""
 		this class can be used to redirect a request to a specified uri
@@ -73,7 +63,7 @@ class RedirectorResource(resource.Resource):
 	def __init__(self, uri):
 		self.uri = uri
 		resource.Resource.__init__(self)
-
+	
 	def render(self, request):
 		request.redirect(self.uri)
 		request.finish()

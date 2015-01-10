@@ -27,7 +27,6 @@ class PowerState(Source):
 		# 3: rebootenigma
 		# 4: wakeup (if not already awake)
 		# 5: standby
-		# 6: kill enigma2
 		try:
 			from Screens.Standby import inStandby
 			from Screens.Standby import Standby
@@ -37,13 +36,13 @@ class PowerState(Source):
 
 			elif type == 0:
 				print "[PowerState.py] Standby 0"
-				if inStandby == None:
+				if inStandby == None:					
 					self.session.open(Standby)
 					return "true"
 				else:
 					inStandby.Power()
 					return "false"
-
+							
 			elif type == 4:
 				print "[PowerState.py] Standby 4"
 				if inStandby != None:
@@ -53,29 +52,22 @@ class PowerState(Source):
 					return "true"
 			elif type == 5:
 				print "[PowerState.py] Standby 5"
-				if inStandby == None:
+				if inStandby == None:					
 					self.session.open(Standby)
-					return "true"
+					return "true"	
 				else:
 					return "false"
-			elif type == 6:
-				print "[PowerState.py] Standby 6"
-				from twisted.internet import reactor
-				import os
-				reactor.callLater(1, os.popen, 'killall -9 enigma2')
-				return "true"
-
+				
 			elif 0 < type < 4:
 				print "[PowerState.py] TryQuitMainloop"
 				from Screens.Standby import TryQuitMainloop
-				from twisted.internet import reactor
-				reactor.callLater(1, self.session.open, TryQuitMainloop, type)
+				self.session.open(TryQuitMainloop, type)
 				return "true"
-
+							
 			else:
 				print "[PowerState.py] cmd unknown" % type
 				return "error"
-
+			
 		except ValueError:
 			return "error"
 

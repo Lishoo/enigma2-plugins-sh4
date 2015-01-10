@@ -292,14 +292,6 @@ class FritzAbout(Screen):
 		self.close()
 
 from FritzCallFBF import FBF_dectActive, FBF_faxActive, FBF_rufumlActive, FBF_tamActive
-		def cleanNumber(number):
-			number = number.replace('(','').replace(')','').replace(' ','').replace('-','')
-			if number[0] == '+':
-				number = '00' + number[1:]
-			if number.startswith(config.plugins.FritzCall.country.value):
-				number = '0' + number[len(config.plugins.FritzCall.country.value):]
-			return number
-				
 
 class FritzMenu(Screen, HelpableScreen):
 	def __init__(self, session):

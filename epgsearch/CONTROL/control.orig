@@ -1,0 +1,17 @@
+Package: enigma2-plugin-extensions-epgsearch
+<<<<<<< HEAD
+Version: 20141213
+Description: search the epg and list results
+Maintainer: Moritz Venn <moritz.venn@freaque.net>
+Homepage: http://www.ritzmo.de
+=======
+Version: 4.4
+Description: search the epg and list results
+Section: base
+Priority: optional
+Maintainer: OpenPLi Team, dima73
+License: CC
+Architecture: all
+Homepage: openpli.org
+>>>>>>> pli/master
+Depends: enigma2

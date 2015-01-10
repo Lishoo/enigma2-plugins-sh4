@@ -4,7 +4,8 @@ from GlobalActions import globalActionMap
 from Components.VolumeControl import VolumeControl
 
 class Volume(Source):
-	def __init__(self, session):
+	def __init__(self, session, command_default="state"):
+		self.cmd = command_default
 		Source.__init__(self)
 		global globalActionMap # hackalert :)
 		self.actionmap = globalActionMap
@@ -12,21 +13,25 @@ class Volume(Source):
 		self.vol = ( True, "State", self.volctrl.getVolume(), self.volctrl.isMuted() )
 
 	def handleCommand(self, cmd):
-		l = []
-		if cmd == "state":
-			l.extend((True, _("State")))
-		elif cmd == "up":
+		self.cmd = cmd
+		self.vol = self.handleVolume()
+
+	def handleVolume(self):
+		list = []
+		if self.cmd == "state":
+			list.extend((True, "State"))
+		elif self.cmd == "up":
 			self.actionmap.actions["volumeUp"]()
-			l.extend((True, _("Volume changed")))
-		elif cmd == "down":
+			list.extend((True, "Volume changed"))
+		elif self.cmd == "down":
 			self.actionmap.actions["volumeDown"]()
-			l.extend((True, _("Volume changed")))
-		elif cmd == "mute":
+			list.extend((True, "Volume changed"))
+		elif self.cmd == "mute":
 			self.actionmap.actions["volumeMute"]()
-			l.extend((True, _("Mute toggled")))
-		elif cmd.startswith("set"):
+			list.extend((True, "Mute toggled"))
+		elif self.cmd.startswith("set"):
 			try:
-				targetvol = int(cmd[3:])
+				targetvol = int(self.cmd[3:])
 				if targetvol > 100:
 					targetvol = 100
 				if targetvol < 0:
@@ -34,15 +39,15 @@ class Volume(Source):
 
 				self.volctrl.setVolume(targetvol, targetvol)
 
-				l.extend((True, _("Volume set to %i") % targetvol))
+				list.extend((True, "Volume set to %i" % targetvol))
 			except ValueError: # if cmd was set12NotInt
-				l.extend((False, _("Wrong parameter format 'set=%s'. Use set=set15") % cmd))
+				list.extend((False, "Wrong parameter format 'set=%s'. Use set=set15 " % self.cmd))
 		else:
-			l.extend((False, _("Unknown Volume command %s") % cmd))
+			list.extend((False, "Unknown Volume command %s" % self.cmd))
 
-		l.extend((self.volctrl.getVolume(), self.volctrl.isMuted()))
+		list.extend((self.volctrl.getVolume(), self.volctrl.isMuted()))
 
-		self.vol = l
+		return list
 
 	volume = property(lambda self: self.vol)
 

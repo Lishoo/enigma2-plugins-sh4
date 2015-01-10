@@ -1,5 +1,5 @@
 installdir = $(libdir)/enigma2/python/Plugins/Extensions/WebInterface/web-data/
 
-install_DATA = *.js IEFixes.htc PIE.htc
+install_DATA = *.js *.html *.json IEFixes.htc
 
-SUBDIRS = gfx img lib m tpl
+SUBDIRS = lib gfx img tpl

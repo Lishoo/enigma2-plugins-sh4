@@ -1,11 +1,26 @@
 
 <!-- tplNavExtras -->
-<ul class="navTable">
-	<li><a href="#!/extras/mediaplayer"><div>${strings.mediaplayer}</div></a></li>
-	<li><a href="#!/extras/deviceinfo"><div>${strings.deviceinfo}</div></a></li>
-	<li><a href="#!/extras/settings"><div>${strings.settings}</div></a></li>
-	<li><a href="#!/extras/tools"><div>${strings.tools}</div></a></li>
-	<li><a href="#!/extras/about"><div>${strings.about}</div></a></li>
-</ul>
-<div id="navExternalsContainer"></div>
+<table id="navTimer" class="navTable">
+	<tr>
+		<td><a href="#" onclick="switchMode('MediaPlayer');">MediaPlayer</a><td>
+	</tr>
+ 	<tr>
+		<td><a href="/bouqueteditor" target="_blank"">BouquetEditor</a><td>
+	</tr>
+	<tr>
+		<td><a href="#" onclick="loadDeviceInfo();">Device Info</a><td>
+	</tr>
+	<tr>
+		<td><a href="#" onclick="loadGearsInfo();">Google Gears</a></td>
+	</tr>
+	<tr>
+		<td><a href="#" onclick="loadSettings();">Settings</a><td>
+	</tr>	
+	<tr>
+		<td><a href="#" onclick="loadTools();">Tools</a><td>
+	</tr>
+	<tr>
+		<td><a href="#" onclick="loadAbout();">About</a><td>
+	</tr>
+</table>
 <!-- /tplNavExtras -->

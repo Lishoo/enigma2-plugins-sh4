@@ -3308,16 +3308,14 @@ def main(session,**kwargs):
 	if kwargs.has_key("servicelist"):
 		servicelist = kwargs["servicelist"]
 	else:
-		from Screens.InfoBar import InfoBar
-		servicelist = InfoBar.instance.servicelist
+		servicelist = None
 	session.open(iDreamMerlin, servicelist)
 
 def merlinmusicplayerfilelist(session,**kwargs):
 	if kwargs.has_key("servicelist"):
 		servicelist = kwargs["servicelist"]
 	else:
-		from Screens.InfoBar import InfoBar
-		servicelist = InfoBar.instance.servicelist
+		servicelist = None
 	session.open(MerlinMusicPlayerFileList, servicelist)
 
 def menu_merlinmusicplayerfilelist(menuid, **kwargs):

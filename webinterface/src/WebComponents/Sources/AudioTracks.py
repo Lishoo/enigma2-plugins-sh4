@@ -1,14 +1,11 @@
-from Components.config import config
 from Components.Sources.Source import Source
-from Components.SystemInfo import SystemInfo
 from Tools.ISO639 import LanguageCodes
 
 class AudioTracks(Source):
 	GET = 0
 	SET = 1
-	DOWNMIX = 2
 
-	text = _("False")
+	text = "False"
 
 	def __init__(self, session, func=GET):
 		self.cmd = None
@@ -18,9 +15,6 @@ class AudioTracks(Source):
 
 	def handleCommand(self, cmd):
 		self.cmd = cmd
-
-	def getResult(self):
-		return self.handleDownmix()
 
 	def setAudioTrack(self):
 		if self.cmd is not None:
@@ -34,23 +28,11 @@ class AudioTracks(Source):
 			print "COMMAND is %s" % self.cmd
 			if self.session.nav.getCurrentService().audioTracks().getNumberOfTracks() > cmd and cmd >= 0:
 				audio.selectTrack(cmd)
-				return _("Success")
+				return "Success"
 			else:
-				return _("Error")
+				return "Error"
 		else:
-			return _("Error")
-
-	def handleDownmix(self):
-		if SystemInfo["CanDownmixAC3"]:
-			if self.cmd == "True":
-				config.av.downmix_ac3.value = True
-			elif self.cmd == "False":
-				config.av.downmix_ac3.value = False
-
-			text = _("AC3 Downmix enabled") if config.av.downmix_ac3.value else _("AC3 Downmix disabled")
-			return config.av.downmix_ac3.value, text
-
-		return False, _("This device does not support AC3 Downmix")
+			return "Error"
 
 	def getAudioTracks(self):
 		service = self.session.nav.getCurrentService()
@@ -100,7 +82,6 @@ class AudioTracks(Source):
 
 		return tracklist
 
-	result = property(getResult)
 	text = property(setAudioTrack)
 	list = property(getAudioTracks)
 	lut = {"Description": 0, "Id": 1, "Pid": 2, "Active": 3}

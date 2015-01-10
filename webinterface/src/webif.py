@@ -7,16 +7,14 @@ Version = '$Header$';
 
 from Tools.Import import my_import
 
-from Components.config import config
+from Components.Sources.Source import ObsoleteSource
 from Components.Converter.Converter import Converter
 from Components.Element import Element
-from Components.Sources.Source import ObsoleteSource
 
 from xml.sax import make_parser
 from xml.sax.handler import ContentHandler, feature_namespaces
 from xml.sax.saxutils import escape as escape_xml
 from twisted.python import util
-from twisted.web import http, resource
 from urllib2 import quote
 from time import time
 
@@ -27,6 +25,9 @@ from WebScreens import *
 
 from __init__ import decrypt_block
 from os import urandom
+
+global screen_cache
+screen_cache = {}
 
 # The classes and Function in File handle all ScreenPage-based requests
 # ScreenPages use enigma2 standard functionality to bring contents to a webfrontend
@@ -44,23 +45,26 @@ class OneTimeElement(Element):
 		self.source_id = id
 
 	def handleCommand(self, args):
-		source = self.source
-		source_id = self.source_id
-		if ',' in source_id:
-			paramlist = source_id.split(",")
+		if ',' in self.source_id:
+			paramlist = self.source_id.split(",")
 			list = {}
 			for key in paramlist:
-				if key in args:
-					list[key] = args[key][0]
-				else:
+				arg = args.get(key, ())
+				Len = len(arg)
+				if Len == 0:
 					list[key] = None
-			source.handleCommand(list)
+				elif Len == 1:
+					list[key] = "".join(arg)
+				elif Len == 2:
+					list[key] = arg[0]
+			self.source.handleCommand(list)
 		else:
-			for c in args.get(source_id, ()):
-				source.handleCommand(c)
+			for c in args.get(self.source_id, ()):
+				self.source.handleCommand(c)
 
 	def render(self, request):
-		request.write(self.source.getHTML(self.source_id))
+		t = self.source.getHTML(self.source_id)
+		request.write(t)
 
 	def execBegin(self):
 		self.suspended = False
@@ -136,6 +140,9 @@ class ListMacroItem:
 # Returns the String as is
 #===============================================================================
 class TextToHTML(Converter):
+	def __init__(self, arg):
+		Converter.__init__(self, arg)
+
 	def getHTML(self, id):
 		return self.source.text.replace('\xc2\x86', '').replace('\xc2\x87', '').decode("utf-8", "ignore").encode("utf-8") # encode & etc. here!
 
@@ -145,6 +152,9 @@ class TextToHTML(Converter):
 # Escapes the given Text to be XML conform
 #===============================================================================
 class TextToXML(Converter):
+	def __init__(self, arg):
+		Converter.__init__(self, arg)
+
 	def getHTML(self, id):
 		return escape_xml(self.source.text).replace('\xc2\x86', '').replace('\xc2\x87', '').replace("\x19", "").replace("\x1c", "").replace("\x1e", "").decode("utf-8", "ignore").encode("utf-8")
 
@@ -154,15 +164,21 @@ class TextToXML(Converter):
 # Escapes the given Text so it can be used inside a URL
 #===============================================================================
 class TextToURL(Converter):
+	def __init__(self, arg):
+		Converter.__init__(self, arg)
+
 	def getHTML(self, id):
 		return self.source.text.replace(" ", "%20").replace("+", "%2b").replace("&", "%26").replace('\xc2\x86', '').replace('\xc2\x87', '').decode("utf-8", "ignore").encode("utf-8")
 
 #===============================================================================
 # ReturnEmptyXML
-#
+# 
 # Returns a XML only consisting of <rootElement />
 #===============================================================================
 class ReturnEmptyXML(Converter):
+	def __init__(self, arg):
+		Converter.__init__(self, arg)
+
 	def getHTML(self, id):
 		return "<rootElement />"
 
@@ -172,6 +188,9 @@ class ReturnEmptyXML(Converter):
 # Useful if you only want to issue a command.
 #===============================================================================
 class Null(Converter):
+	def __init__(self, arg):
+		Converter.__init__(self, arg)
+
 	def getHTML(self, id):
 		return ""
 
@@ -182,6 +201,9 @@ class Null(Converter):
 # Transforms a string into a javascript update pattern
 #===============================================================================
 class JavascriptUpdate(Converter):
+	def __init__(self, arg):
+		Converter.__init__(self, arg)
+
 	def getHTML(self, id):
 		# 3c5x9, added parent. , this is because the ie loads this in a iframe. an the set is in index.html.xml
 		#		 all other will replace this in JS
@@ -193,46 +215,68 @@ class JavascriptUpdate(Converter):
 # The performant 'one-dimensonial listfiller' engine (podlfe)
 #===============================================================================
 class SimpleListFiller(Converter):
+	def __init__(self, arg):
+		Converter.__init__(self, arg)
+		
 	def getText(self):
 		l = self.source.simplelist
-		conv_args = self.converter_arguments
-
+		conv_args = self.converter_arguments		
+		
 		list = [ ]
-		append = list.append
 		for element in conv_args:
 			if isinstance(element, basestring):
-				append((element, None))
+				list.append((element, None))
 			elif isinstance(element, ListItem):
-				append((element, element.filternum))
+				list.append((element, element.filternum))
 			elif isinstance(element, ListMacroItem):
-				append(element.macrodict[element.macroname], None)
+				list.append(element.macrodict[element.macroname], None)
 			else:
 				raise Exception("neither string, ListItem nor ListMacroItem")
-
+			
 		strlist = [ ]
 		append = strlist.append
 		for item in l:
 			if item is None:
 				item = ""
-			else:
-				#filter out "non-displayable" Characters - at the very end, do it the hard way...
-				item = str(item)#.replace('\xc2\x86', '').replace('\xc2\x87', '').replace("\x19", "").replace("\x1c", "").replace("\x1e", "").decode("utf-8", "ignore").encode("utf-8")
-
+				
 			for (element, filternum) in list:
+				#filter out "non-displayable" Characters - at the very end, do it the hard way...
+				item = str(item).replace('\xc2\x86', '').replace('\xc2\x87', '').replace("\x19", "").replace("\x1c", "").replace("\x1e", "").decode("utf-8", "ignore").encode("utf-8")
+				
 				if not filternum:
 					append(element)
-					continue
+				elif filternum == 2:
+					append(item.replace("\\", "\\\\").replace("\n", "\\n").replace('"', '\\"'))
+				elif filternum == 3:					
+					append(escape_xml(item))
+				elif filternum == 4:
+					append(item.replace("%", "%25").replace("+", "%2B").replace('&', '%26').replace('?', '%3f').replace(' ', '+'))
+				elif filternum == 5:
+					append(quote(item))
+				elif filternum == 6:
+					time = parseint(item) or 0
+					t = localtime(time)
+					append("%02d:%02d" % (t.tm_hour, t.tm_min))
+				elif filternum == 7:
+					time = parseint(item) or 0
+					t = localtime(time)
+					append("%d min" % (time / 60))
 				else:
-					appendListItem(item, filternum, append)
+					append(item)
+		# (this will be done in c++ later!)
 
-		return ''.join(strlist)
-
+		return ''.join(strlist)		
+	
 	text = property(getText)
-
+			
 #===============================================================================
 # the performant 'listfiller'-engine (plfe)
 #===============================================================================
 class ListFiller(Converter):
+	def __init__(self, arg):
+		Converter.__init__(self, arg)
+#		print "ListFiller-arg: ",arg
+
 	def getText(self):
 		l = self.source.list
 		lut = self.source.lut
@@ -241,14 +285,13 @@ class ListFiller(Converter):
 		# now build a ["string", 1, "string", 2]-styled list, with indices into the
 		# list to avoid lookup of item name for each entry
 		lutlist = [ ]
-		append = lutlist.append
 		for element in conv_args:
 			if isinstance(element, basestring):
-				append((element, None))
+				lutlist.append((element, None))
 			elif isinstance(element, ListItem):
-				append((lut[element.name], element.filternum))
+				lutlist.append((lut[element.name], element.filternum))
 			elif isinstance(element, ListMacroItem):
-				append((element.macrodict[element.macroname], None))
+				lutlist.append((element.macrodict[element.macroname], None))
 			else:
 				raise Exception("neither string, ListItem nor ListMacroItem")
 
@@ -256,67 +299,45 @@ class ListFiller(Converter):
 		strlist = [ ]
 		append = strlist.append
 		for item in l:
-			for (element, filternum) in lutlist:
+			for (element, filternum) in lutlist:			
 				#None becomes ""
 				curitem = ""
-				if not filternum:
+				if filternum:
+					#filter out "non-displayable" Characters - at the very end, do it the hard way...
+					curitem = str(item[element]).replace('\xc2\x86', '').replace('\xc2\x87', '').replace("\x19", "").replace("\x1c", "").replace("\x1e", "").decode("utf-8", "ignore").encode("utf-8")
+					if curitem is None:
+						curitem = ""
+				else:
 					if element is None:
 						element = ""
+						
+				if not filternum:
 					append(element)
-					continue
+				elif filternum == 2:
+					append(curitem.replace("\\", "\\\\").replace("\n", "\\n").replace('"', '\\"'))
+				elif filternum == 3:
+					append( escape_xml( curitem ))
+				elif filternum == 4:
+					append(curitem.replace("%", "%25").replace("+", "%2B").replace('&', '%26').replace('?', '%3f').replace(' ', '+'))
+				elif filternum == 5:
+					append(quote(curitem))
+				elif filternum == 6:
+					from time import localtime
+					time = int(float(curitem)) or 0
+					t = localtime(time)
+					append("%02d:%02d" % (t.tm_hour, t.tm_min))
+				elif filternum == 7:
+					from time import localtime
+					time = int(float(curitem)) or 0
+					t = localtime(time)
+					append("%d min" % (time / 60))					
 				else:
-					curitem = str(item[element])
-					appendListItem(curitem, filternum, append)
+					append(curitem)
+		# (this will be done in c++ later!)
 
 		return ''.join(strlist)
 
 	text = property(getText)
-
-def appendListItem(item, filternum, append):
-	if filternum == 2:
-		append(item.replace("\\", "\\\\").replace("\n", "\\n").replace('"', '\\"'))
-	elif filternum == 3:
-		append( escape_xml( item ))
-	elif filternum == 4:
-		append(item.replace("%", "%25").replace("+", "%2B").replace('&', '%26').replace('?', '%3f').replace(' ', '+'))
-	elif filternum == 5:
-		append(quote(item))
-	elif filternum == 6:
-		from time import localtime
-		time = 0
-		try:
-			time = int(item)
-			t = localtime(time)
-			append("%04d-%02d-%02d" % (t.tm_year, t.tm_mon, t.tm_mday))
-		except:
-			append("---")
-	elif filternum == 7:
-		from time import localtime
-		time = 0
-		try:
-			time = int(item)
-			t = localtime(time)
-			append("%02d:%02d" % (t.tm_hour, t.tm_min))
-		except:
-			append("--:--")
-	elif filternum == 8:
-		time = 0
-		try:
-			time = int(item)
-			append("%d min" % (time / 60))
-		except:
-			append("-- min")
-	elif filternum == 9:
-		append(quote(item).replace("\"", "%22"))
-	elif filternum == 10:
-		if item == "None":
-			append("n/a")
-		else:
-			append(item.replace("\n", "<br />"))
-	elif filternum == 11:
-		append( item.replace("\"", "&quot;"))
-	else:
-		append(item)
 
 #===============================================================================
 # webifHandler
@@ -336,6 +357,7 @@ class webifHandler(ContentHandler):
 
 	def start_element(self, attrs):
 		scr = self.screen
+
 		wsource = attrs["source"]
 
 		path = wsource.split('.')
@@ -395,17 +417,16 @@ class webifHandler(ContentHandler):
 		self.sub = [ ]
 
 	def end_convert(self):
-		sub = self.sub
-		if len(sub) == 1:
-			sub = sub[0]
-		c = self.converter(sub)
+		if len(self.sub) == 1:
+			self.sub = self.sub[0]
+		c = self.converter(self.sub)
 		c.connect(self.source)
 		self.source = c
 		del self.sub
 
 	def parse_item(self, attrs):
 		if "name" in attrs:
-			filter = {"": 1, "javascript_escape": 2, "xml": 3, "uri": 4, "urlencode": 5, "date": 6, "time": 7, "minutes": 8, "uriAttribute": 9, "html": 10, "attribute" : 11}[attrs.get("filter", "")]
+			filter = {"": 1, "javascript_escape": 2, "xml": 3, "uri": 4, "urlencode": 5, "time": 6, "minutes": 7}[attrs.get("filter", "")]
 			self.sub.append(ListItem(attrs["name"], filter))
 		else:
 			assert "macro" in attrs, "e2:item must have a name= or macro= attribute!"
@@ -419,8 +440,7 @@ class webifHandler(ContentHandler):
 			self.screens.append(self.screen)
 			return
 
-		n3 = name[:3]
-		if n3 == "e2:":
+		if name[:3] == "e2:":
 			self.mode += 1
 
 		tag = '<' + name + ''.join([' %s="%s"' % x for x in attrs.items()]) + '>'
@@ -432,7 +452,7 @@ class webifHandler(ContentHandler):
 			assert name == "e2:element", "found %s instead of e2:element" % name
 			self.start_element(attrs)
 		elif self.mode == 2: # expect "<e2:convert>"
-			if n3 == "e2:":
+			if name[:3] == "e2:":
 				assert name == "e2:convert"
 				self.start_convert(attrs)
 			else:
@@ -447,18 +467,16 @@ class webifHandler(ContentHandler):
 			self.screen = None
 			return
 
-		n3 = name[:3]
 		tag = "</" + name + ">"
 		if self.mode == 0:
 			self.res.append(tag)
-		elif self.mode == 2:
-			if n3 == "e2:": # closed 'convert' -> sub
-				self.end_convert()
-			else:
-				self.sub.append(tag)
+		elif self.mode == 2 and name[:3] != "e2:":
+			self.sub.append(tag)
+		elif self.mode == 2: # closed 'convert' -> sub
+			self.end_convert()
 		elif self.mode == 1: # closed 'element'
 			self.end_element()
-		if n3 == "e2:":
+		if name[:3] == "e2:":
 			self.mode -= 1
 
 	def processingInstruction(self, target, data):
@@ -504,20 +522,6 @@ def renderPage(request, path, session):
 	# by default, we have non-streaming pages
 	finish = True
 
-	if config.plugins.Webinterface.anti_hijack.value:
-		for screen in handler.screens:
-			method = request.method
-			if not screen.allow_GET and method == 'GET' and len(request.args) > 0:
-				request.setHeader("Allow", "POST")
-				request.write(
-					resource.ErrorPage(http.NOT_ALLOWED, "Invalid method: GET!", "GET is not allowed here, please use POST").render(request)
-				)
-				if not request._disconnected:
-					request.finish()
-				else:
-					print "[renderPage] request already finished!"
-				return
-
 	# first, apply "commands" (aka. URL argument)
 	for x in handler.res:
 		if isinstance(x, Element):
@@ -542,45 +546,31 @@ def renderPage(request, path, session):
 	# i.e. on host-originated changes.
 	# in this case, don't finish yet, don't cleanup yet,
 	# but instead do that when the client disconnects.
-
-# This is some debug code, i'll leave it for possible later use
-#	def requestFinishedTest(nothing, handler, request):
-#		print "Request has been cleaned: %s" %request
-#		print nothing
-#
-#	d2 = request.notifyFinish()
-#	d2.addBoth(requestFinishedTest, handler, request)
 	if finish:
 		requestFinish(handler, request)
-
-	else:
-		def _requestFinishDeferred(nothing, handler, request):
+	
+	else:	
+		def requestFinishDeferred(nothing, handler, request):
 			from twisted.internet import reactor
-			reactor.callLater(0, requestFinish, handler, request, requestAlreadyFinished=True)
-
+			reactor.callLater(0, requestFinish, handler, request)				
+		
 		d = request.notifyFinish()
-		d.addBoth( _requestFinishDeferred, handler, request )
 
+		d.addBoth( requestFinishDeferred, handler, request )
+							
 #===============================================================================
 # requestFinish
 #
 # This has to be/is called at the end of every ScreenPage-based Request
 #===============================================================================
-def requestFinish(handler, request, requestAlreadyFinished = False):
+def requestFinish(handler, request):
 	handler.cleanup()
-	if not requestAlreadyFinished:
-		try:
-			if not request._disconnected:
-				request.finish()
-			else:
-				print "[requestFinish] request already finished!"
-		except:
-			pass
-
+	request.finish()	
+	
 	del handler
 
 def validate_certificate(cert, key):
-	buf = decrypt_block(cert[8:], key)
+	buf = decrypt_block(cert[8:], key) 
 	if buf is None:
 		return None
 	return buf[36:107] + cert[139:196]
@@ -591,7 +581,7 @@ def get_random():
 		random = urandom(8)
 		x = str(time())[-8:]
 		result = xor(random, x)
-
+				
 		return result
 	except:
 		return None

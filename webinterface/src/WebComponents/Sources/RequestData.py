@@ -8,11 +8,10 @@ class RequestData(Source):
 	PORT = 1
 	METHOD = 2
 	PATH = 3
-	PROTOCOL = 4
-	REMOTEADRESS = 5
-	REMOTEPORT = 6
-	REMOTETYPE = 7
-	URI = 8
+	REMOTEADRESS = 4
+	REMOTEPORT = 5
+	REMOTETYPE = 6
+	URI = 7
 
 	def __init__(self, request, what=None):
 		Source.__init__(self)
@@ -31,8 +30,6 @@ class RequestData(Source):
 			return self.request.method
 		elif self.what is self.PATH:
 			return self.request.path
-		elif self.what is self.PROTOCOL:
-			return "https" if self.request.isSecure() else "http"
 		elif self.what is self.REMOTEADRESS:
 			return self.request.client.ip
 		elif self.what is self.REMOTEPORT:

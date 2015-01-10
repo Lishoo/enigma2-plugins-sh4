@@ -85,11 +85,6 @@ if config.plugins.epgrefresh.interval.value != 2:
 	config.plugins.epgrefresh.interval_seconds.value = config.plugins.epgrefresh.interval.value * 60
 	config.plugins.epgrefresh.interval.value = 2
 	config.plugins.epgrefresh.save()
-config.plugins.epgrefresh.interval = ConfigNumber(default = 2)
-if config.plugins.epgrefresh.interval.value != 2:
-	config.plugins.epgrefresh.interval_seconds.value = config.plugins.epgrefresh.interval.value * 60
-	config.plugins.epgrefresh.interval.value = 2
-	config.plugins.epgrefresh.save()
 
 config.plugins.epgrefresh_extra = ConfigSubsection()
 config.plugins.epgrefresh_extra.cacheloadsched = ConfigYesNo(default = False)

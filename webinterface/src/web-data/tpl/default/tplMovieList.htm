@@ -1,47 +1,44 @@
 
 <!-- tplMovieList -->
-						<table id="contentTable" class="movieList">
+						<table id="contentTable">
 							{for movie in movies}
 							<tr>
 								<td class="${movie.cssclass}" >
-									<table
-										class="mListItem"
-										data-servicereference="${movie.servicereference}"
-										data-servicename="${movie.servicename}"
-										data-title="${movie.title}"
-										data-description="${movie.description}">
-
+									<table class="mListItem">
 										<tr>
-											<td style="width: 640px;">
+											<td style="width: 640px;">										
 												<div class="sListSName">
-													<a href="#" id="${movie.servicereference}" class="sListSLink" title="${strings.play_item.format(movie.title)}">
+													<a href="#" id="${movie.servicereference}" onclick="{ zap(this.id); }" class="sListSLink" title="Play ${movie.title}">
 														${movie.title} - ${movie.description} (${movie.servicename})
 													</a>
 												</div>
 											</td>
-											<td style="text-align: right;">
-												<a target="_blank" class="small" href="/web/ts.m3u?file=${movie.filename}" title="${strings.stream_channel.format(movie.title)}" >
-													<img src="/web-data/img/screen.png" alt="${strings.do_stream}" border="0">
+											<td style="width: 100px;font-size: 12px;text-align: right;padding-right: 15px;">
+												${movie.tags}
+											</td>
+											<td>
+												<a target="_blank" href="/web/ts.m3u?file=${movie.filename}">
+													<img src="/web-data/img/screen.png" title="Stream ${movie.title}" border="0">
 												</a>
-												<a target="_blank" class="small" href="/file?file=${movie.filename}" title="${strings.download_item.format(movie.title)}">
-													<img src="/web-data/img/film_save.png" alt="${strings.download}" border="0">
+											</td>
+											<td>
+												<a target="_blank" href="/file?file=${movie.filename}">
+													<img src="/web-data/img/save.png" title="Download ${movie.title}" border="0">
 												</a>
-												<a href="#" class="mListDelete" title="${strings.delete_item.format(movie.title)}">
-													<img src="/web-data/img/delete.png" border="0">
+											</td>
+											<td>
+												<a href="#" onclick="delMovie('${movie.servicereference}','${movie.servicename}','${movie.escapedTitle}','${movie.description}');">
+													<img src="/web-data/img/delete.png" title="Delete ${movie.title}" border="0">
 												</a>
 											</td>
 										</tr>
 										<tr class="mListDetail">
-											<td colspan="2" class="mListDetailItem">
+											<td colspan="4" class="mListDetailItem">
 												<table cellspacing="0">
 													<tr>
-														<td rowspan="3" class="mStart">${movie.time}</td>
-														<td rowspan="3" class="mTitle">${movie.descriptionextended}</td>
-														<td rowspan="2">${movie.tags}</a></td>
-													</tr>
-													<tr></tr>
-													<tr>
-														<td class="mLength bottom">${movie.length}<br>${movie.filesize}</td>
+														<td class="mStart">${movie.time}</td>
+														<td class="mTitle">${movie.descriptionextended}</td>
+														<td class="mLength">${movie.length}</td>
 													</tr>
 												</table>
 											</td>
@@ -54,11 +51,11 @@
 								<td>
 									<table>
 										<tr>
-											<td>${strings.no_movies}</td>
+											<td>No Movies to Display</td>
 										</tr>
 									</table>
 								</td>
 							</tr>
-							{/for}
+							{/for}		
 						</table>
 <!-- /tplMovieList -->
