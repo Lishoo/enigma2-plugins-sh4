@@ -60,12 +60,6 @@ AM_CONDITIONAL(UPDATE_PO, test "$with_po" = "yes")
 AC_CONFIG_FILES([
 Makefile
 
-aihdcontroler/Makefile
-aihdcontroler/meta/Makefile
-aihdcontroler/src/Makefile
-aihdcontroler/src/comp/Makefile
-aihdcontroler/src/data/Makefile
-
 antiscrollbar/Makefile
 antiscrollbar/meta/Makefile
 antiscrollbar/src/Makefile
@@ -176,12 +170,6 @@ epgsearch/meta/Makefile
 epgsearch/po/Makefile
 epgsearch/src/Makefile
 epgsearch/src/icons/Makefile
-
-fancontrol2/Makefile
-fancontrol2/meta/Makefile
-fancontrol2/po/Makefile
-fancontrol2/src/Makefile
-fancontrol2/src/data/Makefile
 
 filebrowser/Makefile
 filebrowser/meta/Makefile
