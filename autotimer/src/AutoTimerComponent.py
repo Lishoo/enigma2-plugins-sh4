@@ -52,7 +52,7 @@ class AutoTimerComponent(object):
 			matchLimit='', matchFormatString='', lastBegin=0, justplay=False, \
 			avoidDuplicateDescription=0, searchForDuplicateDescription=2, bouquets=None, \
 			tags=None, encoding=None, searchType="partial", searchCase="insensitive", \
-			overrideAlternatives=True, timeframe=None, vps_enabled=False, \
+			overrideAlternatives=False, timeframe=None, vps_enabled=False, \
 			vps_overwrite=False, setEndtime=False, series_labeling=False):
 		self.name = name
 		self.match = match
@@ -152,7 +152,7 @@ class AutoTimerComponent(object):
 	searchCase = property(lambda self: self._searchCase, setSearchCase)
 
 	def setSearchType(self, type):
-		assert type in ("exact", "partial", "start", "description"), "search type must be exact, partial, start or description"
+		assert type in ("exact", "partial", "start", "description"), "search type must be exact, partial or description"
 		self._searchType = type
 
 	searchType = property(lambda self: self._searchType, setSearchType)
@@ -361,13 +361,13 @@ class AutoTimerComponent(object):
 				return True
 
 		for exclude in self.exclude[0]:
-			if exclude.search(title):
+			if exclude.search(title) is not None:
 				return True
 		for exclude in self.exclude[1]:
-			if exclude.search(short):
+			if exclude.search(short) is not None:
 				return True
 		for exclude in self.exclude[2]:
-			if exclude.search(extended):
+			if exclude.search(extended) is not None:
 				return True
 		return False
 
@@ -388,13 +388,13 @@ class AutoTimerComponent(object):
 				return True
 
 		for include in self.include[0]:
-			if not include.search(title):
+			if include.search(title) is None:
 				return True
 		for include in self.include[1]:
-			if not include.search(short):
+			if include.search(short) is None:
 				return True
 		for include in self.include[2]:
-			if not include.search(extended):
+			if include.search(extended) is None:
 				return True
 
 		return False
@@ -715,8 +715,8 @@ class AutoTimerFastscanComponent(AutoTimerComponent):
 		return override_service
 
 def getDefaultEncoding():
-	if 'de' in language.getLanguage():
-		return 'ISO8859-15'
+	#if 'de' in language.getLanguage():
+	#	return 'ISO8859-15'
 	return 'UTF-8'
 
 # very basic factory ;-)

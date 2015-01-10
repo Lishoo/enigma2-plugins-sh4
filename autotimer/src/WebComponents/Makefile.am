@@ -1,5 +1,3 @@
-installdir = $(libdir)/enigma2/python/Plugins/Extensions/AutoTimer/WebComponents/
-
-SUBDIRS = Sources
+installdir = $(libdir)/enigma2/python/Plugins/Extensions/AutoTimer/WebComponents
 
 install_PYTHON = *.py

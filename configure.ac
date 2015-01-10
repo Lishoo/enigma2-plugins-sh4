@@ -1,4 +1,4 @@
-AC_INIT([enigma2-plugins],[3.2.0],[enigma2-devel@lists.elitedvb.net])
+AC_INIT([enigma2-plugins],[4],[forum@openpli.org])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign no-define tar-pax])
 AC_CONFIG_HEADERS([enigma2-plugins-config.h])
 
@@ -23,15 +23,8 @@ AX_PTHREAD
 TUXBOX_APPS_DVB
 
 PKG_CHECK_MODULES(ENIGMA2, enigma2)
-AC_ARG_ENABLE(libeplayer3,
-	[  --enable-libeplayer3          enable TDT libeplayer3 as player engine supportt],
-	[AC_DEFINE(ENABLE_LIBEPLAYER3,1,[enable TDT libeplayer3 as player engine support])])
-
-if ! test "$enable_libeplayer3" = "yes"; then
 PKG_CHECK_MODULES(GSTREAMER, gstreamer-0.10 gstreamer-pbutils-0.10)
-fi
 PKG_CHECK_MODULES(LIBCRYPTO, libcrypto)
-PKG_CHECK_MODULES(SIGC,sigc++-1.2)
 
 AC_ARG_WITH(tpm,
 	AS_HELP_STRING([--with-tpm], [enable plugins that require a TPM]),
@@ -67,11 +60,11 @@ AM_CONDITIONAL(UPDATE_PO, test "$with_po" = "yes")
 AC_CONFIG_FILES([
 Makefile
 
-alternativesoftcammanager/Makefile
-alternativesoftcammanager/meta/Makefile
-alternativesoftcammanager/po/Makefile
-alternativesoftcammanager/src/Makefile
-alternativesoftcammanager/src/images/Makefile
+aihdcontroler/Makefile
+aihdcontroler/meta/Makefile
+aihdcontroler/src/Makefile
+aihdcontroler/src/comp/Makefile
+aihdcontroler/src/data/Makefile
 
 antiscrollbar/Makefile
 antiscrollbar/meta/Makefile
@@ -102,21 +95,15 @@ autoresolution/meta/Makefile
 autoresolution/src/Makefile
 autoresolution/po/Makefile
 
-autotimer/etc/Makefile
 autotimer/Makefile
-autotimer/meta/Makefile
 autotimer/po/Makefile
-autotimer/src/Makefile
-autotimer/src/WebChilds/Makefile
+autotimer/meta/Makefile
 autotimer/src/WebComponents/Makefile
-autotimer/src/WebComponents/Sources/Makefile
 autotimer/src/WebScreens/Makefile
-autotimer/src/web/Makefile
+autotimer/src/Makefile
 autotimer/src/web-data/Makefile
-
-autovolume/Makefile
-autovolume/meta/Makefile
-autovolume/src/Makefile
+autotimer/src/WebChilds/Makefile
+autotimer/src/web/Makefile
 
 babelzapper/Makefile
 babelzapper/etc/Makefile
@@ -135,11 +122,6 @@ bonjour/src/Makefile
 cdinfo/Makefile
 cdinfo/meta/Makefile
 cdinfo/src/Makefile
-
-curlytx/Makefile
-curlytx/meta/Makefile
-curlytx/po/Makefile
-curlytx/src/Makefile
 
 dreamirc/Makefile
 dreamirc/meta/Makefile
@@ -183,10 +165,6 @@ emailclient/meta/Makefile
 emailclient/po/Makefile
 emailclient/src/Makefile
 
-emission/Makefile
-emission/meta/Makefile
-emission/src/Makefile
-
 epgrefresh/Makefile
 epgrefresh/meta/Makefile
 epgrefresh/po/Makefile
@@ -197,11 +175,13 @@ epgsearch/Makefile
 epgsearch/meta/Makefile
 epgsearch/po/Makefile
 epgsearch/src/Makefile
+epgsearch/src/icons/Makefile
 
-eurotictv/Makefile
-eurotictv/meta/Makefile
-eurotictv/po/Makefile
-eurotictv/src/Makefile
+fancontrol2/Makefile
+fancontrol2/meta/Makefile
+fancontrol2/po/Makefile
+fancontrol2/src/Makefile
+fancontrol2/src/data/Makefile
 
 filebrowser/Makefile
 filebrowser/meta/Makefile
@@ -231,11 +211,6 @@ growlee/Makefile
 growlee/meta/Makefile
 growlee/src/Makefile
 
-hddmanager/Makefile
-hddmanager/meta/Makefile
-hddmanager/po/Makefile
-hddmanager/src/Makefile
-
 httpproxy/Makefile
 httpproxy/meta/Makefile
 httpproxy/src/Makefile
@@ -244,11 +219,6 @@ imdb/Makefile
 imdb/meta/Makefile
 imdb/po/Makefile
 imdb/src/Makefile
-
-infobartunerstate/Makefile
-infobartunerstate/meta/Makefile
-infobartunerstate/po/Makefile
-infobartunerstate/src/Makefile
 
 kiddytimer/Makefile
 kiddytimer/img/Makefile
@@ -259,13 +229,6 @@ kiddytimer/src/Makefile
 letterbox/Makefile
 letterbox/src/Makefile
 letterbox/meta/Makefile
-
-libgisclubskin/Makefile
-libgisclubskin/src/Makefile
-libgisclubskin/src/Converter/Makefile
-libgisclubskin/src/Renderer/Makefile
-libgisclubskin/src/bitratecalc/Makefile
-libgisclubskin/meta/Makefile
 
 logomanager/Makefile
 logomanager/meta/Makefile
@@ -295,7 +258,11 @@ merlinepgcenter/images/HD_BORDER/Makefile
 merlinepgcenter/images/SD/Makefile
 merlinepgcenter/images/XD/Makefile
 merlinepgcenter/images/XD_BORDER/Makefile
-merlinepgcenter/images/HD_Elgato/Makefile
+
+merlinmusicplayer/Makefile
+merlinmusicplayer/meta/Makefile
+merlinmusicplayer/src/Makefile
+merlinmusicplayer/src/images/Makefile
 
 meteoitalia/Makefile
 meteoitalia/meta/Makefile
@@ -339,20 +306,10 @@ movieepg/src/Makefile
 mphelp/Makefile
 mphelp/meta/Makefile
 mphelp/src/Makefile
-mphelp/po/Makefile
 
 multirc/Makefile
 multirc/src/Makefile
 multirc/meta/Makefile
-
-multiquickbutton/Makefile
-multiquickbutton/po/Makefile
-multiquickbutton/src/Makefile
-multiquickbutton/src/images/Makefile
-multiquickbutton/src/images/cli_default/Makefile
-multiquickbutton/src/etc/Makefile
-multiquickbutton/meta/Makefile
-
 
 mytube/Makefile
 mytube/meta/Makefile
@@ -396,11 +353,6 @@ orfteletext/Makefile
 orfteletext/meta/Makefile
 orfteletext/src/Makefile
 
-osdadjustment/Makefile
-osdadjustment/meta/Makefile
-osdadjustment/po/Makefile
-osdadjustment/src/Makefile
-
 partnerbox/Makefile
 partnerbox/meta/Makefile
 partnerbox/po/Makefile
@@ -412,18 +364,6 @@ permanentclock/Makefile
 permanentclock/meta/Makefile
 permanentclock/po/Makefile
 permanentclock/src/Makefile
-
-permanenttimeshift/Makefile
-permanenttimeshift/meta/Makefile
-permanenttimeshift/po/Makefile
-permanenttimeshift/images/Makefile
-permanenttimeshift/src/Makefile
-permanenttimeshift/src/eitsave/Makefile
-permanenttimeshift/src/createapscfiles/Makefile
-
-pipservicerelation/Makefile
-pipservicerelation/src/Makefile
-pipservicerelation/meta/Makefile
 
 pipzap/Makefile
 pipzap/meta/Makefile
@@ -450,11 +390,6 @@ quickbutton/meta/Makefile
 quickbutton/po/Makefile
 quickbutton/src/Makefile
 
-quickepg/Makefile
-quickepg/meta/Makefile
-quickepg/po/Makefile
-quickepg/src/Makefile
-
 reconstructapsc/Makefile
 reconstructapsc/meta/Makefile
 reconstructapsc/src_py/Makefile
@@ -469,10 +404,6 @@ rsdownloader/meta/Makefile
 rsdownloader/po/Makefile
 rsdownloader/src/Makefile
 rsdownloader/src/container/Makefile
-
-sambaserver/Makefile
-sambaserver/meta/Makefile
-sambaserver/src/Makefile
 
 seekbar/Makefile
 seekbar/meta/Makefile
@@ -508,24 +439,6 @@ startuptostandby/Makefile
 startuptostandby/meta/Makefile
 startuptostandby/src/Makefile
 
-subsdownloader2/Makefile
-subsdownloader2/meta/Makefile
-subsdownloader2/src/Makefile
-subsdownloader2/src/pic/Makefile
-subsdownloader2/src/pic/buttons/Makefile
-subsdownloader2/src/pic/buttons/HD/Makefile
-subsdownloader2/src/pic/res/Makefile
-subsdownloader2/src/SourceCode/Makefile
-subsdownloader2/src/SourceCode/chardet/Makefile
-subsdownloader2/src/SourceCode/periscope/Makefile
-subsdownloader2/src/SourceCode/periscope/services/Makefile
-subsdownloader2/src/SourceCode/periscope/services/BierDopje/Makefile
-subsdownloader2/src/SourceCode/periscope/services/OpenSubtitle/Makefile
-subsdownloader2/src/SourceCode/xbmc_subtitles/Makefile
-subsdownloader2/src/SourceCode/xbmc_subtitles/services/Makefile
-subsdownloader2/src/SourceCode/xbmc_subtitles/services/Napisyme/Makefile
-subsdownloader2/src/SourceCode/xbmc_subtitles/services/Itasa/Makefile
-
 svdrp/Makefile
 svdrp/meta/Makefile
 svdrp/src/Makefile
@@ -538,14 +451,6 @@ tageditor/src/Makefile
 trafficinfo/Makefile
 trafficinfo/meta/Makefile
 trafficinfo/src/Makefile
-
-toolkit/Makefile
-toolkit/src/Makefile
-
-tv3play/Makefile
-tv3play/meta/Makefile
-tv3play/po/Makefile
-tv3play/src/Makefile
 
 tvcharts/Makefile
 tvcharts/meta/Makefile
@@ -560,10 +465,6 @@ valixdcontrol/meta/Makefile
 valixdcontrol/src/Makefile
 valixdcontrol/src/comp/Makefile
 valixdcontrol/src/data/Makefile
-
-vfd-icons-minimalwithclock/Makefile
-vfd-icons-minimalwithclock/meta/Makefile
-vfd-icons-minimalwithclock/src/Makefile
 
 virtualzap/Makefile
 virtualzap/meta/Makefile
@@ -581,10 +482,6 @@ vps/meta/Makefile
 vps/po/Makefile
 vps/src_cc/Makefile
 vps/src_py/Makefile
-vps/src_py/web/Makefile
-vps/src_py/web-data/Makefile
-vps/src_py/WebComponents/Makefile
-vps/src_py/WebComponents/Sources/Makefile
 
 weatherplugin/Makefile
 weatherplugin/meta/Makefile
@@ -609,21 +506,13 @@ webinterface/Makefile
 webinterface/meta/Makefile
 webinterface/po/Makefile
 webinterface/src/Makefile
-webinterface/src/m/Makefile
+webinterface/src/etc/Makefile
 webinterface/src/mobile/Makefile
 webinterface/src/web/Makefile
 webinterface/src/web-data/Makefile
 webinterface/src/web-data/gfx/Makefile
 webinterface/src/web-data/img/Makefile
 webinterface/src/web-data/lib/Makefile
-webinterface/src/web-data/lib/lang/Makefile
-webinterface/src/web-data/lib/datepicker/Makefile
-webinterface/src/web-data/lib/datepicker/media/Makefile
-webinterface/src/web-data/m/Makefile
-webinterface/src/web-data/m/css/Makefile
-webinterface/src/web-data/m/css/themes/Makefile
-webinterface/src/web-data/m/css/themes/images/Makefile
-webinterface/src/web-data/m/script/Makefile
 webinterface/src/web-data/tpl/Makefile
 webinterface/src/web-data/tpl/default/Makefile
 webinterface/src/web-data/tpl/default/streaminterface/Makefile

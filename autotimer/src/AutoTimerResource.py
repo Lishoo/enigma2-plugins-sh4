@@ -12,7 +12,7 @@ except ImportError as ie:
 from ServiceReference import ServiceReference
 from Tools.XMLTools import stringToXML
 from enigma import eServiceReference
-from . import _, config, iteritems
+from . import _, config, iteritems, plugin
 from plugin import autotimer
 
 API_VERSION = "1.3"
@@ -137,7 +137,7 @@ class AutoTimerAddOrEditAutoTimerResource(AutoTimerBaseResource):
 					newTimer = False
 					break
 			if timer is None:
-				return self.returnResult(req, False, _("unable to find timer with id %i" % (id,)))
+				return self.returnResult(req, False, (_("unable to find timer with id %i") % (id,)))
 
 		if id != -1:
 			# Match

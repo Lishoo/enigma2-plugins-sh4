@@ -13,7 +13,7 @@ msgstr ""
 "X-Poedit-Basepath: .\n"
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Poedit-SearchPath-0: ../src\n"
-"X-Poedit-SearchPath-1: ../src/webinterface\n"
+"X-Poedit-SearchPath-1: ../src/web\n"
 
 #, python-format
 msgid ""

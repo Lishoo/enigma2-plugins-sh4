@@ -9,6 +9,7 @@ from Screens.ChannelSelection import SimpleChannelSelection
 from Screens.EpgSelection import EPGSelection
 from Screens.MessageBox import MessageBox
 from Screens.ChoiceBox import ChoiceBox
+from Screens.VirtualKeyBoard import VirtualKeyBoard
 
 # GUI (Summary)
 from Screens.Setup import SetupSummary
@@ -21,7 +22,7 @@ from Components.Sources.StaticText import StaticText
 from Components.config import getConfigListEntry, ConfigEnableDisable, \
 	ConfigYesNo, ConfigText, ConfigClock, ConfigNumber, ConfigSelection, \
 	ConfigDateTime, config, NoSave
-
+from enigma import getDesktop
 # Timer
 from RecordTimer import AFTEREVENT
 
@@ -66,6 +67,7 @@ except ImportError as ie:
 else:
 	hasSeriesPlugin = True
 
+
 class SimpleBouquetSelection(SimpleChannelSelection):
 	def __init__(self, session, title):
 		SimpleChannelSelection.__init__(self, session, title)
@@ -106,21 +108,19 @@ class AutoTimerEPGSelection(EPGSelection):
 	def __init__(self, *args):
 		EPGSelection.__init__(self, *args)
 		self.skinName = "EPGSelection"
+		self["key_red"].setText(_(" add AutoTimer"))
 
-	def infoKeyPressed(self):
-		self.timerAdd()
+	def eventSelected(self):
+		self.zapTo()
 
-	def timerAdd(self):
+	def zapTo(self):
 		cur = self["list"].getCurrent()
 		evt = cur[0]
 		sref = cur[1]
 		if not evt:
 			return
-
 		addAutotimerFromEvent(self.session, evt = evt, service = sref)
 
-	def onSelectionChanged(self):
-		pass
 
 class AutoTimerEditorBase:
 	""" Base Class for all Editors """
@@ -311,8 +311,10 @@ class AutoTimerEditorBase:
 				("2", _("On any service")),
 				("3", _("Any service/recording")),
 			],
+
 			default = str(timer.getAvoidDuplicateDescription())
 		))
+
 
 		# Search for Duplicate Desciption in...
 		self.searchForDuplicateDescription = NoSave(ConfigSelection([
@@ -349,6 +351,12 @@ class AutoTimerEditorBase:
 		# SeriesPlugin
 		self.series_labeling = NoSave(ConfigYesNo(default = timer.series_labeling))
 
+		# Filter info
+		self.isActive_services_value = _("unknown")
+		self.isActive_bouquets_value = _("unknown")
+		self.isActive_dayofweek_value = _("unknown")
+		self.isActive_otherfilters_value = _("unknown")
+
 	def pathSelected(self, res):
 		if res is not None:
 			# I'm pretty sure this will always fail
@@ -381,23 +389,39 @@ class AutoTimerEditorBase:
 				self.timerentry_tags
 			)
 
+HD = False
+if getDesktop(0).size().width() >= 1280:
+	HD = True
 class AutoTimerEditor(Screen, ConfigListScreen, AutoTimerEditorBase):
 	"""Edit AutoTimer"""
-
-	skin = """<screen name="AutoTimerEditor" title="Edit AutoTimer" position="center,center" size="565,350">
-		<ePixmap position="0,5" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
-		<ePixmap position="140,5" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
-		<ePixmap position="280,5" size="140,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" />
-		<ePixmap position="420,5" size="140,40" pixmap="skin_default/buttons/blue.png" transparent="1" alphatest="on" />
-		<widget source="key_red" render="Label" position="0,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-		<widget source="key_green" render="Label" position="140,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-		<widget source="key_yellow" render="Label" position="280,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-		<widget source="key_blue" render="Label" position="420,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-		<widget name="config" position="5,50" size="555,225" scrollbarMode="showOnDemand" />
-		<ePixmap pixmap="skin_default/div-h.png" position="0,275" zPosition="1" size="565,2" />
-		<widget source="help" render="Label" position="5,280" size="555,63" font="Regular;21" />
-	</screen>"""
-
+	if HD:
+		skin = """<screen name="AutoTimerEditor" title="Edit AutoTimer" position="center,center" size="700,510">
+			<ePixmap position="40,5" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
+			<ePixmap position="200,5" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
+			<ePixmap position="360,5" size="140,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" />
+			<ePixmap position="520,5" size="140,40" pixmap="skin_default/buttons/blue.png" transparent="1" alphatest="on" />
+			<widget source="key_red" render="Label" position="40,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget source="key_green" render="Label" position="200,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget source="key_yellow" render="Label" position="360,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget source="key_blue" render="Label" position="520,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;18" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget name="config" position="5,50" size="690,350" scrollbarMode="showOnDemand" />
+			<ePixmap pixmap="skin_default/div-h.png" position="0,405" zPosition="1" size="700,2" />
+			<widget source="help" render="Label" position="5,410" size="690,95" font="Regular;20" />
+		</screen>"""
+	else:
+		skin = """<screen name="AutoTimerEditor" title="Edit AutoTimer" position="center,center" size="565,370">
+			<ePixmap position="0,5" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
+			<ePixmap position="140,5" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
+			<ePixmap position="280,5" size="140,40" pixmap="skin_default/buttons/yellow.png" transparent="1" alphatest="on" />
+			<ePixmap position="420,5" size="140,40" pixmap="skin_default/buttons/blue.png" transparent="1" alphatest="on" />
+			<widget source="key_red" render="Label" position="0,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget source="key_green" render="Label" position="140,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget source="key_yellow" render="Label" position="280,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget source="key_blue" render="Label" position="420,5" zPosition="1" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
+			<widget name="config" position="5,50" size="555,225" scrollbarMode="showOnDemand" />
+			<ePixmap pixmap="skin_default/div-h.png" position="0,275" zPosition="1" size="565,2" />
+			<widget source="help" render="Label" position="5,280" size="555,83" font="Regular;21" />
+		</screen>"""
 	def __init__(self, session, timer, editingDefaults = False):
 		Screen.__init__(self, session)
 
@@ -419,6 +443,7 @@ class AutoTimerEditor(Screen, ConfigListScreen, AutoTimerEditorBase):
 		self.avoidDuplicateDescription.addNotifier(self.reloadList, initial_call = False)
 		self.useDestination.addNotifier(self.reloadList, initial_call = False)
 		self.vps_enabled.addNotifier(self.reloadList, initial_call = False)
+		self.series_labeling.addNotifier(self.reloadList, initial_call = False)
 
 		self.refresh()
 		self.initHelpTexts()
@@ -463,12 +488,31 @@ class AutoTimerEditor(Screen, ConfigListScreen, AutoTimerEditorBase):
 			self["key_yellow"].text = _("edit filters")
 		else:
 			self["key_yellow"].text = _("add filters")
+		if self.excludes[0] or self.excludes[1] or self.excludes[2]  or self.includes[0] or self.includes[1] or self.includes[2]:
+			self.isActive_otherfilters_value = _("enabled")
+		else:
+			self.isActive_otherfilters_value = _("disabled")
+		if self.excludes[3] or self.includes[3]:
+			self.isActive_dayofweek_value = _("enabled")
+		else:
+			self.isActive_dayofweek_value = _("disabled")
+		self.reloadList(True)
 
 	def renameServiceButton(self):
 		if self.serviceRestriction:
-			self["key_blue"].text = _("edit services")
+			self["key_blue"].text = _("Edit services")
 		else:
-			self["key_blue"].text = _("add services")
+			self["key_blue"].text = _("Add services")
+			self.isActive_services_value = _("disabled")
+		if self.services:
+			self.isActive_services_value = _("enabled")
+		else:
+			self.isActive_services_value = _("disabled")
+		if self.bouquets:
+			self.isActive_bouquets_value = _("enabled")
+		else:
+			self.isActive_bouquets_value = _("disabled")
+		self.reloadList(True)
 
 	def updateHelp(self):
 		cur = self["config"].getCurrent()
@@ -501,7 +545,7 @@ class AutoTimerEditor(Screen, ConfigListScreen, AutoTimerEditorBase):
 			self.searchCase: _("Select whether or not you want to enforce case correctness."),
 			self.justplay: _("Add zap timer instead of record timer?"),
 			self.setEndtime: _("Set an end time for the timer. If you do, the timespan of the event might be blocked for recordings."),
-			self.overrideAlternatives: _("With this option enabled the channel to record will be selected automaticliy using your list of alternates."),
+			self.overrideAlternatives: _("With this option enabled the channel to record on can be changed to a alternative service it is restricted to."),
 			self.timespan: _("Should this AutoTimer be restricted to a timespan?"),
 			self.timespanbegin: _("Lower bound of timespan. Nothing before this time will be matched. Offsets are not taken into account!"),
 			self.timespanend: _("Upper bound of timespan. Nothing after this time will be matched. Offsets are not taken into account!"),
@@ -526,6 +570,10 @@ class AutoTimerEditor(Screen, ConfigListScreen, AutoTimerEditorBase):
 			self.destination: _("Select the location to save the recording to."),
 			self.tags: _("Tags the Timer/Recording will have."),
 			self.series_labeling: _("Label Timers with season, episode and title, according to the SeriesPlugin settings."),
+			self.isActive_services: _("Use blue key to edit bouquets or services."),
+			self.isActive_bouquets: _("Use blue key to edit bouquets or services."),
+			self.isActive_dayofweek: _("Use yellow key to edit filters."),
+			self.isActive_otherfilters: _("Use yellow key to edit filters."),
 		}
 
 	def refresh(self):
@@ -547,7 +595,7 @@ class AutoTimerEditor(Screen, ConfigListScreen, AutoTimerEditorBase):
 		if self.justplay.value == "zap":
 			list.append(getConfigListEntry(_("Set End Time"), self.setEndtime))
 		list.extend((
-			getConfigListEntry(_("Use automatic selection of alternates."), self.overrideAlternatives),
+			getConfigListEntry(_("Override found with alternative service"), self.overrideAlternatives),
 			getConfigListEntry(_("Only match during timespan"), self.timespan)
 		))
 
@@ -623,7 +671,18 @@ class AutoTimerEditor(Screen, ConfigListScreen, AutoTimerEditorBase):
 		if hasSeriesPlugin:
 			list.append(getConfigListEntry(_("Label series"), self.series_labeling))
 
+		# Display short info on active filters in autotimer editor
+		self.isActive_services = NoSave(ConfigSelection([("0", self.isActive_services_value)], default="0"))
+		self.isActive_bouquets = NoSave(ConfigSelection([("0", self.isActive_bouquets_value)], default="0"))
+		self.isActive_dayofweek = NoSave(ConfigSelection([("0", self.isActive_dayofweek_value)], default="0"))
+		self.isActive_otherfilters = NoSave(ConfigSelection([("0", self.isActive_otherfilters_value)], default="0"))
+		list.append(getConfigListEntry(_("Restriction to certain services (edit in services menu)"), self.isActive_services))
+		list.append(getConfigListEntry(_("Restriction to certain bouquets (edit in services menu)"), self.isActive_bouquets))
+		list.append(getConfigListEntry(_("Restriction to certain days of week (edit in filter menu)"), self.isActive_dayofweek))
+		list.append(getConfigListEntry(_("Other filters (edit in filter menu)"), self.isActive_otherfilters))
+
 		self.list = list
+		self.initHelpTexts()
 
 	def reloadList(self, value):
 		self.refresh()
@@ -684,8 +743,27 @@ class AutoTimerEditor(Screen, ConfigListScreen, AutoTimerEditorBase):
 			self.chooseDestination()
 		elif cur == self.tags:
 			self.chooseTags()
+		elif cur == self.name:
+			self.nameKeyboard()
+		elif cur == self.match:
+			self.matchKeyboard()
 		else:
 			ConfigListScreen.keyOK(self)
+
+	def nameKeyboard(self):
+		self.session.openWithCallback(self.SearchNameCallback, VirtualKeyBoard, title = _("Enter or edit description"), text = self.name.value)
+
+	def SearchNameCallback(self, callback = None):
+		if callback:
+			self.name.value = callback
+
+	def matchKeyboard(self):
+		self.session.openWithCallback(self.SearchMatchCallback, VirtualKeyBoard, title = _("Enter or edit match title"), text = self.match.value)
+
+	def SearchMatchCallback(self, callback = None):
+		if callback:
+			self.match.value = callback
+			#ConfigListScreen.keyOK(self)
 
 	def cancel(self):
 		if self["config"].isChanged():
@@ -851,135 +929,6 @@ class AutoTimerEditor(Screen, ConfigListScreen, AutoTimerEditorBase):
 		# Close
 		self.close(self.timer)
 
-class AutoTimerEditorSilent(AutoTimerEditor):
-	def __init__(self, session, timer, editingDefaults = False):
-		AutoTimerEditor.__init__(self, session, timer, editingDefaults)
-		self.skinName = "AutoTimerEditor"
-		self.onLayoutFinish.append(self.save)
-
-	def save(self):
-		# Match
-		self.timer.match = self.match.value
-
-		# Name
-		self.timer.name = self.name.value.strip() or self.timer.match
-
-		# Encoding
-		self.timer.encoding = self.encoding.value
-
-		# ...
-		self.timer.searchType = self.searchType.value
-		self.timer.searchCase = self.searchCase.value
-
-		# Alternatives
-		self.timer.overrideAlternatives = self.overrideAlternatives.value
-
-		# Enabled
-		self.timer.enabled = self.enabled.value
-
-		# Justplay
-		self.timer.justplay = self.justplay.value == "zap"
-		self.timer.setEndtime = self.setEndtime.value
-
-		# Timespan
-		if self.timespan.value:
-			start = self.timespanbegin.value
-			end = self.timespanend.value
-			self.timer.timespan = (start, end)
-		else:
-			self.timer.timespan = None
-
-		# Timeframe
-		if self.timeframe.value:
-			start = self.timeframebegin.value
-			end = self.timeframeend.value
-			self.timer.timeframe = (start, end)
-		else:
-			self.timer.timeframe = None
-
-		# Services
-		if self.serviceRestriction:
-			self.timer.services = self.services
-			self.timer.bouquets = self.bouquets
-		else:
-			self.timer.services = None
-			self.timer.bouquets = None
-
-		# Offset
-		if self.offset.value:
-			self.timer.offset = (self.offsetbegin.value*60, self.offsetend.value*60)
-		else:
-			self.timer.offset = None
-
-		# AfterEvent
-		if self.afterevent.value == "default":
-			self.timer.afterevent = []
-		else:
-			afterevent = {
-				"nothing": AFTEREVENT.NONE,
-				"deepstandby": AFTEREVENT.DEEPSTANDBY,
-				"standby": AFTEREVENT.STANDBY,
-				"auto": AFTEREVENT.AUTO
-			}[self.afterevent.value]
-			# AfterEvent Timespan
-			if self.afterevent_timespan.value:
-				start = self.afterevent_timespanbegin.value
-				end = self.afterevent_timespanend.value
-				self.timer.afterevent = [(afterevent, (start, end))]
-			else:
-				self.timer.afterevent = [(afterevent, None)]
-
-		# Maxduration
-		if self.duration.value:
-			self.timer.maxduration = self.durationlength.value*60
-		else:
-			self.timer.maxduration = None
-
-		# Ex-&Includes
-		if self.filterSet:
-			self.timer.exclude = self.excludes
-			self.timer.include = self.includes
-		else:
-			self.timer.exclude = None
-			self.timer.include = None
-
-		# Counter
-		if self.counter.value:
-			self.timer.matchCount = self.counter.value
-			if self.counterLeft.value <= self.counter.value:
-				self.timer.matchLeft = self.counterLeft.value
-			else:
-				self.timer.matchLeft = self.counter.value
-			if self.counterFormatString.value:
-				self.timer.matchFormatString = self.counterFormatString.value
-			else:
-				self.timer.matchFormatString = ''
-		else:
-			self.timer.matchCount = 0
-			self.timer.matchLeft = 0
-			self.timer.matchFormatString = ''
-
-		self.timer.avoidDuplicateDescription = int(self.avoidDuplicateDescription.value)
-		self.timer.searchForDuplicateDescription = int(self.searchForDuplicateDescription.value)
-
-		if self.useDestination.value:
-			self.timer.destination = self.destination.value
-		else:
-			self.timer.destination = None
-
-		self.timer.tags = self.timerentry_tags
-
-		self.timer.vps_enabled = self.vps_enabled.value
-		self.timer.vps_overwrite = self.vps_overwrite.value
-
-		self.timer.series_labeling = self.series_labeling.value
-
-		# Close
-		self.returnVal = self.timer
-
-	def retval(self):
-		return self.returnVal
-
 class AutoTimerFilterEditor(Screen, ConfigListScreen):
 	"""Edit AutoTimer Filter"""
 
@@ -1030,9 +979,10 @@ class AutoTimerFilterEditor(Screen, ConfigListScreen):
 			{
 				"cancel": self.cancel,
 				"save": self.save,
+				"ok": self.ok,
 				"yellow": self.remove,
 				"blue": self.new
-			}
+			}, -2
 		)
 
 		# Trigger change
@@ -1160,6 +1110,17 @@ class AutoTimerFilterEditor(Screen, ConfigListScreen):
 
 			list.insert(pos, entry)
 			self["config"].setList(list)
+
+	def ok(self):
+		if self.typeSelection.value != "day":
+			idx = self["config"].getCurrent()[0]
+			if idx == _("Include") or idx == _("Exclude"):
+				text = str(self["config"].getCurrent()[1].getText())
+				self.session.openWithCallback(self.textCallback, VirtualKeyBoard, title = _("Enter or edit text"), text = text)
+
+	def textCallback(self, callback = None):
+		if callback:
+			self["config"].getCurrent()[1].value = callback
 
 	def cancel(self):
 		if self["config"].isChanged():
@@ -1503,58 +1464,11 @@ def importerCallback(ret):
 			ret
 		)
 
-def addAutotimerFromEventSilent(session, evt = None, service = None):
-	from plugin import autotimer
-
-	autotimer.readXml()
-
-	match = evt and evt.getEventName() or ""
-	name = match or "New AutoTimer"
-	if service is not None:
-		service = str(service)
-		myref = eServiceReference(service)
-		if not (myref.flags & eServiceReference.isGroup):
-			# strip all after last :
-			pos = service.rfind(':')
-			if pos != -1:
-				if service[pos-1] == ':':
-					pos -= 1
-				service = service[:pos+1]
-
-	if evt:
-		# timespan defaults to +- 1h
-		begin = evt.getBeginTime()-3600
-		end = begin + evt.getDuration()+7200
-	else:
-		begin = end = 0
-
-	begin = localtime(begin)
-	end = localtime(end)
-
-	newTimer = autotimer.defaultTimer.clone()
-	newTimer.id = autotimer.getUniqueId()
-	newTimer.name = name
-	newTimer.match = name
-	if newTimer.timespan[0]:
-		newTimer.timespan = ((begin[3], begin[4]), (end[3], end[4]),False)
-	newTimer.services = [service]
-	newTimer.enabled = True
-
-	AutoTimerEditorSilentDialog = session.instantiateDialog(AutoTimerEditorSilent, newTimer)
-	retval = AutoTimerEditorSilentDialog.retval()
-	session.deleteDialogWithCallback(editorCallback, AutoTimerEditorSilentDialog, retval)
-
 def editorCallback(ret):
 	if ret:
 		from plugin import autotimer
-
-		autotimer.readXml()
-
 		autotimer.add(ret)
 
 		# Save modified xml
 		autotimer.writeXml()
-
-		autotimer.readXml()
-		autotimer.parseEPG()
 
