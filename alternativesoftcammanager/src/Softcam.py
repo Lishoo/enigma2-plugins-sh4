@@ -38,6 +38,12 @@ def getcamcmd(cam):
 				for version in listdir("/lib/modules"):
 					if path.exists("/lib/modules/%s/extra/encrypt/encrypt.ko" % version):
 						Console().ePopen("modprobe encrypt")
+			sparkid = config.plugins.AltSoftcam.camconfig.value + "/sparkid"
+			if path.exists(sparkid):
+				cmd = "cat " + sparkid + " > /proc/sparkid"
+				from time import sleep
+				sleep(2)
+				Console().ePopen(cmd)
 		return config.plugins.AltSoftcam.camdir.value + "/" + cam + " -b"
 	return config.plugins.AltSoftcam.camdir.value + "/" + cam
 
