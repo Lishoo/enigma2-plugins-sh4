@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2013-04-12 23:40+0200\n"
+"PO-Revision-Date: 2015-01-11 19:40+0200\n"
 "Last-Translator: Tapat <taapat@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
@@ -27,6 +27,9 @@ msgstr "Действительно закрыть без сохранения н
 msgid "Restart"
 msgstr "Перезагрузить"
 
+msgid "Restart softcam"
+msgstr "Перезагрузить softcam"
+
 msgid "Restarting %s"
 msgstr "Перезагружается %s"
 
@@ -35,6 +38,9 @@ msgstr "Ок"
 
 msgid "Setup"
 msgstr "Настройка"
+
+msgid "Show 'Restart softcam' in extensions menu"
+msgstr "Показывать 'Перезагрузить softcam' в меню расширений"
 
 msgid "SoftCam config directory"
 msgstr "Каталог файлов конфигурации"

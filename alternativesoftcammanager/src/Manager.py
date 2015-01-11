@@ -287,6 +287,8 @@ class ConfigEdit(Screen, ConfigListScreen):
 			config.plugins.AltSoftcam.camconfig))
 		configlist.append(getConfigListEntry(_("SoftCam directory"),
 			config.plugins.AltSoftcam.camdir))
+		configlist.append(getConfigListEntry(_("Show 'Restart softcam' in extensions menu"),
+			config.plugins.AltSoftcam.restartext))
 		self["config"].setList(configlist)
 
 	def ok(self):

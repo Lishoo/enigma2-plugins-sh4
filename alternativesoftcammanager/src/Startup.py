@@ -2,13 +2,28 @@ from enigma import eTimer
 from Components.config import config
 from Components.Console import Console
 
-from Softcam import getcamcmd
+from Softcam import getcamcmd, stopcam
+
+class RestartCam:
+	def __init__(self, session):
+		self.session = session
+
+	def restart(self):
+		cam = config.plugins.AltSoftcam.actcam.value
+		if cam != "none":
+			stopcam(cam)
+			service = self.session.nav.getCurrentlyPlayingServiceReference()
+			if service:
+				self.session.nav.stopService()
+			cmd = getcamcmd(cam)
+			print "[Alternative SoftCam Manager]", cmd
+			Console().ePopen(cmd)
+			if service:
+				self.session.nav.playService(service)
 
 
 class StartCamOnStart:
 	def __init__(self):
-		print "[Alternative SoftCam Manager] StartCamOnStart init"
-		self.Console = Console()
 		self.Timer = eTimer()
 		self.Timer.timeout.get().append(self.__camnotrun)
 
@@ -17,20 +32,18 @@ class StartCamOnStart:
 
 	def __camnotrun(self):
 		self.Timer.stop()
-		self.Console.ePopen("ps", self.checkprocess)
+		Console().ePopen("ps", self.checkprocess)
 
 	def checkprocess(self, result, retval, extra_args):
 		processes = result.lower()
 		camlist = ["oscam", "mgcamd", "wicard", "camd3", "mcas", "cccam",
 			"gbox", "mpcs", "mbox", "newcs", "vizcam", "rucam"]
 		camlist.insert(0, config.plugins.AltSoftcam.actcam.value)
-		camnot = True
 		for cam in camlist:
 			if cam in processes:
-				print "[Alternative SoftCam Manager] CAM START ERROR! Already in processes:", cam
-				camnot = False
+				print "[Alternative SoftCam Manager] ERROR in start cam! In processes find:", cam
 				break
-		if camnot:
+		else:
 			cmd = getcamcmd(config.plugins.AltSoftcam.actcam.value)
 			print "[Alternative SoftCam Manager]", cmd
 			Console().ePopen(cmd)
