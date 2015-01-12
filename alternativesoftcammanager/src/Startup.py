@@ -3,6 +3,7 @@ from Components.config import config
 from Components.Console import Console
 from Screens.MessageBox import MessageBox
 
+from . import _
 from Softcam import getcamcmd, stopcam
 
 class RestartCam:
