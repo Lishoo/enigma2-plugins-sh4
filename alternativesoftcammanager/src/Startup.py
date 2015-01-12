@@ -1,6 +1,7 @@
 from enigma import eTimer
 from Components.config import config
 from Components.Console import Console
+from Screens.MessageBox import MessageBox
 
 from Softcam import getcamcmd, stopcam
 
@@ -11,6 +12,8 @@ class RestartCam:
 	def restart(self):
 		cam = config.plugins.AltSoftcam.actcam.value
 		if cam != "none":
+			self.session.open(MessageBox, _("Restarting %s") % cam, 
+				type = MessageBox.TYPE_INFO, timeout = 4)
 			stopcam(cam)
 			service = self.session.nav.getCurrentlyPlayingServiceReference()
 			if service:
@@ -24,6 +27,7 @@ class RestartCam:
 
 class StartCamOnStart:
 	def __init__(self):
+		self.Console = Console()
 		self.Timer = eTimer()
 		self.Timer.timeout.get().append(self.__camnotrun)
 
@@ -32,7 +36,7 @@ class StartCamOnStart:
 
 	def __camnotrun(self):
 		self.Timer.stop()
-		Console().ePopen("ps", self.checkprocess)
+		self.Console.ePopen("ps", self.checkprocess)
 
 	def checkprocess(self, result, retval, extra_args):
 		processes = result.lower()
