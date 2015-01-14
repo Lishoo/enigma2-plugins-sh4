@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-epgsearch
-Version: 20150112
+Version: 20150114
 Description: search the epg and list results
 Section: base
 Priority: optional
