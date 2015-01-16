@@ -1,12 +1,13 @@
 from twisted.web import resource, http, server
 from enigma import eDVBDB
+from Tools.Directories import resolveFilename, SCOPE_CONFIG
 import os
 from xml.dom.minidom import parseString as xml_dom_minidom_parseString
 from urllib import unquote as urllib_unquote
 ##########################
 class ServiceList(resource.Resource):
 	def __init__(self, session):
-		
+
 		self.session = session
 		resource.Resource.__init__(self)
 		self.putChild("reload", ServiceListReload())
@@ -14,36 +15,36 @@ class ServiceList(resource.Resource):
 
 class ServiceListReload(resource.Resource):
 	def render(self, request):
-		request.setHeader('Content-type', 'application; xhtml+xml;' )
+		request.setHeader('Content-type', 'application/xhtml+xml;' )
 		request.setHeader('charset', 'UTF-8')
-				
+
 		try:
 			db = eDVBDB.getInstance()
 			#db.reloadServicelist() # reloading only lamedb
 			db.reloadBouquets() # reloading *.tv and *.radio
 
 			request.setResponseCode(http.OK)
-			
+
 			return """<?xml version="1.0" encoding="UTF-8"?>
-						<e2simplexmlresult>	
+						<e2simplexmlresult>
 							<e2state>True</e2state>
-							<e2statetext>Servicelist reloaded</e2statetext>	
+							<e2statetext>Servicelist reloaded</e2statetext>
 						</e2simplexmlresult>"""
-						
+
 		except Exception, e:
 			request.setResponseCode(http.OK)
 
 			return """<?xml version="1.0" encoding="UTF-8"?>
-						<e2simplexmlresult>	
+						<e2simplexmlresult>
 							<e2state>False</e2state>
-							<e2statetext>Error while loading Servicelist!</e2statetext>	
+							<e2statetext>Error while loading Servicelist!</e2statetext>
 						</e2simplexmlresult>"""
 
 class ServiceListSave(resource.Resource):
 	TYPE_TV = 0
 	TYPE_RADIO = 1
 	EXTENSIONS = ['.tv', '.radio']
-	DIR = "/etc/enigma2/"
+	DIR = resolveFilename(SCOPE_CONFIG)
 	undefinded_tag = "%n/a%"
 	undefinded_and = "%und%"
 
@@ -87,10 +88,10 @@ class ServiceListSave(resource.Resource):
 #		else:
 #			raise http.HTTPError(responsecode.BAD_REQUEST)
 
-	def render(self, request):			
-		request.setHeader('Content-type', 'application; xhtml+xml;' )
+	def render(self, request):
+		request.setHeader('Content-type', 'application/xhtml+xml;' )
 		request.setHeader('charset', 'UTF-8')
-		
+
 		try:
 			content = request.args['content'][0].replace("<n/a>", self.undefinded_tag).replace('&', self.undefinded_and)
 			if content.find('undefined') != -1:
@@ -138,10 +139,10 @@ class ServiceListSave(resource.Resource):
 							<e2statetext>servicelist saved with %i TV und %i Radio Bouquets and was reloaded</e2statetext>
 						</e2simplexmlresult>\n
 					 """ % (len(bouquets_tv), len(bouquets_radio))
-			
-			request.setResponseCode(http.OK)	
+
+			request.setResponseCode(http.OK)
 			request.write(result)
-			
+
 		except Exception, e:
 			print e
 			result = """<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n
@@ -150,11 +151,11 @@ class ServiceListSave(resource.Resource):
 							<e2statetext>%s</e2statetext>
 						</e2simplexmlresult>\n
 					 """ % e
-					 
-			request.setResponseCode(http.OK)	
-			request.write(result)	
-			
-		request.finish()	 
+
+			request.setResponseCode(http.OK)
+			request.write(result)
+
+		request.finish()
 		return server.NOT_DONE_YET
 
 	def parseXML(self, xmldata):

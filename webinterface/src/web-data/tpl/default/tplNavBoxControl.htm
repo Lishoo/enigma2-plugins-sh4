@@ -1,23 +1,11 @@
 
 <!-- tplNavBoxControl -->
-<table id="navExtras" class="navTable">
-	<tr>
-		<td><a href="#" onclick="loadControl('power');">PowerControl</a><td>
-	</tr>
-	<tr>
-		<td><a href="#" onclick="loadControl('message');">Send a Message</a><td>
-	</tr>
-	<tr>
-		<td><a href="#" onclick="loadControl('remote')">WebRemote</a><td>
-	</tr>
-	<tr>
-		<td><a href="#" onclick="loadControl('screenshot')">Screenshot (All)</a><td>
-	</tr>
-	<tr>
-		<td><a href="#" onclick="loadControl('videoshot')">Screenshot (Video)</a><td>
-	</tr>
-	<tr>
-		<td><a href="#" onclick="loadControl('osdshot')">Screenshot (OSD)</a><td>
-	</tr>	
-</table>
+<ul id="navExtras" class="navTable">
+	<li><a href="#!/control/power"><div>${strings.powercontrol}</div></a></li>
+	<li><a href="#!/control/message"><div>${strings.send_message}</div></a></li>
+	<li><a class="webremote" href="#"><div>${strings.webremote}</div></a></li>
+	<li><a href="#!/control/screenshot"><div>${strings.screenshot_all}</div></a></li>
+	<li><a href="#!/control/videoshot"><div>${strings.screenshot_video}</div></a></li>
+	<li><a href="#!/control/osdshot"><div>${strings.screenshot_osd}</div></a></li>
+</ul>
 <!-- /tplNavBoxControl -->

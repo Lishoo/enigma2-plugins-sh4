@@ -1,6 +1,7 @@
 from twisted.web import resource, http, server, static
 from urllib import unquote
 from os import path as os_path
+from Tools.Directories import resolveFilename, SCOPE_HDD
 
 class FileStreamer(resource.Resource):
 	addSlash = True
@@ -13,34 +14,32 @@ class FileStreamer(resource.Resource):
 		else:
 			dir = ''
 
-		if 'file' in request.args:			
+		if 'file' in request.args:
 			filename = unquote(request.args["file"][0])
 			path = dir + filename
 
 			#dirty backwards compatibility hack
 			if not os_path.exists(path):
-				path = "/hdd/movie/%s" % (filename)
-			
+				path = resolveFilename(SCOPE_HDD, filename)
+
 			print "[WebChilds.FileStreamer] path is %s" %path
-			
+
 			if os_path.exists(path):
 				basename = filename.decode('utf-8', 'ignore').encode('ascii', 'ignore')
-				
+
 				if '/' in basename:
 					basename = basename.split('/')[-1]
 
 				request.setHeader("content-disposition", "attachment;filename=\"%s\"" % (basename))
 				file = static.File(path, defaultType = "application/octet-stream")
-				return file.render(request)
+				return file.render_GET(request)
 
 			else:
-				request.setResponseCode(http.OK)
-				request.write("file '%s' was not found" %(dir + filename) )
-				request.finish()
+				request.setResponseCode(http.NOT_FOUND)
+				return "file '%s' was not found" %(dir + filename)
 		else:
 			request.setResponseCode(http.OK)
-			request.write("no file given with file=???")
-			request.finish()
+			return "no file given with file=???"
 
 		return server.NOT_DONE_YET
 
