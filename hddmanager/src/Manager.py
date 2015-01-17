@@ -54,7 +54,7 @@ class MountSetup(Screen, ConfigListScreen):
 		try:
 			with open("/proc/swaps", "r") as f:
 				for line in f.readlines():
-					if line[:19] == "/media/hdd/swapfile":
+					if line[:19] == "/media/hdd/swapfile" and os.path.exists("/media/hdd/swapfile"):
 						self.swap = str(os.path.getsize("/media/hdd/swapfile") / 1024)
 					else:
 						for device in self.swapdevice:
