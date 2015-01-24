@@ -60,13 +60,15 @@ try:
 	PartnerBoxIconsEnabled = showPartnerboxIconsinEPGList()
 except ImportError:
 	PartnerBoxIconsEnabled = False
-
-try:
-	from Plugins.Extensions.Partnerbox.PartnerboxEPGList import getRemoteClockZapPixmap
-	from Plugins.Extensions.Partnerbox.plugin import showPartnerboxZapRepIconsinEPGList
-	PartnerBoxZapRepIcons = showPartnerboxZapRepIconsinEPGList()
-except ImportError:
 	PartnerBoxZapRepIcons = False
+
+if PartnerBoxIconsEnabled:
+	try:
+		from Plugins.Extensions.Partnerbox.PartnerboxEPGList import getRemoteClockZapPixmap
+		from Plugins.Extensions.Partnerbox.plugin import showPartnerboxZapRepIconsinEPGList
+		PartnerBoxZapRepIcons = showPartnerboxZapRepIconsinEPGList()
+	except ImportError:
+		PartnerBoxZapRepIcons = False
 
 # AutoTimer installed?
 try:
@@ -739,7 +741,7 @@ class EPGSearch(EPGSelection):
 				pass
 
 	def runTMBD(self):
-		if fileExists("/usr/lib/enigma2/python/Plugins/Extensions/TMBD/plugin.pyo"):
+		if self.isTMBD:
 			from Plugins.Extensions.TMBD.plugin import TMBD
 			cur = self["list"].getCurrent()
 			if cur[0] is not None:
