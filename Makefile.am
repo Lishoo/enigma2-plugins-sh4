@@ -52,6 +52,7 @@ SUBDIRS = \
 	mphelp \
 	multiquickbutton \
 	multirc \
+	mytube \
 	ncidclient \
 	netcaster \
 	networkbrowser \
@@ -100,6 +101,7 @@ SUBDIRS = \
 	zaphistorybrowser \
 	zapstatistic \
 	zdfmediathek \
+	webinterface
 
 metadir = $(datadir)/meta
 meta_DATA = index-enigma2-plugins.xml
