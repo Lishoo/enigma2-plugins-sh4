@@ -1,4 +1,0 @@
-Package: enigma2-plugin-extensions-webinterface
-Version: 1.7.5
-Description: Control enigma2 with your Browser
-Depends: enigma2, aio-grab, python-twisted-web, python-pyopenssl, python-unixadmin, python-crypt

@@ -47,7 +47,6 @@ SUBDIRS = \
 	mosaic \
 	moviecut \
 	movieretitle \
-	moviesearch \
 	movieselectionquickbutton \
 	movietagger \
 	mphelp \
@@ -101,10 +100,6 @@ SUBDIRS = \
 	zaphistorybrowser \
 	zapstatistic \
 	zdfmediathek \
-	mytube \
-	yttrailer \
-	webbouqueteditor \
-	webinterface
 
 metadir = $(datadir)/meta
 meta_DATA = index-enigma2-plugins.xml

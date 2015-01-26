@@ -33,14 +33,6 @@ fi
 PKG_CHECK_MODULES(LIBCRYPTO, libcrypto)
 PKG_CHECK_MODULES(SIGC,sigc++-1.2)
 
-AC_ARG_WITH(tpm,
-	AS_HELP_STRING([--with-tpm], [enable plugins that require a TPM]),
-	[with_tpm="$withval"],[with_tpm="no"])
-if test "$with_tpm" = "yes"; then
-	AC_DEFINE([HAVE_TPM],[1],[Define to 1 to enable plugins that require a TPM])
-fi
-AM_CONDITIONAL(TPM, test "$with_tpm" = "yes")
-
 AC_ARG_WITH(debug,
 	AS_HELP_STRING([--without-debug],[disable debugging code]),
 	[with_debug="$withval"],[with_debug="yes"])
@@ -321,10 +313,6 @@ movieretitle/meta/Makefile
 movieretitle/po/Makefile
 movieretitle/src/Makefile
 
-moviesearch/Makefile
-moviesearch/meta/Makefile
-moviesearch/src/Makefile
-
 movieselectionquickbutton/Makefile
 movieselectionquickbutton/meta/Makefile
 movieselectionquickbutton/po/Makefile
@@ -598,16 +586,6 @@ webcamviewer/Makefile
 webcamviewer/meta/Makefile
 webcamviewer/src/Makefile
 
-webbouqueteditor/Makefile
-webbouqueteditor/src/Makefile
-webbouqueteditor/meta/Makefile
-webbouqueteditor/src/web/Makefile
-webbouqueteditor/src/web-data/Makefile
-webbouqueteditor/src/WebChilds/Makefile
-webbouqueteditor/src/WebComponents/Makefile
-webbouqueteditor/src/WebComponents/Sources/Makefile
-webbouqueteditor/src/WebScreens/Makefile
-
 webinterface/Makefile
 webinterface/meta/Makefile
 webinterface/po/Makefile
@@ -645,11 +623,6 @@ youtubeplayer/Makefile
 youtubeplayer/meta/Makefile
 youtubeplayer/src/Makefile
 youtubeplayer/src/Nemesis.GlassLine_Mod/Makefile
-
-yttrailer/Makefile
-yttrailer/meta/Makefile
-yttrailer/po/Makefile
-yttrailer/src/Makefile
 
 zaphistorybrowser/Makefile
 zaphistorybrowser/meta/Makefile
