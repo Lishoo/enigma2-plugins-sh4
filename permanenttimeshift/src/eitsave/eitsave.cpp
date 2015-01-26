@@ -4,9 +4,7 @@
 */
 
 using namespace std;
-#include <lib/dvb/dvb.h>
 #include <lib/dvb/epgcache.h>
-#include <fcntl.h>
 
 static void SaveEIT(const char *ref, const char *filename, int  eit_event_id, time_t begTime, time_t endTime)
 {
