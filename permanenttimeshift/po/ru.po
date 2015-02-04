@@ -1,168 +1,416 @@
-# Rusian translations for PTS Plugin package.
-# This file is distributed under the same license as the tuxbox-enigma package.
-# Converted from German version.
-#
 msgid ""
 msgstr ""
 "Project-Id-Version: pts-enigma 1.0.0.RC13\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-05-16 13:00+0200\n"
-"PO-Revision-Date: 2010-06-25 13:18+0300\n"
-"Last-Translator: Pavel Chernov <p070707@rambler.ru>\n"
+"PO-Revision-Date: 2013-03-04 21:37+0200\n"
+"Last-Translator: Dima73 <Dima-73@inbox.lv>\n"
 "Language-Team: http://gisclub.tv/\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Language: Russian\n"
 "X-Poedit-SourceCharset: utf-8\n"
-
-msgid "Save and stop"
-msgstr "Сохранить и остановить"
-
-msgid "Save and record"
-msgstr "Сохранить и записать"
-
-msgid "Don't save"
-msgstr "Не сохранять"
-
-msgid "Timeshift"
-msgstr "Временной сдвиг"
+"Language: ru\n"
+"X-Generator: Poedit 1.5.5\n"
 
 msgid ""
-"OH NO!\n"
-"The timeshift that was marked to save at end of event, was lost because you zapped away!"
+"\n"
+"An Input/output error usually indicates a corrupted filesystem! Please check "
+"the filesystem of your timeshift-device!"
 msgstr ""
-"О НЕТ!!\n"
-"Временной сдвиг, который должен был быть сохранен, утерян из-за того что вы переключили канал!"
-
-msgid "Timeshift saved to your harddisk!"
-msgstr "Временной сдвиг сохранен на Вас жесткий диск!"
-
-msgid "Timeshift copied to your harddisk!"
-msgstr "Временной сдвиг скопирован на Ваш жесткий диск!"
-
-msgid "Timeshift save failed!"
-msgstr "Ошибка сохранения временного сдвига!"
-
-msgid "No Timeshift found to save as recording!"
-msgstr "Не найден временной сдвиг для сохранения в виде записи!"
-
-msgid "Permanent Timeshift Settings"
-msgstr "Настройки временного сдвига"
+"\n"
+"Ошибка ввода/вывода обычно указывает на повреждение файловой системы!"
+"Пожалуйста, проверьте файлувую систему устройства таймшифта!"
 
 msgid ""
-"The Timeshift record was not saved yet!\n"
-"What do you want to do now with the timeshift file?"
+"\n"
+"The Timeshift record event was not over yet!"
 msgstr ""
-"Запись временного сдвига не была еще сохранена!\n"
-"Что вы хотите сделать с сохраненным файлом временного сдвига ?"
+"\n"
+"Запись таймшифта события еще не закончился!"
 
-msgid "Which event do you want to save permanently?"
-msgstr "Какое событие вы хотите сохранить из временного сдвига ?"
+msgid "%s (timeshift)"
+msgstr "%s (таймшифт)"
 
-msgid "Save Timeshift as Movie and stop recording"
-msgstr "Сохранить временной сдвиг и остановить запись"
+msgid ""
+"A recording is currently running.\n"
+"What do you want to do?"
+msgstr ""
+"В текущее время идет запись.\n"
+"Что вы хотите сделать?"
 
-msgid "Save Timeshift as Movie and continue recording"
-msgstr "Сохранить временной сдвиг и продолжить запись"
+msgid "Activate permanent timeshift plugin"
+msgstr "Активировать плагин постоянного таймшифта"
 
-msgid "Don't save Timeshift as Movie"
-msgstr "Не сохранять временной сдвиг в виде записи"
+msgid "Add to save timeshift now in menu recording"
+msgstr "Добавить сохранение таймшифта сейчас в меню записей"
+
+msgid "Ask user"
+msgstr "спросить пользователя"
+
+msgid "Behavior key long record"
+msgstr "Поведение кнопки длинная запись"
+
+msgid "Behavior key long stop"
+msgstr "Поведение кнопки длинная стоп"
+
+msgid "Behavior on start timeshift"
+msgstr "Поведение при старте таймшифта"
+
+msgid "Beta: Enable Permanent Recording?"
+msgstr "Бета: Включить Permanent Recording?"
+
+msgid "Cancel"
+msgstr "Отмена"
+
+msgid "Clean Timeshift Buffer on zap?"
+msgstr "Очистить буфер при переключении канала?"
+
+msgid "Copy Movie when hardlinking failed?"
+msgstr "Копировать видео, если жесткая ссылка не удалась?"
+
+msgid ""
+"Could not activate Permanent-Timeshift!\n"
+"Timeshift-Path does not exist"
+msgstr ""
+"Не удалось активировать постоянный таймшифт!\n"
+"Путь для таймшифта не существует."
+
+msgid "Creating AP and SC Files"
+msgstr "Создание AP и SC файлов"
+
+msgid "Creating Hardlink to Timeshift file failed!"
+msgstr "Ошибка создания жесткой ссылки для файла таймшифта!"
 
 msgid "Current Event:"
 msgstr "Текущие событие:"
 
+msgid "Don't save"
+msgstr "не сохранять"
+
+msgid "Don't save Timeshift as Movie"
+msgstr "Не сохранять таймшифт как видео"
+
+msgid ""
+"Duration for service without EPG more time than max length event!\n"
+"Please change the settings!"
+msgstr ""
+"Продолжительность для сервиса без EPG больше по времени,чем максимальная "
+"продолжительность события!\n"
+"Пожалуйста измените настройки!"
+
+msgid "Exit from view event"
+msgstr "Выход из просмотра событий"
+
+msgid "Filesystems like FAT32 do not support hardlinks!"
+msgstr "Файловая система FAT32 не поддерживает жесткие ссылки!"
+
 msgid "Getting Event Info failed!"
-msgstr "Ошибка получение информации о текущем событии!"
+msgstr "Ошибка получение информации о событии!"
+
+msgid "Indicator color"
+msgstr "Цвет индикатора"
+
+msgid "Indicator mode"
+msgstr "Режим индикатора"
+
+msgid "Live TV"
+msgstr "Live TV"
 
 msgid ""
 "Maximum Timeshift length per Event reached!\n"
 "Restarting Timeshift now ..."
 msgstr ""
-"Максимальное время временного сдвига исчерпано!\n"
-"Делаю перезагрузку временного сдвига ..."
-
-msgid "Timeshift will get saved at end of event!"
-msgstr "Временной сдвиг будет сохранен до конца события!"
-
-msgid "save recording (stop after current event)"
-msgstr "Сохр. запись (стоп после тек. события)"
-
-msgid "save recording (Select event)"
-msgstr "Сохранить запись (выбрать событие)"
-
-msgid "Permanent Timeshift Enable"
-msgstr "Временной сдвиг включен"
-
-msgid "Permanent Timeshift Max Events"
-msgstr "Максимальное количество событий"
-
-msgid "Permanent Timeshift Max Length"
-msgstr "Максимальная длина записи"
-
-msgid "Permanent Timeshift Start Delay"
-msgstr "Задержка на включение временного сдвига"
-
-msgid "Timeshift-Save Action on zap"
-msgstr "Действие при переключении канала"
-
-msgid "Clean Timeshift Buffer on zap?"
-msgstr "Очистить буффер при переключении канала ?"
-
-msgid "Creating Hardlink to Timeshift file failed!"
-msgstr "Creating Hardlink to Timeshift file failed!"
-
-msgid ""
-"Timeshift Buffer Full!\n"
-" Cleaning Buffer and restarting timeshift ..."
-msgstr ""
-"Буфер временного сдвига переполнено!!\n"
-"Очищаю буфер и делаю перезагрузку плагина..."
-
-msgid "We try to copy the file now. This might take a while!"
-msgstr "Мы пытаемся скопировать файл. Это займет некоторе время..."
-
-msgid "Filesystems like FAT32 do not support hardlinks!"
-msgstr "Файловая система FAT32 не совсем совсместима с данным плагином."
+"Максимальная длина таймшифта для события достигнута!\n"
+"Выполняется рестарт таймшифта ..."
 
 msgid ""
 "Merging Timeshift records now!\n"
 "This might take a while ..."
 msgstr ""
-"Обьединяю записи временного сдвига!\n"
-"Это займет некоторое время ..."
+"Объединяем записи таймшифта!\n"
+"Это может занять некоторое время ..."
+
+msgid "No HDD found or HDD not initialized!"
+msgstr "HDD не найден или HDD не установлен!"
+
+msgid "No Timeshift found to save as recording!"
+msgstr "Не найден таймшифт для сохранения как запись!"
 
 msgid ""
-"Could not activate Permanent-Timeshift!\n"
-"\n"
-"Timeshift-Path does not exist"
+"OH NO!\n"
+"The timeshift that was marked to save at end of event, was lost because you "
+"zapped away!"
 msgstr ""
-"Не могу запустить временной сдвиг!\n"
-"\n"
-"Проверьте пути установки"
+"О НЕТ!!\n"
+"Таймшифт, который должен был быть сохранен до конца события, утерян из-за "
+"того что вы переключили канал!"
+
+msgid "PTS Plugin Error: %s"
+msgstr "Плагин PTS, ошибка: %s"
+
+msgid "PTS infobar skin"
+msgstr "Скин PTS инфобара"
+
+msgid "PTS-Plugin: Merging records failed!"
+msgstr "Плагин PTS: Объединение записей не удалось!"
+
+msgid "PTS-Plugin: Restarting Timeshift!"
+msgstr "Плагин PTS: Рестарт таймшифта!"
+
+msgid "Permanent Timeshift"
+msgstr "Постоянный таймшифт"
+
+msgid "Permanent Timeshift Enable"
+msgstr "Активация таймшифта"
+
+msgid "Permanent Timeshift Max Events"
+msgstr "Максимальное количество событий таймшифта"
+
+msgid "Permanent Timeshift Max Length"
+msgstr "Максимальная длина таймшифта для события (в мин.)"
+
+msgid "Permanent Timeshift Settings"
+msgstr "Постоянный таймшифт - настройки"
+
+msgid "Permanent Timeshift Start Delay"
+msgstr "Задержка при старте таймшифта (в сек.)"
+
+msgid "Permanent Timeshift settings"
+msgstr "Настройки постоянного таймшифта"
+
+msgid "Permanent timeshift start delay (sec)"
+msgstr "Задержка старта постоянного таймшифта (сек)"
+
+msgid "Record"
+msgstr "Запись"
+
+msgid "Record started! Stopping timeshift now ..."
+msgstr "Запись началась! Таймшифт сейчас остановлен ..."
+
+msgid ""
+"Reminder, you have previously chosen to save timeshift file at end of "
+"event!\n"
+"This action will be canceled.\n"
+"Save the current event now?"
+msgstr ""
+"Напоминаем, вы ранее выбрали сохранение текущего события по его окончании!\n"
+"Это действие будет отменено.\n"
+"Сохранить текущее событие сейчас?"
+
+msgid "Save Timeshift as Movie and continue recording"
+msgstr "Сохранить таймшифт как видео и продолжить запись"
+
+msgid "Save Timeshift as Movie and stop recording"
+msgstr "Сохранить таймшифт как видео и остановить запись"
+
+msgid "Save and record"
+msgstr "сохранение и запись"
+
+msgid "Save and stop"
+msgstr "сохранение и остановка"
+
+msgid "Saving Timeshift files"
+msgstr "Сохранение файлов таймшифта"
+
+msgid "Saving timeshift as movie now. This might take a while!"
+msgstr "Сохраняем таймшифт как видео. Это может занять некоторое время!"
+
+msgid "Show PTS Infobar while timeshifting"
+msgstr "Показать PTS инфобар во время таймшифтинга"
+
+msgid "Show timeshift indicator in window"
+msgstr "Показать индикатор таймшифта на экране"
+
+msgid "Show warning on zap if not Live TV or not save action"
+msgstr "Смена сервиса - оповещение, если нет Live TV или нет сохр."
+
+msgid "Show warning on zap if not save action"
+msgstr "Смена сервиса - оповещение, если нет сохранения"
+
+msgid "Show warning when change service (without Live TV)"
+msgstr "Показать предупреждение при смене сервисов (без Live TV)"
+
+msgid "Start recording?"
+msgstr "Начать запись?"
+
+msgid "Start timeshift for http stream"
+msgstr "Старт таймшифта для http стрима"
+
+msgid "Stop Timeshift on the current channel?"
+msgstr "Остановить таймшифт на текущем канала?"
+
+msgid "Stop timer recording"
+msgstr "Остановка таймеров записи"
+
+msgid "Stop timeshift while recording"
+msgstr "Остановить таймшифт во время записи"
+
+msgid "Stop timeshift?"
+msgstr "Остановить таймшифт?"
+
+msgid ""
+"The Timeshift record was not saved yet!\n"
+"What do you want to do now with the timeshift file?"
+msgstr ""
+"Запись таймшифта еще не была сохранена!\n"
+"Что вы хотите сделать теперь с файлом таймшифта?"
+
+msgid "Timeshift"
+msgstr "таймшифт"
+
+msgid ""
+"Timeshift Buffer Full!\n"
+" Cleaning Buffer and restarting timeshift ..."
+msgstr ""
+"Буфер таймшифта заполнен!\n"
+" Очистка буфера и рестарт таймшифта ..."
 
 msgid "Timeshift Settings"
-msgstr "Настройки временного сдвига"
+msgstr "Настройки таймшифта"
 
-msgid "Beta: Copy Movie when hardlinking failed?"
-msgstr "Beta: Copy Movie when hardlinking failed?"
+msgid "Timeshift copied to your harddisk!"
+msgstr "Таймшифт скопирован на ваш жесткий диск!"
 
-msgid "Beta: Show PTS Infobar while timeshifting?"
-msgstr "Beta: Show PTS Infobar while timeshifting?"
+msgid "Timeshift duration for service without EPG (min)"
+msgstr "Продолжительность таймшифта для сервиса без EPG (мин)"
 
-msgid "Beta: Merge PTS and Instant Record later?"
-msgstr "Beta: Merge PTS and Instant Record later?"
+msgid "Timeshift max events"
+msgstr "Максимальное количество событий таймшифта"
 
-msgid "Beta: Margin after recording current event?"
-msgstr "Beta: Margin after recording current event?"
+msgid "Timeshift max length event (min)"
+msgstr "Максимальная продолжительность для события (мин)"
 
-msgid "Copy Movie when hardlinking failed?"
-msgstr "Copy Movie when hardlinking failed?"
+msgid "Timeshift mode"
+msgstr "Режим таймшифта"
 
-msgid "Show PTS Infobar while timeshifting?"
-msgstr "Показывать PTS инфо-бар во время временного сдвига?"
+msgid "Timeshift save failed!"
+msgstr "Ошибка при сохранении таймшифта!"
 
-msgid "Stop timeshift while recording?"
-msgstr "Остановить сдвиг времени на время записи ?"
+msgid "Timeshift saved to your harddisk!"
+msgstr "Таймшифт сохранен на ваш жесткий диск!"
 
+msgid "Timeshift setup menu"
+msgstr "Таймшифт - меню настроек"
+
+msgid "Timeshift start delay (wake device)"
+msgstr "Задержка старта таймшифта (разбудить накопитель)"
+
+msgid "Timeshift will get saved at end of event!"
+msgstr "Таймшифт будет сохранен по окончании этого события!"
+
+msgid "Timeshift-save action on zap"
+msgstr "Варианты сохранения при переключении"
+
+msgid ""
+"To apply this settings (Z position or PTS infobar skin), you need a restart "
+"GUI!"
+msgstr ""
+"Для применения этих настроек (Z позиция или Скин PTS инфобара), необходим "
+"рестарт GUI!"
+
+msgid "We try to copy the file now. This might take a while!"
+msgstr "Идет копирование файла. Это займет некоторе время!"
+
+msgid "Which event do you want to save permanently?"
+msgstr "Какое событие вы хотите сохранить как видео?"
+
+msgid "X position (upper-left corner of srceen)"
+msgstr "X позиция (от верхнего левого угла)"
+
+msgid "Y position (upper-left corner of srceen)"
+msgstr "Y позиция (от верхнего левого угла)"
+
+msgid "Z position (priority of srceen)"
+msgstr "Z позиция (приоритет скрина)"
+
+msgid "add recording (enter recording duration)"
+msgstr "начать запись (введите длительность записи)"
+
+msgid "add recording (enter recording endtime)"
+msgstr "начать запись (введите время окончания)"
+
+msgid "add recording (indefinitely)"
+msgstr "начать запись (на неопределенный срок)"
+
+msgid "add recording (stop after current event)"
+msgstr "начать запись (стоп после текущего события)"
+
+msgid "automatic (permanent)"
+msgstr "автоматический (постоянный)"
+
+msgid "blink"
+msgstr "мигающий"
+
+msgid "blue"
+msgstr "синий"
+
+msgid "change recording (duration)"
+msgstr "изменить запись (продолжительность)"
+
+msgid "change recording (endtime)"
+msgstr "изменить запись (время окончания)"
+
+msgid "clock (white)"
+msgstr "часы (белые)"
+
+msgid "default"
+msgstr "по умолчанию"
+
+msgid "disabled"
+msgstr "отключено"
+
+msgid "do nothing"
+msgstr "ничего не делать"
+
+msgid "don't record"
+msgstr "не записывать"
+
+msgid "instant record"
+msgstr "моментальная запись"
+
+msgid "manual (standart)"
+msgstr "ручной (стандартный)"
+
+msgid "maroon"
+msgstr "бордовый"
+
+msgid "new"
+msgstr "новый"
+
+msgid "open list timeshift event"
+msgstr "список событий таймшифта"
+
+msgid "open setup"
+msgstr "открыть настройки"
+
+msgid "pause"
+msgstr "пауза"
+
+msgid "red"
+msgstr "красный"
+
+msgid "save recording (Select event)"
+msgstr "cохранить запись (выбрать событие)"
+
+msgid "save recording (current event until this time)"
+msgstr "cохранить запись (тек. событие сейчас)"
+
+msgid "save recording (stop after current event)"
+msgstr "cохранить запись (стоп после тек. события)"
+
+msgid "start/stop instant record"
+msgstr "моментальная запись - старт/стор"
+
+msgid "static"
+msgstr "статичный"
+
+msgid "stop recording"
+msgstr "остановить запись"
+
+msgid "stop timeshift"
+msgstr "остановить таймшифт"
+
+msgid "white"
+msgstr "белый"
