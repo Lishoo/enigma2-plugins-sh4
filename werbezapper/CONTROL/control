@@ -1,6 +1,6 @@
 Package: enigma2-plugin-extensions-werbezapper
 Version: 20070820
 Description: Werbezapper-Plugin for Enigma2
-Maintainer: Moritz Venn <moritz.venn@freaque.net>
-Homepage: http://www.ritzmo.de
+Maintainer: OpenPLi team <forum@openpli.org>
+Homepage: www.openpli.org
 Depends: enigma2

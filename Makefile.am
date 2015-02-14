@@ -13,6 +13,7 @@ SUBDIRS = \
 	bonjour \
 	cdinfo \
 	curlytx \
+	dreamexplorer \
 	dreamirc \
 	dreammediathek \
 	dvdbackup \

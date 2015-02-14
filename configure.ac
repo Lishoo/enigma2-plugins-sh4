@@ -2,6 +2,12 @@ AC_INIT([enigma2-plugins],[4],[forum@openpli.org])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign no-define tar-pax])
 AC_CONFIG_HEADERS([enigma2-plugins-config.h])
 
+dnl versions of gstreamer and plugins-base
+AC_ARG_WITH(gstversion,
+	AS_HELP_STRING([--with-gstversion],[use gstreamer version (major.minor)]),
+	[GST_MAJORMINOR=$withval],[GST_MAJORMINOR=0.10])
+
+
 # Silent rules are available since 1.11, but older versions
 # are still in use. So don't use them unconditionally.
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
@@ -28,7 +34,7 @@ AC_ARG_ENABLE(libeplayer3,
 	[AC_DEFINE(ENABLE_LIBEPLAYER3,1,[enable TDT libeplayer3 as player engine support])])
 
 if ! test "$enable_libeplayer3" = "yes"; then
-PKG_CHECK_MODULES(GSTREAMER, gstreamer-0.10 gstreamer-pbutils-0.10)
+PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
 fi
 PKG_CHECK_MODULES(LIBCRYPTO, libcrypto)
 PKG_CHECK_MODULES(SIGC,sigc++-1.2)
@@ -125,6 +131,11 @@ bonjour/src/Makefile
 cdinfo/Makefile
 cdinfo/meta/Makefile
 cdinfo/src/Makefile
+
+dreamexplorer/Makefile
+dreamexplorer/meta/Makefile
+dreamexplorer/src/Makefile
+dreamexplorer/src/res/Makefile
 
 curlytx/Makefile
 curlytx/meta/Makefile

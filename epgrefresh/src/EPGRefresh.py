@@ -49,7 +49,7 @@ class EPGRefresh:
 	def isServiceProtected(self, service):
 		if not service:
 			return True
-		if not config.ParentalControl.configured.value or not config.ParentalControl.servicepinactive.value:
+		if not config.ParentalControl.servicepinactive.value:
 			return False
 		refstr = ':'.join(str(service).split(':')[:11])
 		return parentalControl.getProtectionLevel(refstr) != -1
@@ -201,7 +201,10 @@ class EPGRefresh:
 			unsortedServices = []
 			for service in services:
 				ref = service.sref
-				auxiliarySortParameter = int(ref.split(":")[6][:-4], 16)
+				position = ref.split(":")[6][:-4]
+				if not position:
+					position = "0"
+				auxiliarySortParameter = int(position, 16)
 				if auxiliarySortParameter > 1800:
 					auxiliarySortParameter = 3600 - auxiliarySortParameter
 				unsortedServices.append((auxiliarySortParameter, service))

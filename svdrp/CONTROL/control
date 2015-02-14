@@ -4,7 +4,7 @@ Description: basic remote control server using svdrp
 Architecture: sh4
 Section: extra
 Priority: optional
-Maintainer: Moritz Venn <moritz.venn@freaque.net>
-Homepage: http://www.ritzmo.de
+Maintainer: OpenPLi team <forum@openpli.org>
+Homepage: www.openpli.org
 Depends: enigma2, python-twisted-protocols
 Source: http://www.ritzmo.de
