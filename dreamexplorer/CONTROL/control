@@ -1,2 +1,4 @@
+Package: enigma2-plugin-extensions-dreamexplorer
+Version: 20150215
 Description: DreamExplorer: Manage files on your Dreambox
 Depends: enigma2
