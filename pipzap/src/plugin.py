@@ -120,15 +120,11 @@ def ChannelSelection_togglePipzap(self):
 
 def ChannelSelection_zap(self, *args, **kwargs):
 	if self.enable_pipzap and self.dopipzap:
-		if not self.session.pipshown:
-			self.session.pip = self.session.instantiateDialog(PictureInPicture)
-			self.session.pip.show()
-			self.session.pipshown = True
 		self.revertMode=None
 		ref = self.session.pip.getCurrentService()
 		nref = self.getCurrentSelection()
 		if ref is None or ref != nref:
-			if parentalControl.getProtectionLevel(nref.toCompareString()) == -1:
+			if not config.ParentalControl.servicepinactive.value or parentalControl.getProtectionLevel(nref.toCompareString()) == -1:
 				if not self.session.pip.playService(nref):
 					# XXX: Make sure we set an invalid ref
 					self.session.pip.playService(None)
