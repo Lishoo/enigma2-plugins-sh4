@@ -41,7 +41,7 @@ msgstr "Перезагружается %s"
 msgid "Setup"
 msgstr "Настройка"
 
-msgid "Show 'Restart Softcam' in extensions menu"
+msgid "Show 'Restart softcam' in extensions menu"
 msgstr "Показывать 'Перезагрузить эмулятор' в меню расширений"
 
 msgid "SoftCam config directory"
