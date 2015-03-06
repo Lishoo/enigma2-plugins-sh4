@@ -1,4 +1,4 @@
-plugindir = $(libdir)/enigma2/python/Plugins/SystemPlugins/TranscodingSetup
+plugindir = $(libdir)/enigma2/python/Plugins/Extensions/TranscodingSetup
 
 plugin_PYTHON = __init__.py plugin.py
 
