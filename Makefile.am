@@ -87,6 +87,7 @@ SUBDIRS = \
 	tageditor \
 	trafficinfo \
 	tv3play \
+	transcodingsetup \
 	tvcharts \
 	toolkit \
 	unwetterinfo \

@@ -124,6 +124,11 @@ bitrateviewer/meta/Makefile
 bitrateviewer/src/Makefile
 bitrateviewer/src/bitratecalc/Makefile
 
+blindscan/src/Makefile
+blindscan/po/Makefile
+blindscan/Makefile
+blindscan/meta/Makefile
+
 bonjour/Makefile
 bonjour/meta/Makefile
 bonjour/src/Makefile
@@ -540,6 +545,10 @@ tageditor/src/Makefile
 trafficinfo/Makefile
 trafficinfo/meta/Makefile
 trafficinfo/src/Makefile
+
+transcodingsetup/Makefile
+transcodingsetup/src/Makefile
+transcodingsetup/meta/Makefile
 
 toolkit/Makefile
 toolkit/src/Makefile
