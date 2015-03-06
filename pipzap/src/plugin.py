@@ -29,7 +29,7 @@ class baseMethods:
 def ChannelContextMenu___init__(self, session, csel, *args, **kwargs):
 	baseMethods.ChannelContextMenu__init__(self, session, csel, *args, **kwargs)
 
-	if self.pipAvailable:
+	if SystemInfo["PIPAvailable"]:
 		list = self["menu"].list
 		x = 0
 		# TRANSLATORS: Do NOT translate this! This is not a string in our plugin but one from e2 core which we try to find, so a custom translation will probably disallow us to do so.
@@ -54,7 +54,7 @@ def ChannelContextMenu_playMain(self):
 
 # do not hide existing pip
 def ChannelContextMenu_showServiceInPiP(self):
-	if not self.pipAvailable:
+	if not SystemInfo["PIPAvailable"]:
 		return
 
 	if not self.session.pipshown:
@@ -291,8 +291,10 @@ def InfoBarPiP_getTogglePipzapName(self):
 
 def InfoBarPiP_togglePipzap(self):
 	# supposed to fix some problems with permanent timeshift patch
-	if isinstance(self, InfoBarTimeshift) and isinstance(self, InfoBarSeek) and \
-		self.timeshift_enabled and self.isSeekable():
+	if isinstance(self, InfoBarTimeshift) and isinstance(self, InfoBarSeek):
+		ts = self.getTimeshift()
+		timeshiftEnabled = ts and ts.isTimeshiftEnabled()
+		if timeshiftEnabled and self.isSeekable():
 			return 0
 
 	if not self.session.pipshown:
