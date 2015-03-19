@@ -21,7 +21,7 @@ class AutoVolume:
 		self.newService = True
 
 	def updateInfo(self):
-		if self.newService:
+		if self.newService and not self.volctrl.isMuted():
 			self.newService = False
 			if self.isCurrentAudioAC3DTS():
 				if not self.volumeUp:
