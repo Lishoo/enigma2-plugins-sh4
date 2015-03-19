@@ -49,9 +49,7 @@ class AutoVolume:
 		audio = service and service.audioTracks()
 		if audio:
 			try:
-				tracknr = audio.getCurrentTrack()
-				i = audio.getTrackInfo(tracknr)
-				description = i.getDescription() or ""
+				description = audio.getTrackInfo(audio.getCurrentTrack()).getDescription() or ""
 				if "AC3" in description or "DTS" in description:
 					return True
 			except:
