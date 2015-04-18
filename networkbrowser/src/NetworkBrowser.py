@@ -281,11 +281,11 @@ class NetworkBrowser(Screen):
 				username = self.hostdata['username']
 				password = self.hostdata['password']
 			except:
-				username = "username"
-				password = "password"
+				username = "guest"
+				password = ""
 		else:
-			username = "username"
-			password = "password"
+			username = "guest"
+			password = ""
 
 		if devicetype == 'unix':
 			smblist=netscan.smbShare(hostip,hostname,username,password)
@@ -519,11 +519,11 @@ class NetworkBrowser(Screen):
 						data['username'] = self.hostdata['username']
 						data['password'] = self.hostdata['password']
 					except:
-						data['username'] = "username"
-						data['password'] = "password"
+						data['username'] = "guest"
+						data['password'] = ""
 				else:
-					data['username'] = "username"
-					data['password'] = "password"
+					data['username'] = "guest"
+					data['password'] = ""
 
 				for sharename, sharedata in mounts.items():
 					if sharedata['ip'] == selection[2].strip() and sharedata['sharedir'] == selection[3].strip():
