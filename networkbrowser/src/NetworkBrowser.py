@@ -238,26 +238,16 @@ class NetworkBrowser(Screen):
 			username = "guest"
 			password = ""
 
-		if devicetype == 'unix':
-			smblist=netscan.smbShare(hostip,hostname,username,password)
-			for x in smblist:
-				if len(x) == 6:
-					if x[3] != 'IPC$':
-						sharelist.append(x)
-			nfslist=netscan.nfsShare(hostip,hostname)
-			for x in nfslist:
-				if len(x) == 6:
+		smblist=netscan.smbShare(hostip,hostname,username,password)
+		for x in smblist:
+			if len(x) == 6:
+				if x[3] != 'IPC$':
 					sharelist.append(x)
-		else:
-			smblist=netscan.smbShare(hostip,hostname,username,password)
-			for x in smblist:
-				if len(x) == 6:
-					if x[3] != 'IPC$':
-						sharelist.append(x)
-			nfslist=netscan.nfsShare(hostip,hostname)
-			for x in nfslist:
-				if len(x) == 6:
-					sharelist.append(x)
+		nfslist=netscan.nfsShare(hostip,hostname)
+		for x in nfslist:
+			if len(x) == 6:
+				sharelist.append(x)
+
 		return sharelist
 
 	def updateHostsList(self):
