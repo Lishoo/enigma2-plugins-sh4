@@ -161,7 +161,7 @@ msgid "Mounts editor"
 msgstr "Montēšanas punktu redaktors"
 
 msgid "Mounts management"
-msgstr "Pārvaldīd"
+msgstr "Pārvaldīt"
 
 msgid "NFS share"
 msgstr "NFS"
