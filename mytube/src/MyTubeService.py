@@ -665,7 +665,6 @@ class MyTubePlayerService():
 			return
 
 		self.yt_service.current_token = None
-		self.yt_service.token_store.remove_all_tokens()
 
 	def is_auth(self):
 		return False
