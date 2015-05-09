@@ -52,6 +52,9 @@ msgstr "Video atskaņotāja apturēt/iziet darbība:"
 msgid "Videobrowser exit behavior:"
 msgstr "Video pārlūka iziet darbība:"
 
+msgid "Virtual Keyboard"
+msgstr "Klaviatūra"
+
 msgid "Download location"
 msgstr "Lejupielādes atrašānās vieta"
 
