@@ -139,7 +139,7 @@ config.plugins.mytube.general.startFeed = ConfigSelection(
 				 ("my_uploads", _("My Uploads")),
 				], "top_rated")
 config.plugins.mytube.general.on_movie_stop = ConfigSelection(default = "ask", choices = [
-	("ask", _("Ask user")), ("quit", _("Return to movie list")), ("playnext", _("Play next video")), ("playagain", _("Play video again")) ])
+	("ask", _("Ask user")), ("quit", _("Return to movie list"))])
 
 config.plugins.mytube.general.on_movie_eof = ConfigSelection(default = "ask", choices = [
 	("ask", _("Ask user")), ("quit", _("Return to movie list")), ("pause", _("Pause movie at end")),
