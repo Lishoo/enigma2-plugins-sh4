@@ -98,6 +98,7 @@ config.plugins.mytube.search.lr = ConfigSelection(
 				 ("il", _("Israel")),
 				 ("it", _("Italy")),
 				 ("jp", _("Japan")),
+				 ("lv", _("Latvia")),
 				 ("mx", _("Mexico")),
 				 ("nz", _("New Zealand")),
 				 ("pl", _("Poland")),
