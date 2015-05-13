@@ -141,6 +141,10 @@ config.plugins.mytube.general.startFeed = ConfigSelection(
 config.plugins.mytube.general.on_movie_stop = ConfigSelection(default = "ask", choices = [
 	("ask", _("Ask user")), ("quit", _("Return to movie list")), ("playnext", _("Play next video")), ("playagain", _("Play video again")) ])
 
+config.plugins.mytube.general.on_movie_eof = ConfigSelection(default = "ask", choices = [
+	("ask", _("Ask user")), ("quit", _("Return to movie list")), ("pause", _("Pause movie at end")),
+	("playnext", _("Play next (return to movie list)")), ("playagain", _("Repeat"))])
+
 config.plugins.mytube.general.on_exit = ConfigSelection(default = "ask", choices = [
 	("ask", _("Ask user")), ("quit", _("Return to movie list"))])
 
@@ -1888,6 +1892,6 @@ class MyTubePlayer(Screen, InfoBarNotifications, InfoBarSeek):
 	def doEofInternal(self, playing):
 		if not self.execing:
 			return
-		if not playing :
+		if not playing:
 			return
-		self.handleLeave(config.usage.on_movie_eof.value)
+		self.handleLeave(config.plugins.mytube.general.on_movie_eof.value)

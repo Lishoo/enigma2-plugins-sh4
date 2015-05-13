@@ -309,6 +309,7 @@ class MyTubeSettingsScreen(Screen, ConfigListScreen):
 		if config.plugins.mytube.general.loadFeedOnOpen.value:
 			self.searchContextEntries.append(getConfigListEntry(_("Start with following feed:"), config.plugins.mytube.general.startFeed))
 		self.searchContextEntries.append(getConfigListEntry(_("Videoplayer stop/exit behavior:"), config.plugins.mytube.general.on_movie_stop))
+		self.searchContextEntries.append(getConfigListEntry(_('Video EOF behavior:'), config.plugins.mytube.general.on_movie_eof))
 		self.searchContextEntries.append(getConfigListEntry(_("Videobrowser exit behavior:"), config.plugins.mytube.general.on_exit))
 		"""self.ProxyEntry = getConfigListEntry(_("Use HTTP Proxy Server:"), config.plugins.mytube.general.useHTTPProxy)
 		self.searchContextEntries.append(self.ProxyEntry)
@@ -387,6 +388,7 @@ class MyTubeSettingsScreen(Screen, ConfigListScreen):
 		config.plugins.mytube.general.loadFeedOnOpen.save()
 		config.plugins.mytube.general.startFeed.save()
 		config.plugins.mytube.general.on_movie_stop.save()
+		config.plugins.mytube.general.on_movie_eof.save()
 		config.plugins.mytube.general.on_exit.save()
 		config.plugins.mytube.general.videodir.save()
 		config.plugins.mytube.general.clearHistoryOnClose.save()
