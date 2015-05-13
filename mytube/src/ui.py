@@ -146,7 +146,7 @@ config.plugins.mytube.general.on_movie_eof = ConfigSelection(default = "ask", ch
 	("playnext", _("Play next (return to movie list)")), ("playagain", _("Repeat"))])
 
 config.plugins.mytube.general.on_exit = ConfigSelection(default = "ask", choices = [
-	("ask", _("Ask user")), ("quit", _("Return to movie list"))])
+	("ask", _("Ask user")), ("quit", _("Return to previous service"))])
 
 default = resolveFilename(SCOPE_HDD)
 tmp = config.movielist.videodirs.value
