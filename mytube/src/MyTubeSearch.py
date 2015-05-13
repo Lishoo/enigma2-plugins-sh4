@@ -261,21 +261,9 @@ class MyTubeSuggestionsListScreen(Screen):
 
 
 class MyTubeSettingsScreen(Screen, ConfigListScreen):
-	skin = """
-		<screen name="MyTubeSettingsScreen" flags="wfNoBorder" position="0,0" size="720,576" title="MyTube - Settings" >
-			<ePixmap position="0,0" zPosition="-1" size="720,576" pixmap="~/mytubemain_bg.png" alphatest="on" transparent="1" backgroundColor="transparent"/>
-			<widget name="title" position="60,50" size="600,50" zPosition="5" valign="center" halign="left" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-			<widget name="config" zPosition="2" position="60,120" size="610,370" scrollbarMode="showOnDemand" transparent="1" />
-
-			<ePixmap position="100,500" size="100,40" zPosition="0" pixmap="~/plugin.png" alphatest="on" transparent="1" />
-			<ePixmap position="220,500" zPosition="4" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
-			<ePixmap position="360,500" zPosition="4" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
-			<widget name="key_red" position="220,500" zPosition="5" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-			<widget name="key_green" position="360,500" zPosition="5" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-		</screen>"""
-
 	def __init__(self, session, plugin_path):
 		Screen.__init__(self, session)
+		self.skinName = "Setup"
 		self.skin_path = plugin_path
 		self.session = session
 
