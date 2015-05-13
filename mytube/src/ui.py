@@ -11,15 +11,15 @@ from Components.MultiContent import MultiContentEntryText, MultiContentEntryPixm
 from Components.Pixmap import Pixmap
 from Components.ProgressBar import ProgressBar
 from Components.ScrollLabel import ScrollLabel
-from Components.ServiceEventTracker import ServiceEventTracker
 from Components.Sources.List import List
 from Components.Task import Task, Job, job_manager
+from Components.VolumeControl import VolumeControl
 from Components.config import config, ConfigSelection, ConfigSubsection, ConfigText, ConfigYesNo, getConfigListEntry, ConfigPassword
 #, ConfigIP, ConfigNumber, ConfigLocations
 from MyTubeSearch import ConfigTextWithGoogleSuggestions, MyTubeSettingsScreen, MyTubeTasksScreen, MyTubeHistoryScreen
 from MyTubeService import validate_cert, get_rnd, myTubeService
 from Screens.ChoiceBox import ChoiceBox
-from Screens.InfoBarGenerics import InfoBarNotifications, InfoBarSeek
+from Screens.InfoBar import MoviePlayer
 from Screens.MessageBox import MessageBox
 from Screens.Screen import Screen
 from Screens.VirtualKeyBoard import VirtualKeyBoard
@@ -1411,6 +1411,7 @@ class MyTubeVideoInfoScreen(Screen):
 		{
 			"back": self.close,
 			"red": self.close,
+			"showEventInfo": self.close,
 			"up": self.pageUp,
 			"down":	self.pageDown,
 			"left":	self.pageUp,
@@ -1619,258 +1620,108 @@ class MyTubeVideoHelpScreen(Screen):
 		self["detailtext"].pageDown()
 
 
-class MyTubePlayer(Screen, InfoBarNotifications, InfoBarSeek):
-	STATE_IDLE = 0
-	STATE_PLAYING = 1
-	STATE_PAUSED = 2
-	ENABLE_RESUME_SUPPORT = True
-	ALLOW_SUSPEND = True
+class MyTubePlayer(MoviePlayer):
 
-	skin = """<screen name="MyTubePlayer" flags="wfNoBorder" position="0,380" size="720,160" title="InfoBar" backgroundColor="transparent">
-		<ePixmap position="0,0" pixmap="skin_default/info-bg_mp.png" zPosition="-1" size="720,160" />
-		<ePixmap position="29,40" pixmap="skin_default/screws_mp.png" size="665,104" alphatest="on" />
-		<ePixmap position="48,70" pixmap="skin_default/icons/mp_buttons.png" size="108,13" alphatest="on" />
-		<ePixmap pixmap="skin_default/icons/icon_event.png" position="207,78" size="15,10" alphatest="on" />
-		<widget source="session.CurrentService" render="Label" position="230,73" size="360,40" font="Regular;20" backgroundColor="#263c59" shadowColor="#1d354c" shadowOffset="-1,-1" transparent="1">
-			<convert type="ServiceName">Name</convert>
-		</widget>
-		<widget source="session.CurrentService" render="Label" position="580,73" size="90,24" font="Regular;20" halign="right" backgroundColor="#4e5a74" transparent="1">
-			<convert type="ServicePosition">Length</convert>
-		</widget>
-		<widget source="session.CurrentService" render="Label" position="205,129" size="100,20" font="Regular;18" halign="center" valign="center" backgroundColor="#06224f" shadowColor="#1d354c" shadowOffset="-1,-1" transparent="1">
-			<convert type="ServicePosition">Position</convert>
-		</widget>
-		<widget source="session.CurrentService" render="PositionGauge" position="300,133" size="270,10" zPosition="2" pointer="skin_default/position_pointer.png:540,0" transparent="1" foregroundColor="#20224f">
-			<convert type="ServicePosition">Gauge</convert>
-		</widget>
-		<widget source="session.CurrentService" render="Label" position="576,129" size="100,20" font="Regular;18" halign="center" valign="center" backgroundColor="#06224f" shadowColor="#1d354c" shadowOffset="-1,-1" transparent="1">
-			<convert type="ServicePosition">Remaining</convert>
-		</widget>
-		</screen>"""
+	ENABLE_RESUME_SUPPORT = True
+	ALLOW_SUSPEND = Screen.SUSPEND_PAUSES
 
 	def __init__(self, session, service, lastservice, infoCallback = None, nextCallback = None, prevCallback = None):
-		Screen.__init__(self, session)
-		InfoBarNotifications.__init__(self)
-		InfoBarSeek.__init__(self)
-		self.session = session
-		self.service = service
+		MoviePlayer.__init__(self, session, service)
+		self.skinName = "MoviePlayer"
+		self.lastservice = None
 		self.infoCallback = infoCallback
 		self.nextCallback = nextCallback
 		self.prevCallback = prevCallback
-		self.screen_timeout = 5000
-		self.nextservice = None
 
-		print "evEOF=%d" % iPlayableService.evEOF
-		self.__event_tracker = ServiceEventTracker(screen = self, eventmap =
-			{
-				iPlayableService.evSeekableStatusChanged: self.__seekableStatusChanged,
-				iPlayableService.evStart: self.__serviceStarted,
-				iPlayableService.evEOF: self.__evEOF,
-			})
+		class MyTubePlayerList():
+			def __init__(self):
+				self.dopipzap = False
 
-		self["actions"] = ActionMap(["OkCancelActions", "InfobarSeekActions", "MediaPlayerActions", "MovieSelectionActions"],
-		{
-				"ok": self.ok,
-				"cancel": self.leavePlayer,
-				"stop": self.leavePlayer,
-				"playpauseService": self.playpauseService,
-				"seekFwd": self.playNextFile,
-				"seekBack": self.playPrevFile,
-				"showEventInfo": self.showVideoInfo,
-			}, -2)
+		self.servicelist = MyTubePlayerList()
 
+	def seekFwd(self):
+		self.seekFwdManual()
 
-		self.lastservice = lastservice
+	def seekBack(self):
+		self.seekBackManual()
 
-		self.hidetimer = eTimer()
-		self.hidetimer.timeout.get().append(self.ok)
-		self.returning = False
+	def showMovies(self):
+		return 0
 
-		self.state = self.STATE_PLAYING
-		self.lastseekstate = self.STATE_PLAYING
-
-		self.onPlayStateChanged = [ ]
-		self.__seekableStatusChanged()
-
-		self.play()
-		self.onClose.append(self.__onClose)
-
-	def __onClose(self):
-		self.session.nav.stopService()
-
-	def __evEOF(self):
-		print "evEOF=%d" % iPlayableService.evEOF
-		print "Event EOF"
-		self.handleLeave(config.plugins.mytube.general.on_movie_stop.value)
-
-	def __setHideTimer(self):
-		self.hidetimer.start(self.screen_timeout)
-
-	def showInfobar(self):
-		self.show()
-		if self.state == self.STATE_PLAYING:
-			self.__setHideTimer()
-		else:
-			pass
-
-	def hideInfobar(self):
-		self.hide()
-		self.hidetimer.stop()
-
-	def ok(self):
-		if self.shown:
-			self.hideInfobar()
-		else:
-			self.showInfobar()
-
-	def showVideoInfo(self):
-		if self.shown:
-			self.hideInfobar()
+	def openCurEventView(self):
 		if self.infoCallback is not None:
 			self.infoCallback()
 
+	def jumpNextMark(self):
+		self.playNextFile()
+
+	def jumpPreviousMark(self):
+		self.playPrevFile()
+
+	def channelUp(self):
+		self.playNextFile()
+
+	def channelDown(self):
+		self.playPrevFile()
+
+	def up(self):
+		if config.usage.oldstyle_zap_controls.value:
+			self.playNextFile()
+		elif config.usage.volume_instead_of_channelselection.value:
+			VolumeControl.instance and VolumeControl.instance.volUp()
+
+	def down(self):
+		if config.usage.oldstyle_zap_controls.value:
+			self.playPrevFile()
+		elif config.usage.volume_instead_of_channelselection.value:
+			VolumeControl.instance and VolumeControl.instance.volDown()
+
+	def left(self):
+		if not config.usage.oldstyle_zap_controls.value:
+			self.playPrevFile()
+		elif config.usage.volume_instead_of_channelselection.value:
+			VolumeControl.instance and VolumeControl.instance.volDown()
+
+	def right(self):
+		if not config.usage.oldstyle_zap_controls.value:
+			self.playNextFile()
+		elif config.usage.volume_instead_of_channelselection.value:
+			VolumeControl.instance and VolumeControl.instance.volUp()
+
 	def playNextFile(self):
 		print "playNextFile"
-		nextservice,error = self.nextCallback()
-		print "nextservice--->",nextservice
-		if nextservice is None:
-			self.handleLeave(config.plugins.mytube.general.on_movie_stop.value, error)
-		else:
-			self.playService(nextservice)
-			self.showInfobar()
+		nextservice, error = self.nextCallback()
+		self.playNextPrev(nextservice)
 
 	def playPrevFile(self):
 		print "playPrevFile"
-		prevservice,error = self.prevCallback()
-		if prevservice is None:
-			self.handleLeave(config.plugins.mytube.general.on_movie_stop.value, error)
-		else:
-			self.playService(prevservice)
-			self.showInfobar()
+		prevservice, error = self.prevCallback()
+		self.playNextPrev(prevservice)
 
-	def playagain(self):
-		print "playagain"
-		if self.state != self.STATE_IDLE:
-			self.stopCurrent()
-		self.play()
-
-	def playService(self, newservice):
-		if self.state != self.STATE_IDLE:
-			self.stopCurrent()
-		self.service = newservice
-		self.play()
-
-	def play(self):
-		if self.state == self.STATE_PAUSED:
-			if self.shown:
-				self.__setHideTimer()
-		self.state = self.STATE_PLAYING
-		self.session.nav.playService(self.service)
-		if self.shown:
-			self.__setHideTimer()
-
-	def stopCurrent(self):
-		print "stopCurrent"
-		self.session.nav.stopService()
-		self.state = self.STATE_IDLE
-
-	def playpauseService(self):
-		print "playpauseService"
-		if self.state == self.STATE_PLAYING:
-			self.pauseService()
-		elif self.state == self.STATE_PAUSED:
-			self.unPauseService()
-
-	def pauseService(self):
-		print "pauseService"
-		if self.state == self.STATE_PLAYING:
-			self.setSeekState(self.STATE_PAUSED)
-
-	def unPauseService(self):
-		print "unPauseService"
-		if self.state == self.STATE_PAUSED:
-			self.setSeekState(self.STATE_PLAYING)
-
-
-	def getSeek(self):
-		service = self.session.nav.getCurrentService()
+	def playNextPrev(self, service):
 		if service is None:
-			return None
-
-		seek = service.seek()
-
-		if seek is None or not seek.isCurrentlySeekable():
-			return None
-
-		return seek
-
-	def isSeekable(self):
-		if self.getSeek() is None:
-			return False
-		return True
-
-	def __seekableStatusChanged(self):
-		print "seekable status changed!"
-		if not self.isSeekable():
-			self["SeekActions"].setEnabled(False)
-			self.setSeekState(self.STATE_PLAYING)
+			self.handleLeave(config.plugins.mytube.general.on_movie_stop.value, error = True)
 		else:
-			self["SeekActions"].setEnabled(True)
-			print "seekable"
-
-	def __serviceStarted(self):
-		self.state = self.STATE_PLAYING
-		self.__seekableStatusChanged()
-
-	def setSeekState(self, wantstate, onlyGUI = False):
-		print "setSeekState"
-		if wantstate == self.STATE_PAUSED:
-			print "trying to switch to Pause- state:",self.STATE_PAUSED
-		elif wantstate == self.STATE_PLAYING:
-			print "trying to switch to playing- state:",self.STATE_PLAYING
-		service = self.session.nav.getCurrentService()
-		if service is None:
-			print "No Service found"
-			return False
-		pauseable = service.pause()
-		if pauseable is None:
-			print "not pauseable."
-			self.state = self.STATE_PLAYING
-
-		if pauseable is not None:
-			print "service is pausable"
-			if wantstate == self.STATE_PAUSED:
-				print "WANT TO PAUSE"
-				pauseable.pause()
-				self.state = self.STATE_PAUSED
-				if not self.shown:
-					self.hidetimer.stop()
-					self.show()
-			elif wantstate == self.STATE_PLAYING:
-				print "WANT TO PLAY"
-				pauseable.unpause()
-				self.state = self.STATE_PLAYING
-				if self.shown:
-					self.__setHideTimer()
-
-		for c in self.onPlayStateChanged:
-			c(self.state)
-
-		return True
+			self.cur_service = service
+			self.setSeekState(self.SEEK_STATE_PLAY)
+			self.session.nav.stopService()
+			self.session.nav.playService(service)
 
 	def handleLeave(self, how, error = False):
 		self.is_closing = True
 		if how == "ask":
 			list = (
 				(_("Yes"), "quit"),
-				(_("No, but play video again"), "playagain"),
 				(_("Yes, but play next video"), "playnext"),
 				(_("Yes, but play previous video"), "playprev"),
+				(_("No, but play video again"), "playagain"),
+				(_("No"), "continue"),
 			)
 			if error is False:
-				self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title=_("Stop playing this movie?"), list = list)
+				title = _("Stop playing this movie?")
 			else:
-				self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title=_("No playable video found! Stop playing this movie?"), list = list)
+				title = _("No playable video found! Stop playing this movie?")
+			self.session.openWithCallback(self.leavePlayerConfirmed, ChoiceBox, title = title, list = list)
 		else:
 			self.leavePlayerConfirmed([True, how])
 
@@ -1880,14 +1731,17 @@ class MyTubePlayer(Screen, InfoBarNotifications, InfoBarSeek):
 	def leavePlayerConfirmed(self, answer):
 		answer = answer and answer[1]
 		if answer == "quit":
-			print 'quited'
+			print "quited"
+			self.setSeekState(self.SEEK_STATE_PLAY)
 			self.close()
 		elif answer == "playnext":
 			self.playNextFile()
 		elif answer == "playprev":
 			self.playPrevFile()
 		elif answer == "playagain":
-			self.playagain()
+			self.setSeekState(self.SEEK_STATE_PLAY)
+			self.session.nav.stopService()
+			self.session.nav.playService(self.cur_service)
 
 	def doEofInternal(self, playing):
 		if not self.execing:
