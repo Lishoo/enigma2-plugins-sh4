@@ -167,7 +167,7 @@ msgid "Japan"
 msgstr "Japāna"
 
 msgid "Latvia"
-msgstr ""
+msgstr "Latvija"
 
 msgid "Load feed on startup:"
 msgstr "Ielādēt barotnes startējot:"
