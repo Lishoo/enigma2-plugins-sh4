@@ -489,7 +489,11 @@ class MyTubeFeedEntry():
 		watch_url = 'http://www.youtube.com/watch?v=%s' % video_id
 		format_prio = "/".join(VIDEO_FMT_PRIORITY_MAP.itervalues())
 		ytdl = YoutubeDL(params={"youtube_include_dash_manifest": False, "format": format_prio, "nocheckcertificate": True})
-		result = ytdl.extract_info(watch_url, download=False, ie_key="Youtube")
+		try:
+			result = ytdl.extract_info(watch_url, download=False, ie_key="Youtube")
+		except:
+			print "[MyTubeFeedEntry] Error in extract info"
+			return None
 		if KEY_ENTRIES in result: # Can be a playlist or a list of videos
 			entry = result[KEY_ENTRIES][0] #TODO handle properly
 		else:# Just a video
