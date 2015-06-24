@@ -99,6 +99,7 @@ SUBDIRS = \
 	weatherplugin \
 	webcamviewer \
 	werbezapper \
+	youtube \
 	youtubeplayer \
 	zaphistorybrowser \
 	zapstatistic \

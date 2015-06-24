@@ -639,6 +639,11 @@ werbezapper/meta/Makefile
 werbezapper/po/Makefile
 werbezapper/src/Makefile
 
+youtube/Makefile
+youtube/meta/Makefile
+youtube/po/Makefile
+youtube/src/Makefile
+
 youtubeplayer/Makefile
 youtubeplayer/meta/Makefile
 youtubeplayer/src/Makefile
