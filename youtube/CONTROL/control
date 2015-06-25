@@ -1,5 +1,6 @@
 Package: enigma2-plugin-extensions-youtube
 Version: 20150625
+Architecture: all
 Description: Watch YouTube videos
 Maintainer: Taapat <taapat@gmail.com>
 Depends: enigma2, python-twisted-web, google-api-python-client, python-youtube-dl
