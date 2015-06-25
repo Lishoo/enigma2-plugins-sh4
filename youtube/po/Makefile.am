@@ -1,5 +1,5 @@
 PLUGIN = YouTube
 CATEGORY = Extensions
-LANGS = lv
+LANGS = lv ru
 
 include $(top_srcdir)/Rules-po.mak
