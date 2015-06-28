@@ -643,6 +643,7 @@ youtube/Makefile
 youtube/meta/Makefile
 youtube/po/Makefile
 youtube/src/Makefile
+youtube/src/icons/Makefile
 
 youtubeplayer/Makefile
 youtubeplayer/meta/Makefile
