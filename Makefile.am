@@ -86,7 +86,6 @@ SUBDIRS = \
 	svdrp \
 	tageditor \
 	trafficinfo \
-	tv3play \
 	transcodingsetup \
 	tvcharts \
 	toolkit \
@@ -99,7 +98,6 @@ SUBDIRS = \
 	weatherplugin \
 	webcamviewer \
 	werbezapper \
-	youtube \
 	youtubeplayer \
 	zaphistorybrowser \
 	zapstatistic \
