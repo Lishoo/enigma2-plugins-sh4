@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-eibox
-Version: 20101005
+Version: 20150811
 Description: graphical European Installation Bus visualization
 Maintainer: OpenPLi team <forum@openpli.org>
 Depends: enigma2

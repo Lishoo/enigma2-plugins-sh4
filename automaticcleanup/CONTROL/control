@@ -1,5 +1,5 @@
 Package: enigma2-plugin-systemplugins-automaticcleanup
-Version: 0.1.5
+Version: 0.1.6
 Description: Automatic System Cleanup (setting backups, orphaned movie files, timer entries)
 Maintainer: OpenPLi team <forum@openpli.org>
 Homepage: http://www.openpli.org
