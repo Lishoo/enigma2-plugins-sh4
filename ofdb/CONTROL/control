@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-ofdb
 Version: 20080502
 Description: query movie details from the Online Film Datenbank
-Maintainer: fraxinas <andreas.frisch@multimedia-labs.de>
+Maintainer: OpenPLi team <forum@openpli.org>
 Depends: enigma2, python-html, python-twisted-web

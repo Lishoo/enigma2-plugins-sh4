@@ -1,6 +1,6 @@
 Package: enigma2-plugin-extensions-pluginhider
 Version: 20110615
 Description: show/hide plugins from plugin and extensionsmenu
-Maintainer: Moritz Venn <moritz.venn@freaque.net>
-Homepage: http://www.ritzmo.de
+Maintainer: OpenPLi team <forum@openpli.org>
+Homepage: http://www.openpli.org
 Depends: enigma2, python-lang

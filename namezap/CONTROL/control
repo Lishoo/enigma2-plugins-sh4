@@ -1,6 +1,6 @@
 Package: enigma2-plugin-extensions-namezap
 Version: 20110613
 Description: displays service name instead of number when zapping via number keys
-Maintainer: Moritz Venn <moritz.venn@freaque.net>
-Homepage: http://www.ritzmo.de
+Maintainer: OpenPLi team <forum@openpli.org>
+Homepage: http://www.openpli.org
 Depends: enigma2

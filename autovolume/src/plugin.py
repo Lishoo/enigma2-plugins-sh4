@@ -21,7 +21,7 @@ class AutoVolume:
 		self.newService = True
 
 	def updateInfo(self):
-		if self.newService:
+		if self.newService and not self.volctrl.isMuted():
 			self.newService = False
 			if self.isCurrentAudioAC3DTS():
 				if not self.volumeUp:
@@ -49,9 +49,7 @@ class AutoVolume:
 		audio = service and service.audioTracks()
 		if audio:
 			try:
-				tracknr = audio.getCurrentTrack()
-				i = audio.getTrackInfo(tracknr)
-				description = i.getDescription() or ""
+				description = audio.getTrackInfo(audio.getCurrentTrack()).getDescription() or ""
 				if "AC3" in description or "DTS" in description:
 					return True
 			except:

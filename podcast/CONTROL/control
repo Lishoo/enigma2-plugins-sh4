@@ -1,6 +1,6 @@
 Package: enigma2-plugin-extensions-podcast
 Version: 0.1
 Description: Stream podcasts
-Maintainer: Nabil Hanna <nabil1978@web.de>
-Homepage: http://www.lt-forums.org/ali
+Maintainer: OpenPLi team <forum@openpli.org>
+Homepage: http://www.openpli.org
 Depends: enigma2, python-twisted-web

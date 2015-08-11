@@ -168,7 +168,7 @@ if default not in tmp:
 class MyTubeSuggestionsListScreen(Screen):
 	skin = """
 		<screen name="MyTubeSuggestionsListScreen" title="MyTube - Search" position="60,93" zPosition="6" size="610,160" flags="wfNoBorder" >
-			<ePixmap position="0,0" zPosition="-1" size="610,160" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MyTube/suggestions_bg.png" alphatest="on" transparent="1" backgroundColor="transparent"/>
+			<ePixmap position="0,0" zPosition="-1" size="610,160" pixmap="~/suggestions_bg.png" alphatest="on" transparent="1" backgroundColor="transparent"/>
 			<widget source="suggestionslist" render="Listbox" position="10,5" zPosition="7" size="580,150" scrollbarMode="showOnDemand" transparent="1" >
 				<convert type="TemplatedMultiContent">
 					{"template": [
@@ -261,21 +261,9 @@ class MyTubeSuggestionsListScreen(Screen):
 
 
 class MyTubeSettingsScreen(Screen, ConfigListScreen):
-	skin = """
-		<screen name="MyTubeSettingsScreen" flags="wfNoBorder" position="0,0" size="720,576" title="MyTube - Settings" >
-			<ePixmap position="0,0" zPosition="-1" size="720,576" pixmap="~/mytubemain_bg.png" alphatest="on" transparent="1" backgroundColor="transparent"/>
-			<widget name="title" position="60,50" size="600,50" zPosition="5" valign="center" halign="left" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-			<widget name="config" zPosition="2" position="60,120" size="610,370" scrollbarMode="showOnDemand" transparent="1" />
-
-			<ePixmap position="100,500" size="100,40" zPosition="0" pixmap="~/plugin.png" alphatest="on" transparent="1" />
-			<ePixmap position="220,500" zPosition="4" size="140,40" pixmap="skin_default/buttons/red.png" transparent="1" alphatest="on" />
-			<ePixmap position="360,500" zPosition="4" size="140,40" pixmap="skin_default/buttons/green.png" transparent="1" alphatest="on" />
-			<widget name="key_red" position="220,500" zPosition="5" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-			<widget name="key_green" position="360,500" zPosition="5" size="140,40" valign="center" halign="center" font="Regular;21" transparent="1" foregroundColor="white" shadowColor="black" shadowOffset="-1,-1" />
-		</screen>"""
-
 	def __init__(self, session, plugin_path):
 		Screen.__init__(self, session)
+		self.skinName = "Setup"
 		self.skin_path = plugin_path
 		self.session = session
 
@@ -321,6 +309,7 @@ class MyTubeSettingsScreen(Screen, ConfigListScreen):
 		if config.plugins.mytube.general.loadFeedOnOpen.value:
 			self.searchContextEntries.append(getConfigListEntry(_("Start with following feed:"), config.plugins.mytube.general.startFeed))
 		self.searchContextEntries.append(getConfigListEntry(_("Videoplayer stop/exit behavior:"), config.plugins.mytube.general.on_movie_stop))
+		self.searchContextEntries.append(getConfigListEntry(_('Video EOF behavior:'), config.plugins.mytube.general.on_movie_eof))
 		self.searchContextEntries.append(getConfigListEntry(_("Videobrowser exit behavior:"), config.plugins.mytube.general.on_exit))
 		"""self.ProxyEntry = getConfigListEntry(_("Use HTTP Proxy Server:"), config.plugins.mytube.general.useHTTPProxy)
 		self.searchContextEntries.append(self.ProxyEntry)
@@ -399,6 +388,7 @@ class MyTubeSettingsScreen(Screen, ConfigListScreen):
 		config.plugins.mytube.general.loadFeedOnOpen.save()
 		config.plugins.mytube.general.startFeed.save()
 		config.plugins.mytube.general.on_movie_stop.save()
+		config.plugins.mytube.general.on_movie_eof.save()
 		config.plugins.mytube.general.on_exit.save()
 		config.plugins.mytube.general.videodir.save()
 		config.plugins.mytube.general.clearHistoryOnClose.save()
@@ -516,7 +506,7 @@ class MyTubeTasksScreen(Screen):
 class MyTubeHistoryScreen(Screen):
 	skin = """
 		<screen name="MyTubeHistoryScreen" position="60,93" zPosition="6" size="610,160" flags="wfNoBorder" title="MyTube - History">
-			<ePixmap position="0,0" zPosition="-1" size="610,160" pixmap="/usr/lib/enigma2/python/Plugins/Extensions/MyTube/suggestions_bg.png" alphatest="on" transparent="1" backgroundColor="transparent"/>
+			<ePixmap position="0,0" zPosition="-1" size="610,160" pixmap="~/suggestions_bg.png" alphatest="on" transparent="1" backgroundColor="transparent"/>
 			<widget source="historylist" render="Listbox" position="10,5" zPosition="7" size="580,150" scrollbarMode="showOnDemand" transparent="1" >
 				<convert type="TemplatedMultiContent">
 					{"template": [

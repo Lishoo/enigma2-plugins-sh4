@@ -161,7 +161,7 @@ msgid "Mounts editor"
 msgstr "Montēšanas punktu redaktors"
 
 msgid "Mounts management"
-msgstr "Montēšanas punktu pārvaldība"
+msgstr "Pārvaldīt"
 
 msgid "NFS share"
 msgstr "NFS"
@@ -221,10 +221,10 @@ msgid "Rescan"
 msgstr "Pārskanēt"
 
 msgid "Scan NFS share"
-msgstr "Skanēt NFS resursu"
+msgstr "Skanēt NFS"
 
 msgid "Scan range"
-msgstr "Skanēšanas diap."
+msgstr "Diapazons"
 
 msgid "Search for network shares"
 msgstr "Meklēt tīkla resursus"
