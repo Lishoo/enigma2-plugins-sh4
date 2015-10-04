@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-tageditor
-Version: 20150811
+Version: 20151004
 Description: Edit tags of movies, and in timers
 Maintainer: OpenPLi team <forum@openpli.org>
 Depends: enigma2

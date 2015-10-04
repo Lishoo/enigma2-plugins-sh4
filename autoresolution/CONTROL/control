@@ -1,5 +1,5 @@
 Package: enigma2-plugin-systemplugins-autoresolution
-Version: 20150811
+Version: 20151004
 Description: Automatically change resolution 
 Maintainer: OpenPLi team <forum@openpli.org>
 Depends: enigma2, enigma2-plugin-systemplugins-videomode

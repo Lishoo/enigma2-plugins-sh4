@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-vlcplayer
-Version: 1.7
+Version: 1.8
 Description: Enigma2 Plugin to play AVI/DIVX/WMV/etc. videos from PC on your dreambox. Needs a running VLC (see www.vieolan.org)
 Maintainer: OpenPLi team <forum@openpli.org>
 Homepage: www.openpli.org
