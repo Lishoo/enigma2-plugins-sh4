@@ -821,7 +821,7 @@ class EpgCenterTimerlist(TimerList):
 		self.baseHeight = self.piconSize.height()
 		self.listStyle = listStyle
 		
-		GUIComponent.__init__(self)
+		TimerList.__init__(self, list)
 		
 		self.l = eListboxPythonMultiContent()
 		self.l.setBuildFunc(self.buildTimerEntry)
