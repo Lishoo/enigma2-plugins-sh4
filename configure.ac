@@ -294,7 +294,6 @@ merlinepgcenter/skins/Makefile
 merlinepgcenter/images/Makefile
 merlinepgcenter/images/HD/Makefile
 merlinepgcenter/images/HD_BORDER/Makefile
-merlinepgcenter/images/HD_Elgato/Makefile
 merlinepgcenter/images/SD/Makefile
 merlinepgcenter/images/XD/Makefile
 merlinepgcenter/images/XD_BORDER/Makefile
