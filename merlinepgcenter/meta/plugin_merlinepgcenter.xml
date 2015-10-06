@@ -8,7 +8,7 @@
                     <packagename>enigma2-plugin-extensions-merlinepgcenter</packagename>
                     <shortdescription>more than just an EPG...</shortdescription>
                     <description>more than just an EPG...</description>
-                    <screenshot src="http://www.dreamboxupdate.com/preview/plugin_merlinepgcenter.jpg" />
+                    <screenshot/>		    
           </info>
 
 	  <files type="package"> <!-- without version, without .ipk -->

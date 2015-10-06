@@ -23,8 +23,7 @@
 		<key id="KEY_RADIO" mapto="showRadio" flags="m" />
 		<key id="KEY_TV" mapto="showTv" flags="m" />
 		<key id="KEY_INFO" mapto="showEventInfo" flags="m" />
-		<key id="KEY_OK" mapto="ok" flags="m" />
-		<key id="KEY_VIDEO" mapto="video" flags="m" />
+		<key id="KEY_OK" mapto="ok" flags="m" /> <!-- TODO nicht bei EPGSEARCH_RESULT setzen -->
 	</map>
 	
 	<!-- CONFIG LIST ACTIONS (EPGSEARCH_HISTORY / SETTINGS)-->
@@ -56,6 +55,13 @@
 		<key id="KEY_PREVIOUS" mapto="previous" flags="mr" />
 		<key id="KEY_NEXT" mapto="next" flags="mr" />
 	</map>
+	
+	<!-- TODO KEYBOARD ACTIONS
+			"gotAsciiCode": self.keyGotAscii,
+			"home": self.keyHome,
+			"end": self.keyEnd,
+			"toggleOverwrite": self.keyToggleOW,
+	-->
 	
 	<!-- KEY RED ACTION -->
 	<map context="EpgRedActions">
@@ -101,11 +107,6 @@
 	<!-- TOGGLE CONFIG ACTIONS -->
 	<map context="ToggleConfigActions">
 		<key id="KEY_MENU" mapto="toggleConfig" flags="m" />
-	</map>
-	
-	<!-- YTTRAILER PVR ACTIONS -->
-	<map context="YttrailerActions">
-		<key id="KEY_VIDEO" mapto="video" flags="m" />
 	</map>
 </keymap>
 
