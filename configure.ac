@@ -65,12 +65,6 @@ AM_CONDITIONAL(UPDATE_PO, test "$with_po" = "yes")
 AC_CONFIG_FILES([
 Makefile
 
-alternativesoftcammanager/Makefile
-alternativesoftcammanager/meta/Makefile
-alternativesoftcammanager/po/Makefile
-alternativesoftcammanager/src/Makefile
-alternativesoftcammanager/src/images/Makefile
-
 antiscrollbar/Makefile
 antiscrollbar/meta/Makefile
 antiscrollbar/src/Makefile

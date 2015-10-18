@@ -1,7 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = \
-	alternativesoftcammanager \
 	antiscrollbar \
 	audiosync \
 	automaticcleanup \
