@@ -52,7 +52,6 @@ SUBDIRS = \
 	mphelp \
 	multiquickbutton \
 	multirc \
-	mytube \
 	ncidclient \
 	netcaster \
 	networkbrowser \

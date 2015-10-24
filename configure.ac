@@ -349,11 +349,6 @@ multiquickbutton/src/images/cli_default/Makefile
 multiquickbutton/src/etc/Makefile
 multiquickbutton/meta/Makefile
 
-mytube/Makefile
-mytube/meta/Makefile
-mytube/src/Makefile
-mytube/po/Makefile
-
 namezap/Makefile
 namezap/meta/Makefile
 namezap/po/Makefile
