@@ -28,7 +28,6 @@ from ServiceReference import ServiceReference
 
 # OWN IMPORTS
 from EpgCenterList import EpgCenterList, TIMERLIST
-from MerlinEPGCenter import LIST_MODE_AUTOTIMER
 
 
 ############################################################################################
@@ -134,7 +133,7 @@ class EpgSingleTab(EpgBaseTab):
 				service = servicelist.getNext()
 				if service.valid():
 					return service.toString()
-				if service.flags & (eServiceReference.isDirectory | eServiceReference.isMarker | eServiceReference.isGroup): # ignore non playable services
+				if service.flags & (eServiceReference.isDirectory | eServiceReference.isMarker): # ignore non playable services
 					continue
 		else:
 			return ""
@@ -159,16 +158,14 @@ class EpgSingleTab(EpgBaseTab):
 				
 		return sRef
 		
-	def show(self, oldMode, firstBouquet, currentBouquet, currentBouquetIndex, currentMode, showOutdated, sRef = None, timerListMode = None):
+	def show(self, oldMode, firstBouquet, currentBouquet, currentBouquetIndex, currentMode, showOutdated, sRef = None):
 		# save the last state
 		self.__currentBouquet = currentBouquet
 		self.__currentBouquetIndex = currentBouquetIndex
 		self.__currentMode = currentMode
 		self.__showOutdated = showOutdated
 		
-		if timerListMode == LIST_MODE_AUTOTIMER: # we don't have a service ref from autotimers, let's get the first one in bouquets
-			self.__sRef = self.getFirstServiceRef(firstBouquet)
-		elif sRef == None:
+		if sRef == None:
 			self.__sRef = self.getServiceRef(oldMode, firstBouquet)
 		else:
 			self.__sRef = sRef

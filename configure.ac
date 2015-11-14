@@ -65,12 +65,6 @@ AM_CONDITIONAL(UPDATE_PO, test "$with_po" = "yes")
 AC_CONFIG_FILES([
 Makefile
 
-alternativesoftcammanager/Makefile
-alternativesoftcammanager/meta/Makefile
-alternativesoftcammanager/po/Makefile
-alternativesoftcammanager/src/Makefile
-alternativesoftcammanager/src/images/Makefile
-
 antiscrollbar/Makefile
 antiscrollbar/meta/Makefile
 antiscrollbar/src/Makefile
@@ -85,11 +79,6 @@ automaticcleanup/Makefile
 automaticcleanup/meta/Makefile
 automaticcleanup/po/Makefile
 automaticcleanup/src/Makefile
-
-automatictimerlistcleanup/Makefile
-automatictimerlistcleanup/meta/Makefile
-automatictimerlistcleanup/po/Makefile
-automatictimerlistcleanup/src/Makefile
 
 automaticvolumeadjustment/Makefile
 automaticvolumeadjustment/meta/Makefile
@@ -299,7 +288,6 @@ merlinepgcenter/skins/Makefile
 merlinepgcenter/images/Makefile
 merlinepgcenter/images/HD/Makefile
 merlinepgcenter/images/HD_BORDER/Makefile
-merlinepgcenter/images/HD_Elgato/Makefile
 merlinepgcenter/images/SD/Makefile
 merlinepgcenter/images/XD/Makefile
 merlinepgcenter/images/XD_BORDER/Makefile
@@ -360,11 +348,6 @@ multiquickbutton/src/images/Makefile
 multiquickbutton/src/images/cli_default/Makefile
 multiquickbutton/src/etc/Makefile
 multiquickbutton/meta/Makefile
-
-mytube/Makefile
-mytube/meta/Makefile
-mytube/src/Makefile
-mytube/po/Makefile
 
 namezap/Makefile
 namezap/meta/Makefile

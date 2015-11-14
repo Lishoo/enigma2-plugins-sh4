@@ -1,7 +1,6 @@
 ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = \
-	alternativesoftcammanager \
 	antiscrollbar \
 	audiosync \
 	automaticcleanup \
@@ -53,7 +52,6 @@ SUBDIRS = \
 	mphelp \
 	multiquickbutton \
 	multirc \
-	mytube \
 	ncidclient \
 	netcaster \
 	networkbrowser \

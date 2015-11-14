@@ -1,3 +1,3 @@
 PLUGIN = MerlinEPGCenter
-LANGS = de it pl
+LANGS = de it
 include $(top_srcdir)/Rules-po.mak

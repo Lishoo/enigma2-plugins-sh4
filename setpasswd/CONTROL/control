@@ -1,5 +1,5 @@
 Package: enigma2-plugin-systemplugins-changepassword
-Version: 20090520-r0
+Version: 20150811-r0
 Description: change or reset root password on your dreambox
 Maintainer: OpenPLi team <forum@openpli.org>
 Homepage: http://www.openpli.org
