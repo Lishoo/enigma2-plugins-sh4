@@ -13,6 +13,7 @@ SUBDIRS = \
 	bonjour \
 	cdinfo \
 	curlytx \
+	dreamexplorer \
 	dreamirc \
 	dreammediathek \
 	dvdbackup \
@@ -47,12 +48,12 @@ SUBDIRS = \
 	mosaic \
 	moviecut \
 	movieretitle \
-	moviesearch \
 	movieselectionquickbutton \
 	movietagger \
 	mphelp \
 	multiquickbutton \
 	multirc \
+	mytube \
 	ncidclient \
 	netcaster \
 	networkbrowser \
@@ -85,7 +86,7 @@ SUBDIRS = \
 	svdrp \
 	tageditor \
 	trafficinfo \
-	tv3play \
+	transcodingsetup \
 	tvcharts \
 	toolkit \
 	unwetterinfo \
@@ -101,9 +102,6 @@ SUBDIRS = \
 	zaphistorybrowser \
 	zapstatistic \
 	zdfmediathek \
-	mytube \
-	yttrailer \
-	webbouqueteditor \
 	webinterface
 
 metadir = $(datadir)/meta

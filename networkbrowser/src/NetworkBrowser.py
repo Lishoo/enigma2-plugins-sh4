@@ -232,28 +232,23 @@ class NetworkBrowser(Screen):
 				username = self.hostdata['username']
 				password = self.hostdata['password']
 			except:
-				username = "username"
-				password = "password"
+				username = "guest"
+				password = ""
 		else:
-			username = "username"
-			password = "password"
+			username = "guest"
+			password = ""
 
-		if devicetype == 'unix':
-			smblist=netscan.smbShare(hostip,hostname,username,password)
-			for x in smblist:
-				if len(x) == 6:
-					if x[3] != 'IPC$':
-						sharelist.append(x)
-			nfslist=netscan.nfsShare(hostip,hostname)
-			for x in nfslist:
-				if len(x) == 6:
+		smblist=netscan.smbShare(hostip,hostname,username,password)
+		for x in smblist:
+			if len(x) == 6:
+				if x[3].upper() not in ('IPC$', 'ADMIN$', 'PRINT$'):
 					sharelist.append(x)
-		else:
-			smblist=netscan.smbShare(hostip,hostname,username,password)
-			for x in smblist:
-				if len(x) == 6:
-					if x[3] != 'IPC$':
-						sharelist.append(x)
+
+		nfslist=netscan.nfsShare(hostip,hostname)
+		for x in nfslist:
+			if len(x) == 6:
+				sharelist.append(x)
+
 		return sharelist
 
 	def updateHostsList(self):
@@ -325,7 +320,7 @@ class NetworkBrowser(Screen):
 			sharedir = share[3]
 			sharedescription = share[5]
 		else:
-			sharedir = share[4]
+			sharedir = share[4][1:]
 			sharedescription = share[3]
 
 		if sharetype == 'nfsShare':
@@ -464,11 +459,11 @@ class NetworkBrowser(Screen):
 						data['username'] = self.hostdata['username']
 						data['password'] = self.hostdata['password']
 					except:
-						data['username'] = "username"
-						data['password'] = "password"
+						data['username'] = "guest"
+						data['password'] = ""
 				else:
-					data['username'] = "username"
-					data['password'] = "password"
+					data['username'] = "guest"
+					data['password'] = ""
 
 				for sharename, sharedata in mounts.items():
 					if sharedata['ip'] == selection[2].strip() and sharedata['sharedir'] == selection[3].strip():

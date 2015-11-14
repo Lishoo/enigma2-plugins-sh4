@@ -1,6 +1,6 @@
 Package: enigma2-plugin-extensions-mytube
-Version: 20090420
+Version: 20150607
 Description: MyTube Player for direct playback of Youtube movies
 Maintainer: Mladen Horvat <acid-burn@opendreambox.org>
 Homepage: http://www.dream-multimedia-tv.de/
-Depends: enigma2, python-twisted-web, python-gdata
+Depends: enigma2, python-twisted-web, python-gdata, google-api-python-client, python-youtube-dl

@@ -157,10 +157,10 @@ global StopService
 PlayService = None
 StopService = None
 
-def playService(ref, checkParentalControl=True, forceRestart=False):
+def playService(ref, checkParentalControl=True, forceRestart=False, adjust=True):
 	if PlayService:
 		zapstatistic.handlePlayServiceCommand(ref)
-		PlayService(ref, checkParentalControl, forceRestart)
+		PlayService(ref, checkParentalControl, forceRestart, adjust)
 
 def stopService():
 	if StopService:
@@ -483,7 +483,7 @@ class ZapStatisticScreen(Screen, ProtectedScreen):
 		self.updateLabels()
 
 	def isProtected(self):
-		return config.ParentalControl.setuppinactive.value and config.ParentalControl.configured.value
+		return config.ParentalControl.servicepinactive.value
 	
 	def pinEntered(self, result):
 		if result is None:

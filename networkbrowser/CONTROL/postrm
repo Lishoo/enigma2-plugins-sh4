@@ -1,4 +1,4 @@
 #!/bin/sh
-rm /usr/lib/enigma2/python/Plugins/SystemPlugins/NetworkBrowser
+rm -R /usr/lib/enigma2/python/Plugins/SystemPlugins/NetworkBrowser
 exit 0
 

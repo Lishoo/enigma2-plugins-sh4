@@ -1,5 +1,5 @@
 Package: enigma2-plugin-extensions-lastfm
 Version: 20110611
 Description: Listen to Last.FM Internet Radio, the social music revolution 
-Maintainer: 3c5x9 <3c5x9@gmx.net>
+Maintainer: OpenPLi team <forum@openpli.org>
 Depends: enigma2, python-twisted-web, python-crypt

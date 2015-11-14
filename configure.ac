@@ -2,6 +2,12 @@ AC_INIT([enigma2-plugins],[4],[forum@openpli.org])
 AM_INIT_AUTOMAKE([dist-bzip2 foreign no-define tar-pax])
 AC_CONFIG_HEADERS([enigma2-plugins-config.h])
 
+dnl versions of gstreamer and plugins-base
+AC_ARG_WITH(gstversion,
+	AS_HELP_STRING([--with-gstversion],[use gstreamer version (major.minor)]),
+	[GST_MAJORMINOR=$withval],[GST_MAJORMINOR=0.10])
+
+
 # Silent rules are available since 1.11, but older versions
 # are still in use. So don't use them unconditionally.
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
@@ -28,18 +34,10 @@ AC_ARG_ENABLE(libeplayer3,
 	[AC_DEFINE(ENABLE_LIBEPLAYER3,1,[enable TDT libeplayer3 as player engine support])])
 
 if ! test "$enable_libeplayer3" = "yes"; then
-PKG_CHECK_MODULES(GSTREAMER, gstreamer-0.10 gstreamer-pbutils-0.10)
+PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
 fi
 PKG_CHECK_MODULES(LIBCRYPTO, libcrypto)
 PKG_CHECK_MODULES(SIGC,sigc++-1.2)
-
-AC_ARG_WITH(tpm,
-	AS_HELP_STRING([--with-tpm], [enable plugins that require a TPM]),
-	[with_tpm="$withval"],[with_tpm="no"])
-if test "$with_tpm" = "yes"; then
-	AC_DEFINE([HAVE_TPM],[1],[Define to 1 to enable plugins that require a TPM])
-fi
-AM_CONDITIONAL(TPM, test "$with_tpm" = "yes")
 
 AC_ARG_WITH(debug,
 	AS_HELP_STRING([--without-debug],[disable debugging code]),
@@ -126,6 +124,11 @@ bitrateviewer/meta/Makefile
 bitrateviewer/src/Makefile
 bitrateviewer/src/bitratecalc/Makefile
 
+blindscan/src/Makefile
+blindscan/po/Makefile
+blindscan/Makefile
+blindscan/meta/Makefile
+
 bonjour/Makefile
 bonjour/meta/Makefile
 bonjour/src/Makefile
@@ -133,6 +136,11 @@ bonjour/src/Makefile
 cdinfo/Makefile
 cdinfo/meta/Makefile
 cdinfo/src/Makefile
+
+dreamexplorer/Makefile
+dreamexplorer/meta/Makefile
+dreamexplorer/src/Makefile
+dreamexplorer/src/res/Makefile
 
 curlytx/Makefile
 curlytx/meta/Makefile
@@ -320,10 +328,6 @@ movieretitle/Makefile
 movieretitle/meta/Makefile
 movieretitle/po/Makefile
 movieretitle/src/Makefile
-
-moviesearch/Makefile
-moviesearch/meta/Makefile
-moviesearch/src/Makefile
 
 movieselectionquickbutton/Makefile
 movieselectionquickbutton/meta/Makefile
@@ -542,13 +546,12 @@ trafficinfo/Makefile
 trafficinfo/meta/Makefile
 trafficinfo/src/Makefile
 
+transcodingsetup/Makefile
+transcodingsetup/src/Makefile
+transcodingsetup/meta/Makefile
+
 toolkit/Makefile
 toolkit/src/Makefile
-
-tv3play/Makefile
-tv3play/meta/Makefile
-tv3play/po/Makefile
-tv3play/src/Makefile
 
 tvcharts/Makefile
 tvcharts/meta/Makefile
@@ -598,16 +601,6 @@ webcamviewer/Makefile
 webcamviewer/meta/Makefile
 webcamviewer/src/Makefile
 
-webbouqueteditor/Makefile
-webbouqueteditor/src/Makefile
-webbouqueteditor/meta/Makefile
-webbouqueteditor/src/web/Makefile
-webbouqueteditor/src/web-data/Makefile
-webbouqueteditor/src/WebChilds/Makefile
-webbouqueteditor/src/WebComponents/Makefile
-webbouqueteditor/src/WebComponents/Sources/Makefile
-webbouqueteditor/src/WebScreens/Makefile
-
 webinterface/Makefile
 webinterface/meta/Makefile
 webinterface/po/Makefile
@@ -645,11 +638,6 @@ youtubeplayer/Makefile
 youtubeplayer/meta/Makefile
 youtubeplayer/src/Makefile
 youtubeplayer/src/Nemesis.GlassLine_Mod/Makefile
-
-yttrailer/Makefile
-yttrailer/meta/Makefile
-yttrailer/po/Makefile
-yttrailer/src/Makefile
 
 zaphistorybrowser/Makefile
 zaphistorybrowser/meta/Makefile
