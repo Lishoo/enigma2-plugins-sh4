@@ -32,12 +32,20 @@ PKG_CHECK_MODULES(ENIGMA2, enigma2)
 AC_ARG_ENABLE(libeplayer3,
 	[  --enable-libeplayer3          enable TDT libeplayer3 as player engine supportt],
 	[AC_DEFINE(ENABLE_LIBEPLAYER3,1,[enable TDT libeplayer3 as player engine support])])
+AC_ARG_ENABLE(sigc2,
+	[  --enable-sigc2         enable sigc2 config],
+	[AC_DEFINE(ENABLE_SIGC2, 1, [enable sigc2 config])])
 
+if ! test "$enable_sigc2" = "yes"; then
+SIGC_MAJORMINOR=1.2
+else
+SIGC_MAJORMINOR=2.0
+fi
 if ! test "$enable_libeplayer3" = "yes"; then
 PKG_CHECK_MODULES(GSTREAMER, gstreamer-$GST_MAJORMINOR gstreamer-pbutils-$GST_MAJORMINOR)
 fi
 PKG_CHECK_MODULES(LIBCRYPTO, libcrypto)
-PKG_CHECK_MODULES(SIGC,sigc++-1.2)
+PKG_CHECK_MODULES(SIGC,sigc++-$SIGC_MAJORMINOR)
 
 AC_ARG_WITH(debug,
 	AS_HELP_STRING([--without-debug],[disable debugging code]),
